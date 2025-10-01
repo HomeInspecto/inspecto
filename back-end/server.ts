@@ -20,6 +20,12 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/test', (req, res) => {
+  res.json({ 
+    message: 'Test backend server is running'
+  });
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy', service: 'back-end' });
 });
