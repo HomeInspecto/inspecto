@@ -7,8 +7,12 @@ WORKDIR /back-end
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
+# Install global dependencies
+RUN npm install -g nodemon ts-node typescript
+
 # Install dependencies
 RUN npm install
+RUN npm install --save-dev @types/node @types/express @types/cors @types/swagger-jsdoc @types/swagger-ui-express
 
 # Copy the rest of the application code to the working directory
 COPY . .

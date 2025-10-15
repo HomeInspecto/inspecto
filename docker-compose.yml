@@ -8,8 +8,8 @@ services:
     ports:
       - 4000:4000
     volumes:
-      - ./back-end:/back-end
-      - /back-end/node_modules
+      - ./back-end:/app
+      - /app/node_modules
     networks:
       - app-network
 
