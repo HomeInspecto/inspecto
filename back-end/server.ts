@@ -28,14 +28,13 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 //serve swagger UI at URL
 app.use('/api', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
-/* Routes
+// Routes
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Backend server is running yayy!',
     timestamp: new Date().toISOString()
   });
 });
-*/
 
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy', service: 'back-end' });
