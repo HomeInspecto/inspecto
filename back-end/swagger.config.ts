@@ -4,7 +4,7 @@ const swaggerOptions = {
     //API info
     openapi: '3.0.0',
     info: {
-      title: 'Inspecto Home Inspection API',
+      title: 'Inspecto API',
       version: '1.0.0',
       description: 'API for generating automated home inspection reports from audio and images.',
     },
