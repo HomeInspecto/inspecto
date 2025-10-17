@@ -1,4 +1,4 @@
-# Use regular Node.js image for better compatibility with native modules
+# Use an official Node.js runtime as a parent image
 FROM node:20
 
 # Set the working directory in the container
@@ -10,11 +10,17 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Install Expo CLI globally
+RUN npm install -g @expo/cli
+
+# Verify expo installation
+RUN npx expo --version
+
 # Copy the rest of the application code to the working directory
 COPY . .
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 8081
 
 # Define the command to run the app
-CMD ["npm", "run", "dev"]
+CMD ["npx", "expo", "start", "--web"]

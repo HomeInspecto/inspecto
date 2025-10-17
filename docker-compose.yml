@@ -18,14 +18,13 @@ services:
     build:
       context: ./front-end
     ports:
-      - 3000:3000
+      - 8081:8081
     volumes:
       - ./front-end:/front-end
       - /front-end/node_modules
     working_dir: /front-end
     environment:
       - NODE_ENV=development
-    command: npm run dev
     networks:
       - app-network
 
