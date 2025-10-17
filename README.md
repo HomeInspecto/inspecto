@@ -25,6 +25,7 @@ A full-stack application with Next.js frontend and Node.js/Express backend, cont
    - Frontend: http://localhost:3000
    - Backend: http://localhost:4000
    - Backend Health Check: http://localhost:4000/health
+   - To check API endpoints: http://localhost:4000/api
 
 ### Development Features
 
