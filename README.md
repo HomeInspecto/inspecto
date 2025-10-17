@@ -1,12 +1,14 @@
 # Inspecto
 
-A full-stack application with Next.js frontend and Node.js/Express backend, containerized with Docker and configured for development with hot reloading.
+A full-stack application with Expo React Native frontend and Node.js/Express backend, containerized with Docker and configured for development with hot reloading.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose installed
 - Git
+- Node.js (for local development)
+- iOS Simulator (for iOS development) or Android Studio (for Android development)
 
 ### Running the Project
 
@@ -17,12 +19,29 @@ A full-stack application with Next.js frontend and Node.js/Express backend, cont
    ```
 
 2. **Start the development environment**
+
+   **Option A: Docker (Web Development)**
    ```bash
    docker compose up --build
    ```
 
+   **Option B: Local Development (iOS/Android)**
+   ```bash
+   # Backend
+   docker compose up back-end
+   
+   # Frontend (in another terminal)
+   cd front-end
+   npm install
+   npm run ios    # for iOS
+   # or
+   npm run android # for Android
+   # or
+   npm run web    # for web
+   ```
+
 3. **Access the applications**
-   - Frontend: http://localhost:3000
+   - Frontend Web: http://localhost:8081 (Docker) or http://localhost:8081 (Local)
    - Backend: http://localhost:4000
    - Backend Health Check: http://localhost:4000/health
    - To check API endpoints: http://localhost:4000/api
@@ -32,15 +51,25 @@ A full-stack application with Next.js frontend and Node.js/Express backend, cont
 - ✅ **Hot Reloading**: Both frontend and backend automatically reload on file changes
 - ✅ **File Watching**: Real-time file synchronization between host and containers
 - ✅ **TypeScript Support**: Full TypeScript support for both frontend and backend
-- ✅ **Tailwind CSS**: Styled with Tailwind CSS v3
+- ✅ **Cross-Platform**: React Native app works on iOS, Android, and Web
+- ✅ **Expo Router**: File-based routing with Expo Router
+- ✅ **Custom Components**: Reusable UI components with styled buttons
 - ✅ **Express API**: RESTful API with Cohere AI integration ready
 
 ### Project Structure
 
 ```
 inspecto/
-├── front-end/          # Next.js React application
-│   ├── src/app/        # App router pages
+├── front-end/          # Expo React Native application
+│   ├── app/            # Expo Router pages and layouts
+│   │   ├── (tabs)/     # Tab-based navigation
+│   │   └── _layout.tsx # Root layout
+│   ├── components/     # Reusable UI components
+│   │   ├── button.tsx  # Custom button component
+│   │   └── ui/         # UI component library
+│   ├── assets/         # Images and static assets
+│   ├── constants/      # App constants and themes
+│   ├── hooks/          # Custom React hooks
 │   ├── package.json    # Frontend dependencies
 │   └── Dockerfile      # Frontend container config
 ├── back-end/           # Node.js Express API
@@ -53,7 +82,7 @@ inspecto/
 
 ### Available Commands
 
-#### Using Docker (Recommended)
+#### Using Docker (Web Development)
 ```bash
 # Start development environment
 docker compose up --build
@@ -69,17 +98,28 @@ docker compose logs front-end
 docker compose logs back-end
 ```
 
-#### Local Development (Without Docker)
+#### Local Development (iOS/Android)
 ```bash
-# Frontend
+# Backend
+docker compose up back-end
+
+# Frontend (in another terminal)
 cd front-end
 npm install
-npm run dev
+npm run ios    # for iOS
+npm run android # for Android
+npm run web 
+```
 
-# Backend
-cd back-end
-npm install
-npm run dev
+#### Available Scripts
+```bash
+# Frontend scripts
+cd front-end
+npm run start     # Start Expo development server
+npm run android   # Start with Android
+npm run ios       # Start with iOS
+npm run web       # Start with Web
+npm run lint      # Run ESLint
 ```
 
 ### Environment Variables
@@ -98,11 +138,26 @@ The project includes GitHub Actions workflows for:
 
 ### Troubleshooting
 
-**Port conflicts**: If ports 3000 or 4000 are in use, modify the ports in `docker-compose.yml`
+**Port conflicts**: If ports 8081 or 4000 are in use, modify the ports in `docker-compose.yml`
 
-**File watching not working**: Ensure Docker has proper volume mount permissions
+**iOS Simulator issues**: 
+- Ensure Xcode is installed and iOS Simulator is available
+- Run `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer` if needed
 
-**Build failures**: Try `docker compose down --remove-orphans` and rebuild
+**Android Emulator issues**:
+- Ensure Android Studio and Android SDK are installed
+- Check available disk space (emulator needs 2-4GB free)
+- Use `adb devices` to check if emulator is running
+
+**Docker issues**:
+- File watching not working: Ensure Docker has proper volume mount permissions
+- Build failures: Try `docker compose down --remove-orphans` and rebuild
+- Expo not found: Rebuild container with `docker compose up --build`
+
+**Development workflow**:
+- Use Docker for web development
+- Use local development for iOS/Android development
+- Backend can run in Docker while frontend runs locally
 
 ### Contributing
 
@@ -113,4 +168,4 @@ The project includes GitHub Actions workflows for:
 
 ---
 
-Built with ❤️ using Next.js, Express, TypeScript, and Docker
+Built with ❤️ using Expo React Native, Express, TypeScript, and Docker
