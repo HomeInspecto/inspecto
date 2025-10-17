@@ -10,12 +10,17 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Install Expo CLI globally
+RUN npm install -g @expo/cli
+
+# Verify expo installation
+RUN npx expo --version
+
 # Copy the rest of the application code to the working directory
 COPY . .
 
-
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 8081
 
 # Define the command to run the app
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["npx", "expo", "start", "--web"]
