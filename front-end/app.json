@@ -50,7 +50,8 @@
         "expo-media-library",
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to save inspection images.",
-          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos to your photo library."
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos to your photo library.",
+          "audioPermission": "Allow $(PRODUCT_NAME) to access your audio files for media library access."
         }
       ]
     ],
