@@ -5,6 +5,7 @@ A full-stack application with Expo React Native frontend and Node.js/Express bac
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Docker and Docker Compose installed
 - Git
 - Node.js (for local development)
@@ -13,6 +14,7 @@ A full-stack application with Expo React Native frontend and Node.js/Express bac
 ### Running the Project
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd inspecto
@@ -21,15 +23,17 @@ A full-stack application with Expo React Native frontend and Node.js/Express bac
 2. **Start the development environment**
 
    **Option A: Docker (Web Development)**
+
    ```bash
    docker compose up --build
    ```
 
    **Option B: Local Development (iOS/Android)**
+
    ```bash
    # Backend
    docker compose up back-end
-   
+
    # Frontend (in another terminal)
    cd front-end
    npm install
@@ -46,6 +50,28 @@ A full-stack application with Expo React Native frontend and Node.js/Express bac
    - Backend Health Check: http://localhost:4000/health
    - To check API endpoints: http://localhost:4000/api
 
+### 📱 Testing Camera & Gallery Features
+
+**On iOS (Expo Go):**
+
+1. Install **Expo Go** from App Store
+2. Start development server: `cd front-end && npm run start`
+3. Scan QR code with Expo Go
+4. Navigate to **Camera** tab to take photos
+5. Navigate to **Gallery** tab to view photos
+6. Test **pinch-to-zoom** on camera
+7. Test **new photo counter** (appears after taking photos)
+
+**On Android (Development Build):**
+
+1. Install **EAS CLI**: `npm install -g eas-cli`
+2. Login to EAS: `eas login` (create free account at expo.dev if needed)
+3. Build Android app: `cd front-end && eas build --platform android --profile development`
+4. Install the APK on your Android device/emulator
+5. Start development server: `cd front-end && npm run start`
+6. Open the native app and connect to development server
+7. Test camera and gallery features
+
 ### Development Features
 
 - ✅ **Hot Reloading**: Both frontend and backend automatically reload on file changes
@@ -55,6 +81,7 @@ A full-stack application with Expo React Native frontend and Node.js/Express bac
 - ✅ **Expo Router**: File-based routing with Expo Router
 - ✅ **Custom Components**: Reusable UI components with styled buttons
 - ✅ **Express API**: RESTful API with Cohere AI integration ready
+- ✅ **Camera & Gallery**: Take photos, view gallery, pinch-to-zoom, new photo tracking
 
 ### Project Structure
 
@@ -83,6 +110,7 @@ inspecto/
 ### Available Commands
 
 #### Using Docker (Web Development)
+
 ```bash
 # Start development environment
 docker compose up --build
@@ -99,6 +127,7 @@ docker compose logs back-end
 ```
 
 #### Local Development (iOS/Android)
+
 ```bash
 # Backend
 docker compose up back-end
@@ -108,10 +137,11 @@ cd front-end
 npm install
 npm run ios    # for iOS
 npm run android # for Android
-npm run web 
+npm run web
 ```
 
 #### Available Scripts
+
 ```bash
 # Frontend scripts
 cd front-end
@@ -125,6 +155,7 @@ npm run lint      # Run ESLint
 ### Environment Variables
 
 Create a `.env` file in the root directory:
+
 ```env
 COHERE_API_KEY=your_cohere_api_key_here
 ```
@@ -132,6 +163,7 @@ COHERE_API_KEY=your_cohere_api_key_here
 ### CI/CD
 
 The project includes GitHub Actions workflows for:
+
 - **Frontend CI**: Runs on pull requests to `main` branch when frontend files change
 - **Backend CI**: Runs on pull requests to `main` branch when backend files change
 - **Deployment**: Configured for continuous deployment
@@ -140,21 +172,25 @@ The project includes GitHub Actions workflows for:
 
 **Port conflicts**: If ports 8081 or 4000 are in use, modify the ports in `docker-compose.yml`
 
-**iOS Simulator issues**: 
+**iOS Simulator issues**:
+
 - Ensure Xcode is installed and iOS Simulator is available
 - Run `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer` if needed
 
 **Android Emulator issues**:
+
 - Ensure Android Studio and Android SDK are installed
 - Check available disk space (emulator needs 2-4GB free)
 - Use `adb devices` to check if emulator is running
 
 **Docker issues**:
+
 - File watching not working: Ensure Docker has proper volume mount permissions
 - Build failures: Try `docker compose down --remove-orphans` and rebuild
 - Expo not found: Rebuild container with `docker compose up --build`
 
 **Development workflow**:
+
 - Use Docker for web development
 - Use local development for iOS/Android development
 - Backend can run in Docker while frontend runs locally
