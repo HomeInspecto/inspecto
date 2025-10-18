@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   photoContainer: {
-    flex: 1,
-    margin: 5,
+    width: '48%',
+    margin: '1%',
     aspectRatio: 1,
     borderRadius: 8,
     overflow: 'hidden',
