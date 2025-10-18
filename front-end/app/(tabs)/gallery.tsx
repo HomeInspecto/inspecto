@@ -5,11 +5,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import PhotoGallery from '@/components/photo-gallery';
 
-// Only import MediaLibrary on iOS
-let MediaLibrary: any = null;
-if (Platform.OS === 'ios') {
-  MediaLibrary = require('expo-media-library');
-}
+import * as MediaLibrary from 'expo-media-library';
 
 interface Photo {
   id: string;
@@ -22,10 +18,11 @@ export default function GalleryScreen() {
   const [loading, setLoading] = useState(true);
   const [lastGalleryVisit, setLastGalleryVisit] = useState<number>(0);
   
-  // Handle MediaLibrary permissions - only on iOS
-  const [permission, requestPermission] = MediaLibrary 
-    ? MediaLibrary.usePermissions() 
-    : [{ granted: true }, () => Promise.resolve({ granted: true })];
+  // Always call the hook, but handle platform differences in logic
+  const [permission, requestPermission] = MediaLibrary.usePermissions();
+  
+  // Handle platform-specific permission logic
+  const shouldCheckPermissions = Platform.OS === 'ios';
 
   useEffect(() => {
     loadPhotos();
@@ -104,15 +101,6 @@ export default function GalleryScreen() {
     }
   }
 
-  async function markGalleryAsVisited() {
-    try {
-      const currentTime = Date.now().toString();
-      await AsyncStorage.setItem('last_gallery_visit', currentTime);
-      setLastGalleryVisit(Date.now());
-    } catch (error) {
-      console.log('Error marking gallery as visited:', error);
-    }
-  }
 
   async function markGalleryAsSeen() {
     try {
@@ -198,7 +186,7 @@ export default function GalleryScreen() {
   }
 
   // Handle permissions - skip check on Android due to Expo Go limitations
-  if (!permission.granted && Platform.OS === 'ios') {
+  if (!permission.granted && shouldCheckPermissions) {
     return (
       <View style={styles.container}>
         <View style={styles.permissionContainer}>

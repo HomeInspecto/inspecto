@@ -14,10 +14,11 @@ export default function CameraScreen() {
   const [newPhotoCount, setNewPhotoCount] = useState(0);
   const cameraRef = useRef<CameraView>(null);
   
-  // Only use MediaLibrary permissions on iOS (Android Expo Go has limitations)
-  const [mediaLibraryPermission, requestMediaLibraryPermission] = Platform.OS === 'ios' 
-    ? MediaLibrary.usePermissions() 
-    : [{ granted: true }, () => Promise.resolve({ granted: true })];
+  // Always call the hook, but handle platform differences in logic
+  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
+  
+  // Handle platform-specific permission logic
+  const shouldCheckMediaLibraryPermissions = Platform.OS === 'ios';
 
   // Load new photo count on mount
   useEffect(() => {
@@ -81,7 +82,7 @@ export default function CameraScreen() {
   }
 
   // Handle media library permissions (iOS only, Android skips this)
-  if (!mediaLibraryPermission.granted && Platform.OS === 'ios') {
+  if (!mediaLibraryPermission.granted && shouldCheckMediaLibraryPermissions) {
     // Media library permissions are not granted yet
     return (
       <View style={styles.container}>

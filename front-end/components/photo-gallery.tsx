@@ -48,7 +48,7 @@ export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, last
           </TouchableOpacity>
         </TouchableOpacity>
       );
-        } catch (error) {
+        } catch {
           return null;
         }
   };
