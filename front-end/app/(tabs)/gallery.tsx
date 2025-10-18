@@ -1,0 +1,259 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import * as MediaLibrary from 'expo-media-library';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router, useFocusEffect } from 'expo-router';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import PhotoGallery from '@/components/photo-gallery';
+
+interface Photo {
+  id: string;
+  uri: string;
+  timestamp: number;
+}
+
+export default function GalleryScreen() {
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [permission, requestPermission] = MediaLibrary.usePermissions();
+
+  useEffect(() => {
+    loadPhotos();
+  }, []);
+
+  // Refresh photos when the gallery screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      loadPhotos();
+    }, [])
+  );
+
+  async function loadPhotos() {
+    try {
+      setLoading(true);
+
+      // Load photos from AsyncStorage (app-specific photos)
+      const storedPhotos = await AsyncStorage.getItem('inspecto_photos');
+      
+      if (!storedPhotos) {
+        setPhotos([]);
+        setLoading(false);
+        return;
+      }
+
+      const photoList: Photo[] = JSON.parse(storedPhotos);
+      
+      // Sort by timestamp (newest first)
+      photoList.sort((a, b) => b.timestamp - a.timestamp);
+      
+      setPhotos(photoList);
+    } catch (error) {
+      console.error('Error loading photos:', error);
+      Alert.alert('Error', 'Failed to load photos from storage.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDeletePhoto(photoId: string) {
+    try {
+      // Delete from device media library
+      await MediaLibrary.deleteAssetsAsync([photoId]);
+      
+      // Remove from AsyncStorage
+      const storedPhotos = await AsyncStorage.getItem('inspecto_photos');
+      if (storedPhotos) {
+        const photoList = JSON.parse(storedPhotos);
+        const updatedPhotos = photoList.filter((photo: Photo) => photo.id !== photoId);
+        await AsyncStorage.setItem('inspecto_photos', JSON.stringify(updatedPhotos));
+      }
+      
+      // Update local state
+      setPhotos(photos.filter(photo => photo.id !== photoId));
+      Alert.alert('Success', 'Photo deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+      Alert.alert('Error', 'Failed to delete photo.');
+    }
+  }
+
+  function handlePhotoPress(photo: Photo) {
+    // TODO: Navigate to photo editor or full-screen view
+    Alert.alert('Photo Selected', `Photo ID: ${photo.id}`);
+  }
+
+  async function clearAllPhotos() {
+    Alert.alert(
+      'Clear All Photos',
+      'Are you sure you want to delete all photos? This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Clear All',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // Clear AsyncStorage
+              await AsyncStorage.removeItem('inspecto_photos');
+              
+              // Clear local state
+              setPhotos([]);
+              
+              Alert.alert('Success', 'All photos have been cleared.');
+            } catch (error) {
+              console.error('Error clearing photos:', error);
+              Alert.alert('Error', 'Failed to clear photos.');
+            }
+          },
+        },
+      ]
+    );
+  }
+
+  if (!permission) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading permissions...</Text>
+      </View>
+    );
+  }
+
+  if (!permission.granted) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.permissionContainer}>
+          <IconSymbol name="photo" size={64} color="#ccc" />
+          <Text style={styles.permissionTitle}>Photo Access Required</Text>
+          <Text style={styles.permissionText}>
+            We need access to your photos to show them in the gallery.
+          </Text>
+          <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+            <Text style={styles.permissionButtonText}>Grant Permission</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading photos...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <IconSymbol name="chevron.left" size={24} color="#007AFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Photo Gallery</Text>
+        <TouchableOpacity 
+          style={styles.refreshButton}
+          onPress={loadPhotos}
+        >
+          <IconSymbol name="arrow.clockwise" size={24} color="#007AFF" />
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.clearButton}
+          onPress={clearAllPhotos}
+        >
+          <IconSymbol name="trash" size={24} color="#FF3B30" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.content}>
+        <PhotoGallery
+          photos={photos}
+          onPhotoPress={handlePhotoPress}
+          onDeletePhoto={handleDeletePhoto}
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 20,
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  backButton: {
+    padding: 8,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+  },
+  refreshButton: {
+    padding: 8,
+  },
+  clearButton: {
+    padding: 8,
+  },
+  content: {
+    flex: 1,
+  },
+  permissionContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  permissionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  permissionText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 30,
+  },
+  permissionButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 8,
+  },
+  permissionButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+  },
+});
