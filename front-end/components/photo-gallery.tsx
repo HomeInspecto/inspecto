@@ -12,23 +12,39 @@ interface PhotoGalleryProps {
   photos: Photo[];
   onPhotoPress?: (photo: Photo) => void;
   onDeletePhoto?: (photoId: string) => void;
+  lastGalleryVisit?: number;
 }
 
-export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto }: PhotoGalleryProps) {
-  const renderPhoto = ({ item }: { item: Photo }) => (
-    <TouchableOpacity
-      style={styles.photoContainer}
-      onPress={() => onPhotoPress?.(item)}
-    >
-      <Image source={{ uri: item.uri }} style={styles.photo} />
+export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, lastGalleryVisit = 0 }: PhotoGalleryProps) {
+  const renderPhoto = ({ item }: { item: Photo }) => {
+    const isNew = item.timestamp > lastGalleryVisit;
+    
+    // Debug logging
+    console.log('Photo timestamp:', item.timestamp, 'Last visit:', lastGalleryVisit, 'Is new:', isNew);
+    
+    return (
       <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => onDeletePhoto?.(item.id)}
+        style={[
+          styles.photoContainer,
+          isNew && styles.newPhotoContainer
+        ]}
+        onPress={() => onPhotoPress?.(item)}
       >
-        <IconSymbol name="trash" size={16} color="white" />
+        <Image source={{ uri: item.uri }} style={styles.photo} />
+        {isNew && (
+          <View style={styles.newPhotoBadge}>
+            <Text style={styles.newPhotoText}>NEW</Text>
+          </View>
+        )}
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => onDeletePhoto?.(item.id)}
+        >
+          <IconSymbol name="trash" size={16} color="white" />
+        </TouchableOpacity>
       </TouchableOpacity>
-    </TouchableOpacity>
-  );
+    );
+  };
 
   if (photos.length === 0) {
     return (
@@ -96,5 +112,40 @@ const styles = StyleSheet.create({
     color: '#999',
     marginTop: 8,
     textAlign: 'center',
+  },
+  newPhotoContainer: {
+    borderWidth: 4,
+    borderColor: '#00FF00',
+    backgroundColor: 'rgba(0, 255, 0, 0.1)',
+    shadowColor: '#00FF00',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  newPhotoBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: '#34C759',
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    shadowColor: '#34C759',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  newPhotoText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
 });

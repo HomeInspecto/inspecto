@@ -1,14 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions, PanResponder } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, PanResponder } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-const { width, height } = Dimensions.get('window');
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -16,8 +12,52 @@ export default function CameraScreen() {
   const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
   const [isCapturing, setIsCapturing] = useState(false);
   const [zoom, setZoom] = useState(0);
+  const [newPhotoCount, setNewPhotoCount] = useState(0);
   const cameraRef = useRef<CameraView>(null);
-  const colorScheme = useColorScheme();
+
+  // Load new photo count on mount
+  useEffect(() => {
+    loadNewPhotoCount();
+  }, []);
+
+  // Reset new photo count when returning from gallery
+  useFocusEffect(
+    React.useCallback(() => {
+      loadNewPhotoCount();
+      // Mark gallery as visited when returning to camera
+      markGalleryAsVisited();
+    }, [])
+  );
+
+  async function loadNewPhotoCount() {
+    try {
+      const gallerySeenTimestamp = await AsyncStorage.getItem('gallery_seen_timestamp');
+      const allPhotos = await AsyncStorage.getItem('inspecto_photos');
+      
+      if (!allPhotos) {
+        setNewPhotoCount(0);
+        return;
+      }
+      
+      const photos = JSON.parse(allPhotos);
+      const lastSeenTime = gallerySeenTimestamp ? parseInt(gallerySeenTimestamp) : 0;
+      const newPhotos = photos.filter((photo: any) => photo.timestamp > lastSeenTime);
+      
+      setNewPhotoCount(newPhotos.length);
+    } catch (error) {
+      console.log('Error loading new photo count:', error);
+      setNewPhotoCount(0);
+    }
+  }
+
+  async function markGalleryAsVisited() {
+    try {
+      const currentTime = Date.now().toString();
+      await AsyncStorage.setItem('last_gallery_visit', currentTime);
+    } catch (error) {
+      console.log('Error marking gallery as visited:', error);
+    }
+  }
 
   if (!permission || !mediaLibraryPermission) {
     // Permissions are still loading
@@ -117,23 +157,9 @@ export default function CameraScreen() {
             console.log('Could not store photo data:', error);
           }
           
-          Alert.alert(
-            'Photo Captured!',
-            'Photo has been saved to your device.',
-            [
-              {
-                text: 'Take Another',
-                onPress: () => setIsCapturing(false),
-              },
-              {
-                text: 'View Gallery',
-                onPress: () => {
-                  setIsCapturing(false);
-                  router.push('/(tabs)/gallery');
-                },
-              },
-            ]
-          );
+          // Increment new photo count
+          setNewPhotoCount(prev => prev + 1);
+          setIsCapturing(false);
         }
       } catch (error) {
         console.error('Error taking picture:', error);
@@ -196,6 +222,21 @@ export default function CameraScreen() {
           </View>
         </View>
       </View>
+
+      {/* New Photo Counter */}
+      {newPhotoCount > 0 && (
+        <TouchableOpacity 
+          style={styles.newPhotoCounter}
+          onPress={() => router.push('/(tabs)/gallery')}
+        >
+          <View style={styles.counterBadge}>
+            <Text style={styles.counterText}>{newPhotoCount}</Text>
+          </View>
+          <Text style={styles.counterLabel}>
+            {newPhotoCount === 1 ? 'new photo' : 'new photos'}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -292,5 +333,36 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderWidth: 2,
     borderColor: '#007AFF',
+  },
+  newPhotoCounter: {
+    position: 'absolute',
+    bottom: 120,
+    right: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minWidth: 80,
+  },
+  counterBadge: {
+    backgroundColor: '#FF3B30',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  counterText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  counterLabel: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '500',
   },
 });

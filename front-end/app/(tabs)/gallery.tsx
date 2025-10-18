@@ -16,6 +16,7 @@ export default function GalleryScreen() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [permission, requestPermission] = MediaLibrary.usePermissions();
+  const [lastGalleryVisit, setLastGalleryVisit] = useState<number>(0);
 
   useEffect(() => {
     loadPhotos();
@@ -25,6 +26,8 @@ export default function GalleryScreen() {
   useFocusEffect(
     React.useCallback(() => {
       loadPhotos();
+      // Mark gallery as seen for counter reset (but don't affect highlighting)
+      markGalleryAsSeen();
     }, [])
   );
 
@@ -32,9 +35,16 @@ export default function GalleryScreen() {
     try {
       setLoading(true);
 
+      // Load last gallery visit time
+      const lastVisit = await AsyncStorage.getItem('last_gallery_visit');
+      const lastVisitTime = lastVisit ? parseInt(lastVisit) : 0;
+      setLastGalleryVisit(lastVisitTime);
+      
+      console.log('Gallery: Last visit time:', lastVisitTime);
+
       // Load photos from AsyncStorage (app-specific photos)
       const storedPhotos = await AsyncStorage.getItem('inspecto_photos');
-      
+
       if (!storedPhotos) {
         setPhotos([]);
         setLoading(false);
@@ -42,16 +52,38 @@ export default function GalleryScreen() {
       }
 
       const photoList: Photo[] = JSON.parse(storedPhotos);
-      
+
       // Sort by timestamp (newest first)
       photoList.sort((a, b) => b.timestamp - a.timestamp);
       
+      console.log('Gallery: Photos loaded:', photoList.length);
+      console.log('Gallery: Photo timestamps:', photoList.map(p => p.timestamp));
+
       setPhotos(photoList);
     } catch (error) {
       console.error('Error loading photos:', error);
       Alert.alert('Error', 'Failed to load photos from storage.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function markGalleryAsVisited() {
+    try {
+      const currentTime = Date.now().toString();
+      await AsyncStorage.setItem('last_gallery_visit', currentTime);
+      setLastGalleryVisit(Date.now());
+    } catch (error) {
+      console.log('Error marking gallery as visited:', error);
+    }
+  }
+
+  async function markGalleryAsSeen() {
+    try {
+      const currentTime = Date.now().toString();
+      await AsyncStorage.setItem('gallery_seen_timestamp', currentTime);
+    } catch (error) {
+      console.log('Error marking gallery as seen:', error);
     }
   }
 
@@ -172,13 +204,14 @@ export default function GalleryScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.content}>
-        <PhotoGallery
-          photos={photos}
-          onPhotoPress={handlePhotoPress}
-          onDeletePhoto={handleDeletePhoto}
-        />
-      </View>
+          <View style={styles.content}>
+            <PhotoGallery
+              photos={photos}
+              onPhotoPress={handlePhotoPress}
+              onDeletePhoto={handleDeletePhoto}
+              lastGalleryVisit={lastGalleryVisit}
+            />
+          </View>
     </View>
   );
 }
