@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import * as MediaLibrary from 'expo-media-library';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import PhotoGallery from '@/components/photo-gallery';
+
+// Only import MediaLibrary on iOS
+let MediaLibrary: any = null;
+if (Platform.OS === 'ios') {
+  MediaLibrary = require('expo-media-library');
+}
 
 interface Photo {
   id: string;
@@ -15,8 +20,12 @@ interface Photo {
 export default function GalleryScreen() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [permission, requestPermission] = MediaLibrary.usePermissions();
   const [lastGalleryVisit, setLastGalleryVisit] = useState<number>(0);
+  
+  // Handle MediaLibrary permissions - only on iOS
+  const [permission, requestPermission] = MediaLibrary 
+    ? MediaLibrary.usePermissions() 
+    : [{ granted: true }, () => Promise.resolve({ granted: true })];
 
   useEffect(() => {
     loadPhotos();
@@ -53,16 +62,43 @@ export default function GalleryScreen() {
 
       const photoList: Photo[] = JSON.parse(storedPhotos);
 
-      // Sort by timestamp (newest first)
-      photoList.sort((a, b) => b.timestamp - a.timestamp);
-      
-      console.log('Gallery: Photos loaded:', photoList.length);
-      console.log('Gallery: Photo timestamps:', photoList.map(p => p.timestamp));
+      // Filter out invalid photos and validate data
+      const validPhotos = photoList.filter(photo => {
+        if (!photo || !photo.id || !photo.uri || !photo.timestamp) {
+          return false;
+        }
+        
+        // On Android, only allow file:// URIs (local files)
+        if (Platform.OS === 'android') {
+          return photo.uri.startsWith('file://');
+        }
+        
+        // On iOS, allow all valid URIs
+        return photo.uri.startsWith('file://') || 
+               photo.uri.startsWith('content://') || 
+               photo.uri.startsWith('ph://');
+      });
 
-      setPhotos(photoList);
+      // Sort by timestamp (newest first)
+      validPhotos.sort((a, b) => b.timestamp - a.timestamp);
+      
+      // If we filtered out invalid photos, save the cleaned data
+      if (validPhotos.length < photoList.length) {
+        await AsyncStorage.setItem('inspecto_photos', JSON.stringify(validPhotos));
+      }
+
+      setPhotos(validPhotos);
     } catch (error) {
       console.error('Error loading photos:', error);
-      Alert.alert('Error', 'Failed to load photos from storage.');
+      // If there's a persistent error, clear the corrupted data
+      try {
+        await AsyncStorage.removeItem('inspecto_photos');
+        await AsyncStorage.removeItem('last_gallery_visit');
+        await AsyncStorage.removeItem('gallery_seen_timestamp');
+      } catch (clearError) {
+        console.log('Error clearing data:', clearError);
+      }
+      setPhotos([]);
     } finally {
       setLoading(false);
     }
@@ -89,8 +125,14 @@ export default function GalleryScreen() {
 
   async function handleDeletePhoto(photoId: string) {
     try {
-      // Delete from device media library
-      await MediaLibrary.deleteAssetsAsync([photoId]);
+      // Only try MediaLibrary deletion on iOS
+      if (Platform.OS === 'ios') {
+        try {
+          await MediaLibrary.deleteAssetsAsync([photoId]);
+        } catch (error) {
+          console.log('MediaLibrary delete error (continuing anyway):', error);
+        }
+      }
       
       // Remove from AsyncStorage
       const storedPhotos = await AsyncStorage.getItem('inspecto_photos');
@@ -128,13 +170,15 @@ export default function GalleryScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Clear AsyncStorage
+              // Clear all app data to prevent crashes
               await AsyncStorage.removeItem('inspecto_photos');
+              await AsyncStorage.removeItem('last_gallery_visit');
+              await AsyncStorage.removeItem('gallery_seen_timestamp');
               
               // Clear local state
               setPhotos([]);
               
-              Alert.alert('Success', 'All photos have been cleared.');
+              Alert.alert('Success', 'All photos and data have been cleared.');
             } catch (error) {
               console.error('Error clearing photos:', error);
               Alert.alert('Error', 'Failed to clear photos.');
@@ -153,7 +197,8 @@ export default function GalleryScreen() {
     );
   }
 
-  if (!permission.granted) {
+  // Handle permissions - skip check on Android due to Expo Go limitations
+  if (!permission.granted && Platform.OS === 'ios') {
     return (
       <View style={styles.container}>
         <View style={styles.permissionContainer}>

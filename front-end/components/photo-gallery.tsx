@@ -17,33 +17,40 @@ interface PhotoGalleryProps {
 
 export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, lastGalleryVisit = 0 }: PhotoGalleryProps) {
   const renderPhoto = ({ item }: { item: Photo }) => {
-    const isNew = item.timestamp > lastGalleryVisit;
-    
-    // Debug logging
-    console.log('Photo timestamp:', item.timestamp, 'Last visit:', lastGalleryVisit, 'Is new:', isNew);
-    
-    return (
-      <TouchableOpacity
-        style={[
-          styles.photoContainer,
-          isNew && styles.newPhotoContainer
-        ]}
-        onPress={() => onPhotoPress?.(item)}
-      >
-        <Image source={{ uri: item.uri }} style={styles.photo} />
-        {isNew && (
-          <View style={styles.newPhotoBadge}>
-            <Text style={styles.newPhotoText}>NEW</Text>
-          </View>
-        )}
+        try {
+          const isNew = item.timestamp > lastGalleryVisit;
+          
+          return (
         <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => onDeletePhoto?.(item.id)}
+          style={[
+            styles.photoContainer,
+            isNew && styles.newPhotoContainer
+          ]}
+          onPress={() => onPhotoPress?.(item)}
         >
-          <IconSymbol name="trash" size={16} color="white" />
+          <Image 
+            source={{ uri: item.uri }} 
+            style={styles.photo}
+            onError={(error) => {
+              // Silently handle image load errors
+            }}
+          />
+          {isNew && (
+            <View style={styles.newPhotoBadge}>
+              <Text style={styles.newPhotoText}>NEW</Text>
+            </View>
+          )}
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => onDeletePhoto?.(item.id)}
+          >
+            <IconSymbol name="trash" size={16} color="white" />
+          </TouchableOpacity>
         </TouchableOpacity>
-      </TouchableOpacity>
-    );
+      );
+        } catch (error) {
+          return null;
+        }
   };
 
   if (photos.length === 0) {
