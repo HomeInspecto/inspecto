@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, PanResponder } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, PanResponder, Platform } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,11 +9,15 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
   const [isCapturing, setIsCapturing] = useState(false);
   const [zoom, setZoom] = useState(0);
   const [newPhotoCount, setNewPhotoCount] = useState(0);
   const cameraRef = useRef<CameraView>(null);
+  
+  // Only use MediaLibrary permissions on iOS (Android Expo Go has limitations)
+  const [mediaLibraryPermission, requestMediaLibraryPermission] = Platform.OS === 'ios' 
+    ? MediaLibrary.usePermissions() 
+    : [{ granted: true }, () => Promise.resolve({ granted: true })];
 
   // Load new photo count on mount
   useEffect(() => {
@@ -76,7 +80,8 @@ export default function CameraScreen() {
     );
   }
 
-  if (!mediaLibraryPermission.granted) {
+  // Handle media library permissions (iOS only, Android skips this)
+  if (!mediaLibraryPermission.granted && Platform.OS === 'ios') {
     // Media library permissions are not granted yet
     return (
       <View style={styles.container}>
@@ -87,6 +92,7 @@ export default function CameraScreen() {
       </View>
     );
   }
+
 
   function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
@@ -137,8 +143,12 @@ export default function CameraScreen() {
         });
         
         if (photo) {
-          // Save to media library
-          const asset = await MediaLibrary.createAssetAsync(photo.uri);
+          // Use direct photo data for both platforms to avoid MediaLibrary issues
+          const asset = {
+            id: `photo_${Date.now()}`,
+            uri: photo.uri,
+            filename: `inspecto_${Date.now()}.jpg`
+          };
           
           // Store photo info in AsyncStorage for app-specific tracking
           try {
@@ -146,7 +156,7 @@ export default function CameraScreen() {
               id: asset.id,
               uri: asset.uri,
               timestamp: Date.now(),
-              filename: asset.filename || `inspecto_${Date.now()}.jpg`
+              filename: asset.filename
             };
             
             const existingPhotos = await AsyncStorage.getItem('inspecto_photos');
