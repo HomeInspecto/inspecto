@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Platform, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
@@ -16,6 +16,26 @@ interface PhotoGalleryProps {
 }
 
 export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, lastGalleryVisit = 0 }: PhotoGalleryProps) {
+  // Calculate responsive grid based on screen size and platform
+  const screenWidth = Dimensions.get('window').width;
+  const getNumColumns = () => {
+    if (Platform.OS === 'web') {
+      // Web: More columns for larger screens
+      if (screenWidth >= 1200) return 6; // Large desktop
+      if (screenWidth >= 900) return 5;  // Desktop
+      if (screenWidth >= 768) return 4;  // Tablet
+      return 3; // Mobile web
+    }
+    // Mobile: Keep 2 columns for better touch interaction
+    return 2;
+  };
+
+  const numColumns = getNumColumns();
+  const marginBetween = 8; // Margin between thumbnails
+  const containerPadding = 20; // Total horizontal padding
+  const totalMarginSpace = (numColumns - 1) * marginBetween;
+  const itemWidth = (screenWidth - containerPadding - totalMarginSpace) / numColumns;
+
   const renderPhoto = ({ item }: { item: Photo }) => {
         try {
           const isNew = item.timestamp > lastGalleryVisit;
@@ -24,6 +44,11 @@ export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, last
         <TouchableOpacity
           style={[
             styles.photoContainer,
+            { 
+              width: itemWidth,
+              marginRight: marginBetween,
+              marginBottom: marginBetween
+            },
             isNew && styles.newPhotoContainer
           ]}
           onPress={() => onPhotoPress?.(item)}
@@ -44,7 +69,7 @@ export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, last
             style={styles.deleteButton}
             onPress={() => onDeletePhoto?.(item.id)}
           >
-            <IconSymbol name="trash" size={16} color="white" />
+            <IconSymbol name="trash" size={Platform.OS === 'web' ? 12 : 16} color="white" />
           </TouchableOpacity>
         </TouchableOpacity>
       );
@@ -68,7 +93,7 @@ export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, last
       data={photos}
       renderItem={renderPhoto}
       keyExtractor={(item) => item.id}
-      numColumns={2}
+      numColumns={numColumns}
       contentContainerStyle={styles.galleryContainer}
       showsVerticalScrollIndicator={false}
     />
@@ -78,10 +103,10 @@ export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, last
 const styles = StyleSheet.create({
   galleryContainer: {
     padding: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   photoContainer: {
-    width: '48%',
-    margin: '1%',
     aspectRatio: 1,
     borderRadius: 8,
     overflow: 'hidden',
@@ -96,9 +121,9 @@ const styles = StyleSheet.create({
     top: 8,
     right: 8,
     backgroundColor: 'rgba(255, 0, 0, 0.7)',
-    borderRadius: 15,
-    width: 30,
-    height: 30,
+    borderRadius: Platform.OS === 'web' ? 12 : 15,
+    width: Platform.OS === 'web' ? 24 : 30,
+    height: Platform.OS === 'web' ? 24 : 30,
     justifyContent: 'center',
     alignItems: 'center',
   },

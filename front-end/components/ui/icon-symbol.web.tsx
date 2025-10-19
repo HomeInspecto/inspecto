@@ -1,5 +1,5 @@
-// Fallback for using MaterialIcons on Android and web.
-
+// Web-specific icon implementation with Material Icons font loading
+import { useEffect } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
 import { ComponentProps } from 'react';
@@ -33,9 +33,7 @@ const MAPPING = {
 } as IconMapping;
 
 /**
- * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.
- * This ensures a consistent look across platforms, and optimal resource usage.
- * Icon `name`s are based on SF Symbols and require manual mapping to Material Icons.
+ * Web-specific icon component that ensures Material Icons font is loaded
  */
 export function IconSymbol({
   name,
@@ -49,10 +47,19 @@ export function IconSymbol({
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  const iconName = MAPPING[name];
-  if (!iconName) {
-    console.warn(`Icon "${name}" not found in mapping`);
-    return <MaterialIcons color={color} size={size} name="help" style={style} />;
-  }
-  return <MaterialIcons color={color} size={size} name={iconName} style={style} />;
+  // Load Material Icons font for web
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      // Check if Material Icons font is already loaded
+      const existingLink = document.querySelector('link[href*="Material+Icons"]');
+      if (!existingLink) {
+        const link = document.createElement('link');
+        link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+      }
+    }
+  }, []);
+
+  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
 }

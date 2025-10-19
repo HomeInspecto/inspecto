@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, Platform, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -17,6 +17,11 @@ export default function GalleryScreen() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastGalleryVisit, setLastGalleryVisit] = useState<number>(0);
+  
+  // Get screen dimensions for responsive sizing
+  const screenWidth = Dimensions.get('window').width;
+  const isWeb = Platform.OS === 'web';
+  const isLargeScreen = screenWidth >= 768;
   
   // Always call the hook, but handle platform differences in logic
   const [permission, requestPermission] = MediaLibrary.usePermissions();
@@ -71,9 +76,21 @@ export default function GalleryScreen() {
         }
         
         // On iOS, allow all valid URIs
-        return photo.uri.startsWith('file://') || 
-               photo.uri.startsWith('content://') || 
-               photo.uri.startsWith('ph://');
+        if (Platform.OS === 'ios') {
+          return photo.uri.startsWith('file://') || 
+                 photo.uri.startsWith('content://') || 
+                 photo.uri.startsWith('ph://');
+        }
+        
+        // On web, allow blob: URIs (web camera photos)
+        if (Platform.OS === 'web') {
+          return photo.uri.startsWith('blob:') || 
+                 photo.uri.startsWith('file://') ||
+                 photo.uri.startsWith('data:');
+        }
+        
+        // Default: allow all valid URIs
+        return true;
       });
 
       // Sort by timestamp (newest first)
@@ -145,36 +162,60 @@ export default function GalleryScreen() {
   }
 
   async function clearAllPhotos() {
-    Alert.alert(
-      'Clear All Photos',
-      'Are you sure you want to delete all photos? This action cannot be undone.',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Clear All',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              // Clear all app data to prevent crashes
-              await AsyncStorage.removeItem('inspecto_photos');
-              await AsyncStorage.removeItem('last_gallery_visit');
-              await AsyncStorage.removeItem('gallery_seen_timestamp');
-              
-              // Clear local state
-              setPhotos([]);
-              
-              Alert.alert('Success', 'All photos and data have been cleared.');
-            } catch (error) {
-              console.error('Error clearing photos:', error);
-              Alert.alert('Error', 'Failed to clear photos.');
-            }
+    // Use web-compatible confirmation for web platform
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(
+        'Are you sure you want to delete all photos? This action cannot be undone.'
+      );
+      if (!confirmed) return;
+    } else {
+      Alert.alert(
+        'Clear All Photos',
+        'Are you sure you want to delete all photos? This action cannot be undone.',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
           },
-        },
-      ]
-    );
+          {
+            text: 'Clear All',
+            style: 'destructive',
+            onPress: async () => {
+              await performClearAll();
+            },
+          },
+        ]
+      );
+      return;
+    }
+    
+    // Execute clear all for web
+    await performClearAll();
+  }
+
+  async function performClearAll() {
+    try {
+      // Clear all app data to prevent crashes
+      await AsyncStorage.removeItem('inspecto_photos');
+      await AsyncStorage.removeItem('last_gallery_visit');
+      await AsyncStorage.removeItem('gallery_seen_timestamp');
+      
+      // Clear local state
+      setPhotos([]);
+      
+      if (Platform.OS === 'web') {
+        alert('All photos and data have been cleared.');
+      } else {
+        Alert.alert('Success', 'All photos and data have been cleared.');
+      }
+    } catch (error) {
+      console.error('Error clearing photos:', error);
+      if (Platform.OS === 'web') {
+        alert('Failed to clear photos.');
+      } else {
+        Alert.alert('Error', 'Failed to clear photos.');
+      }
+    }
   }
 
   if (!permission) {
@@ -215,26 +256,42 @@ export default function GalleryScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, isWeb && styles.headerWeb]}>
         <TouchableOpacity 
-          style={styles.backButton}
+          style={[styles.backButton, isWeb && styles.backButtonWeb]}
           onPress={() => router.back()}
         >
-          <IconSymbol name="chevron.left" size={24} color="#007AFF" />
+          <IconSymbol 
+            name="chevron.left" 
+            size={isWeb ? (isLargeScreen ? 28 : 24) : 24} 
+            color="#007AFF" 
+          />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Photo Gallery</Text>
-        <TouchableOpacity 
-          style={styles.refreshButton}
-          onPress={loadPhotos}
-        >
-          <IconSymbol name="arrow.clockwise" size={24} color="#007AFF" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.clearButton}
-          onPress={clearAllPhotos}
-        >
-          <IconSymbol name="trash" size={24} color="#FF3B30" />
-        </TouchableOpacity>
+        <Text style={[styles.headerTitle, isWeb && styles.headerTitleWeb]}>
+          Photo Gallery
+        </Text>
+        <View style={[styles.headerActions, isWeb && styles.headerActionsWeb]}>
+          <TouchableOpacity 
+            style={[styles.refreshButton, isWeb && styles.refreshButtonWeb]}
+            onPress={loadPhotos}
+          >
+            <IconSymbol 
+              name="arrow.clockwise" 
+              size={isWeb ? (isLargeScreen ? 28 : 24) : 24} 
+              color="#007AFF" 
+            />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.clearButton, isWeb && styles.clearButtonWeb]}
+            onPress={clearAllPhotos}
+          >
+            <IconSymbol 
+              name="trash" 
+              size={isWeb ? (isLargeScreen ? 28 : 24) : 24} 
+              color="#FF3B30" 
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
           <View style={styles.content}>
@@ -265,19 +322,59 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
+  headerWeb: {
+    paddingTop: 20,
+    paddingBottom: 16,
+    paddingHorizontal: 24,
+    maxWidth: 1200,
+    alignSelf: 'center',
+    width: '100%',
+  },
   backButton: {
     padding: 8,
+  },
+  backButtonWeb: {
+    padding: 12,
+    marginRight: 8,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
   },
+  headerTitleWeb: {
+    fontSize: 24,
+    fontWeight: '700',
+    flex: 1,
+    textAlign: 'center',
+    marginHorizontal: 16,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerActionsWeb: {
+    gap: 8,
+  },
   refreshButton: {
     padding: 8,
   },
+  refreshButtonWeb: {
+    padding: 12,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
   clearButton: {
     padding: 8,
+  },
+  clearButtonWeb: {
+    padding: 12,
+    backgroundColor: '#fff5f5',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fed7d7',
   },
   content: {
     flex: 1,
