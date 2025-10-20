@@ -98,10 +98,12 @@ export default function CameraScreen() {
     // Camera permissions are not granted yet
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <TouchableOpacity style={styles.button} onPress={requestPermission}>
-          <Text style={styles.buttonText}>Grant Camera Permission</Text>
-        </TouchableOpacity>
+        <View style={styles.permissionContainer}>
+          <Text style={styles.message}>We need your permission to show the camera</Text>
+          <TouchableOpacity style={styles.button} onPress={requestPermission}>
+            <Text style={styles.buttonText}>Grant Camera Permission</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -111,10 +113,12 @@ export default function CameraScreen() {
     // Media library permissions are not granted yet
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need permission to save photos to your device</Text>
-        <TouchableOpacity style={styles.button} onPress={requestMediaLibraryPermission}>
-          <Text style={styles.buttonText}>Grant Photo Permission</Text>
-        </TouchableOpacity>
+        <View style={styles.permissionContainer}>
+          <Text style={styles.message}>We need permission to save photos to your device</Text>
+          <TouchableOpacity style={styles.button} onPress={requestMediaLibraryPermission}>
+            <Text style={styles.buttonText}>Grant Photo Permission</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -338,6 +342,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  permissionContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 120,
+    paddingHorizontal: 20,
   },
   controlsContainer: {
     position: 'absolute',
