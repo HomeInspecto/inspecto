@@ -12,6 +12,7 @@ export default function CameraScreen() {
   const [isCapturing, setIsCapturing] = useState(false);
   const [zoom, setZoom] = useState(0);
   const [newPhotoCount, setNewPhotoCount] = useState(0);
+  const [isCameraActive, setIsCameraActive] = useState(true);
   const cameraRef = useRef<CameraView>(null);
   
   // Always call the hook, but handle platform differences in logic
@@ -25,12 +26,35 @@ export default function CameraScreen() {
     loadNewPhotoCount();
   }, []);
 
+  // Reset capturing state on component unmount or navigation
+  useEffect(() => {
+    return () => {
+      setIsCapturing(false);
+    };
+  }, []);
+
   // Reset new photo count when returning from gallery
   useFocusEffect(
     React.useCallback(() => {
       loadNewPhotoCount();
       // Mark gallery as visited when returning to camera
       markGalleryAsVisited();
+    }, [])
+  );
+
+  // Reset capturing state when camera screen loses focus
+  useFocusEffect(
+    React.useCallback(() => {
+      // Activate camera when screen comes into focus
+      setIsCameraActive(true);
+      setIsCapturing(false);
+      
+      // Cleanup function - deactivate camera when screen loses focus
+      return () => {
+        setIsCameraActive(false);
+        setIsCapturing(false);
+        setZoom(0);
+      };
     }, [])
   );
 
@@ -50,7 +74,6 @@ export default function CameraScreen() {
       
       setNewPhotoCount(newPhotos.length);
     } catch (error) {
-      console.log('Error loading new photo count:', error);
       setNewPhotoCount(0);
     }
   }
@@ -60,9 +83,10 @@ export default function CameraScreen() {
       const currentTime = Date.now().toString();
       await AsyncStorage.setItem('last_gallery_visit', currentTime);
     } catch (error) {
-      console.log('Error marking gallery as visited:', error);
+      // Silently handle error
     }
   }
+
 
   if (!permission || !mediaLibraryPermission) {
     // Permissions are still loading
@@ -135,7 +159,7 @@ export default function CameraScreen() {
   });
 
   async function takePicture() {
-    if (cameraRef.current && !isCapturing) {
+    if (cameraRef.current && !isCapturing && isCameraActive) {
       try {
         setIsCapturing(true);
         const photo = await cameraRef.current.takePictureAsync({
@@ -165,7 +189,7 @@ export default function CameraScreen() {
             photos.push(photoData);
             await AsyncStorage.setItem('inspecto_photos', JSON.stringify(photos));
           } catch (error) {
-            console.log('Could not store photo data:', error);
+            // Silently handle storage errors
           }
           
           // Increment new photo count
@@ -183,12 +207,18 @@ export default function CameraScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.cameraContainer} {...panResponder.panHandlers}>
-        <CameraView 
-          style={styles.camera} 
-          facing={facing}
-          zoom={zoom}
-          ref={cameraRef}
-        />
+        {isCameraActive ? (
+          <CameraView 
+            style={styles.camera} 
+            facing={facing}
+            zoom={zoom}
+            ref={cameraRef}
+          />
+        ) : (
+          <View style={styles.cameraPlaceholder}>
+            <Text style={styles.cameraPlaceholderText}>Camera Inactive</Text>
+          </View>
+        )}
         
         {/* Zoom Indicator */}
         {zoom > 0 && (
@@ -225,7 +255,9 @@ export default function CameraScreen() {
                 styles.captureButton,
                 isCapturing && styles.captureButtonDisabled
               ]}
-              onPress={takePicture}
+              onPress={() => {
+                takePicture();
+              }}
               disabled={isCapturing}
             >
               <View style={styles.captureButtonInner} />
@@ -262,6 +294,17 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
+  },
+  cameraPlaceholder: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cameraPlaceholderText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   zoomIndicator: {
     position: 'absolute',
