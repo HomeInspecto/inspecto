@@ -47,13 +47,14 @@ export default function CameraScreen() {
     React.useCallback(() => {
       // Activate camera when screen comes into focus
       setIsCameraActive(true);
+      // Only reset capturing state when coming into focus, not when leaving
       setIsCapturing(false);
       
       // Cleanup function - deactivate camera when screen loses focus
       return () => {
         setIsCameraActive(false);
-        setIsCapturing(false);
         setZoom(0);
+        // Don't reset isCapturing here - let the photo process complete
       };
     }, [])
   );
