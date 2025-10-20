@@ -30,6 +30,7 @@ const MAPPING = {
   'arrow.clockwise': 'refresh',
   'xmark': 'close',
   'arrow.triangle.2.circlepath': 'flip-camera-android',
+  'checkmark.circle.fill': 'check-circle',
 } as IconMapping;
 
 /**
