@@ -33,6 +33,7 @@ A full-stack application with Expo React Native frontend and Node.js/Express bac
    # Frontend (in another terminal)
    cd front-end
    npm install
+   npm run start  # pop up the QR to scan
    npm run ios    # for iOS
    # or
    npm run android # for Android
