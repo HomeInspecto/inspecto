@@ -17,6 +17,7 @@ export default function GalleryScreen() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastGalleryVisit, setLastGalleryVisit] = useState<number>(0);
+  const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
   
   // Get screen dimensions for responsive sizing
   const screenWidth = Dimensions.get('window').width;
@@ -51,7 +52,6 @@ export default function GalleryScreen() {
       const lastVisitTime = lastVisit ? parseInt(lastVisit) : 0;
       setLastGalleryVisit(lastVisitTime);
       
-      console.log('Gallery: Last visit time:', lastVisitTime);
 
       // Load photos from AsyncStorage (app-specific photos)
       const storedPhotos = await AsyncStorage.getItem('inspecto_photos');
@@ -110,7 +110,6 @@ export default function GalleryScreen() {
         await AsyncStorage.removeItem('last_gallery_visit');
         await AsyncStorage.removeItem('gallery_seen_timestamp');
       } catch (clearError) {
-        console.log('Error clearing data:', clearError);
       }
       setPhotos([]);
     } finally {
@@ -124,7 +123,6 @@ export default function GalleryScreen() {
       const currentTime = Date.now().toString();
       await AsyncStorage.setItem('gallery_seen_timestamp', currentTime);
     } catch (error) {
-      console.log('Error marking gallery as seen:', error);
     }
   }
 
@@ -135,7 +133,6 @@ export default function GalleryScreen() {
         try {
           await MediaLibrary.deleteAssetsAsync([photoId]);
         } catch (error) {
-          console.log('MediaLibrary delete error (continuing anyway):', error);
         }
       }
       
@@ -157,40 +154,106 @@ export default function GalleryScreen() {
   }
 
   function handlePhotoPress(photo: Photo) {
-    // TODO: Navigate to photo editor or full-screen view
-    Alert.alert('Photo Selected', `Photo ID: ${photo.id}`);
+    // Toggle photo selection
+    const newSelected = new Set(selectedPhotos);
+    if (newSelected.has(photo.id)) {
+      newSelected.delete(photo.id);
+    } else {
+      newSelected.add(photo.id);
+    }
+    setSelectedPhotos(newSelected);
   }
 
+  function clearSelection() {
+    setSelectedPhotos(new Set());
+  }
+
+
   async function clearAllPhotos() {
+    const hasSelected = selectedPhotos.size > 0;
+    const message = hasSelected 
+      ? `Delete ${selectedPhotos.size} selected photo${selectedPhotos.size > 1 ? 's' : ''}?`
+      : 'Are you sure you want to delete all photos? This action cannot be undone.';
+    
     // Use web-compatible confirmation for web platform
     if (Platform.OS === 'web') {
-      const confirmed = window.confirm(
-        'Are you sure you want to delete all photos? This action cannot be undone.'
-      );
+      const confirmed = window.confirm(message);
       if (!confirmed) return;
+      
+      if (hasSelected) {
+        await performDeleteSelected();
+      } else {
+        await performClearAll();
+      }
     } else {
-      Alert.alert(
-        'Clear All Photos',
-        'Are you sure you want to delete all photos? This action cannot be undone.',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Clear All',
-            style: 'destructive',
-            onPress: async () => {
+      const buttons = [
+        {
+          text: 'Cancel',
+          style: 'cancel' as const,
+        },
+        {
+          text: hasSelected ? 'Delete Selected' : 'Clear All',
+          style: 'destructive' as const,
+          onPress: async () => {
+            if (hasSelected) {
+              await performDeleteSelected();
+            } else {
               await performClearAll();
-            },
+            }
           },
-        ]
+        },
+      ];
+      
+      if (hasSelected) {
+        buttons.push({
+          text: 'Clear All',
+          style: 'destructive' as const,
+          onPress: async () => {
+            await performClearAll();
+          },
+        });
+      }
+      
+      Alert.alert(
+        hasSelected ? 'Delete Selected Photos' : 'Clear All Photos',
+        message,
+        buttons
       );
       return;
     }
-    
-    // Execute clear all for web
-    await performClearAll();
+  }
+
+  async function performDeleteSelected() {
+    try {
+      // Get current photos from AsyncStorage
+      const storedPhotos = await AsyncStorage.getItem('inspecto_photos');
+      if (!storedPhotos) return;
+      
+      const photoList = JSON.parse(storedPhotos);
+      const updatedPhotos = photoList.filter((photo: Photo) => !selectedPhotos.has(photo.id));
+      
+      // Update AsyncStorage
+      await AsyncStorage.setItem('inspecto_photos', JSON.stringify(updatedPhotos));
+      
+      // Update local state - maintain the same order as in AsyncStorage
+      // Don't re-sort, just filter out the deleted photos
+      const currentPhotos = photos.filter(photo => !selectedPhotos.has(photo.id));
+      setPhotos(currentPhotos);
+      setSelectedPhotos(new Set());
+      
+      if (Platform.OS === 'web') {
+        alert(`${selectedPhotos.size} photo${selectedPhotos.size > 1 ? 's' : ''} deleted.`);
+      } else {
+        Alert.alert('Success', `${selectedPhotos.size} photo${selectedPhotos.size > 1 ? 's' : ''} deleted.`);
+      }
+    } catch (error) {
+      console.error('Error deleting selected photos:', error);
+      if (Platform.OS === 'web') {
+        alert('Failed to delete photos.');
+      } else {
+        Alert.alert('Error', 'Failed to delete photos.');
+      }
+    }
   }
 
   async function performClearAll() {
@@ -202,6 +265,7 @@ export default function GalleryScreen() {
       
       // Clear local state
       setPhotos([]);
+      setSelectedPhotos(new Set());
       
       if (Platform.OS === 'web') {
         alert('All photos and data have been cleared.');
@@ -256,7 +320,11 @@ export default function GalleryScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, isWeb && styles.headerWeb]}>
+      <View 
+        style={[styles.header, isWeb && styles.headerWeb]}
+        accessibilityRole="header"
+        accessibilityLabel="Photo Gallery Header"
+      >
         <TouchableOpacity 
           style={[styles.backButton, isWeb && styles.backButtonWeb]}
           onPress={() => router.back()}
@@ -281,25 +349,35 @@ export default function GalleryScreen() {
               color="#007AFF" 
             />
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.clearButton, isWeb && styles.clearButtonWeb]}
-            onPress={clearAllPhotos}
-          >
-            <IconSymbol 
-              name="trash" 
-              size={isWeb ? (isLargeScreen ? 28 : 24) : 24} 
-              color="#FF3B30" 
-            />
-          </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.clearButton, isWeb && styles.clearButtonWeb]}
+          onPress={clearAllPhotos}
+        >
+          <IconSymbol 
+            name="trash" 
+            size={isWeb ? (isLargeScreen ? 28 : 24) : 24} 
+            color="#FF3B30" 
+          />
+          {selectedPhotos.size > 0 && (
+            <View style={styles.selectionCount}>
+              <Text style={styles.selectionCountText}>{selectedPhotos.size}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
         </View>
       </View>
 
-          <View style={styles.content}>
+          <View 
+            style={styles.content}
+            accessibilityRole="none"
+            accessibilityLabel="Photo Gallery"
+          >
             <PhotoGallery
               photos={photos}
               onPhotoPress={handlePhotoPress}
               onDeletePhoto={handleDeletePhoto}
               lastGalleryVisit={lastGalleryVisit}
+              selectedPhotos={selectedPhotos}
             />
           </View>
     </View>
@@ -375,6 +453,36 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#fed7d7',
+  },
+  selectionCount: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: '#007AFF',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
+    ...(Platform.OS === 'web' ? {
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+    } : {
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 4,
+    }),
+  },
+  selectionCountText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   content: {
     flex: 1,
