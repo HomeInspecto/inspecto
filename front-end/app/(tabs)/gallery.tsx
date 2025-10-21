@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import PhotoGallery from '@/components/photo-gallery';
+import FullscreenImageViewer from '@/components/fullscreen-image-viewer';
 
 import * as MediaLibrary from 'expo-media-library';
 
@@ -18,6 +19,7 @@ export default function GalleryScreen() {
   const [loading, setLoading] = useState(true);
   const [lastGalleryVisit, setLastGalleryVisit] = useState<number>(0);
   const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
+  const [fullscreenPhoto, setFullscreenPhoto] = useState<Photo | null>(null);
   
   // Get screen dimensions for responsive sizing
   const screenWidth = Dimensions.get('window').width;
@@ -166,6 +168,14 @@ export default function GalleryScreen() {
 
   function clearSelection() {
     setSelectedPhotos(new Set());
+  }
+
+  function handleEditPhoto(photo: Photo) {
+    setFullscreenPhoto(photo);
+  }
+
+  function handleCloseFullscreen() {
+    setFullscreenPhoto(null);
   }
 
 
@@ -376,10 +386,19 @@ export default function GalleryScreen() {
               photos={photos}
               onPhotoPress={handlePhotoPress}
               onDeletePhoto={handleDeletePhoto}
+              onEditPhoto={handleEditPhoto}
               lastGalleryVisit={lastGalleryVisit}
               selectedPhotos={selectedPhotos}
             />
           </View>
+      
+      {/* Fullscreen Image Viewer - rendered outside main container */}
+      {fullscreenPhoto && (
+        <FullscreenImageViewer
+          photo={fullscreenPhoto}
+          onClose={handleCloseFullscreen}
+        />
+      )}
     </View>
   );
 }

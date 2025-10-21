@@ -12,11 +12,12 @@ interface PhotoGalleryProps {
   photos: Photo[];
   onPhotoPress?: (photo: Photo) => void;
   onDeletePhoto?: (photoId: string) => void;
+  onEditPhoto?: (photo: Photo) => void;
   lastGalleryVisit?: number;
   selectedPhotos?: Set<string>;
 }
 
-export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, lastGalleryVisit = 0, selectedPhotos = new Set() }: PhotoGalleryProps) {
+export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, onEditPhoto, lastGalleryVisit = 0, selectedPhotos = new Set() }: PhotoGalleryProps) {
   // Calculate responsive grid based on screen size and platform
   const screenWidth = Dimensions.get('window').width;
   const getNumColumns = () => {
@@ -79,6 +80,12 @@ export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, last
           >
             <IconSymbol name="trash" size={Platform.OS === 'web' ? 12 : 16} color="white" />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => onEditPhoto?.(item)}
+          >
+            <IconSymbol name="pencil" size={Platform.OS === 'web' ? 12 : 16} color="white" />
+          </TouchableOpacity>
         </TouchableOpacity>
       );
         } catch {
@@ -129,6 +136,17 @@ const styles = StyleSheet.create({
     top: 8,
     right: 8,
     backgroundColor: 'rgba(255, 0, 0, 0.7)',
+    borderRadius: Platform.OS === 'web' ? 12 : 15,
+    width: Platform.OS === 'web' ? 24 : 30,
+    height: Platform.OS === 'web' ? 24 : 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  editButton: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 122, 255, 0.8)',
     borderRadius: Platform.OS === 'web' ? 12 : 15,
     width: Platform.OS === 'web' ? 24 : 30,
     height: Platform.OS === 'web' ? 24 : 30,
