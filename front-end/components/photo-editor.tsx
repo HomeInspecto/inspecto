@@ -13,7 +13,7 @@ interface Photo {
   timestamp: number;
 }
 
-interface FullscreenImageViewerProps {
+interface PhotoEditorProps {
   photo: Photo;
   onClose: () => void;
 }
@@ -35,7 +35,7 @@ interface PathData {
 
 type EditorTool = 'pen' | 'arrow' | 'circle' | 'eraser';
 
-export default function FullscreenImageViewer({ photo, onClose }: FullscreenImageViewerProps) {
+export default function PhotoEditor({ photo, onClose }: PhotoEditorProps) {
   const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
   const [orientation, setOrientation] = useState(ScreenOrientation.Orientation.PORTRAIT_UP);
   

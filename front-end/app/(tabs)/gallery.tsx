@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import PhotoGallery from '@/components/photo-gallery';
-import FullscreenImageViewer from '@/components/fullscreen-image-viewer';
+import PhotoEditor from '@/components/photo-editor';
 
 import * as MediaLibrary from 'expo-media-library';
 
@@ -392,13 +392,13 @@ export default function GalleryScreen() {
             />
           </View>
       
-      {/* Fullscreen Image Viewer - rendered outside main container */}
-      {fullscreenPhoto && (
-        <FullscreenImageViewer
-          photo={fullscreenPhoto}
-          onClose={handleCloseFullscreen}
-        />
-      )}
+    {/* Photo Editor - rendered outside main container */}
+    {fullscreenPhoto && (
+      <PhotoEditor
+        photo={fullscreenPhoto}
+        onClose={handleCloseFullscreen}
+      />
+    )}
     </View>
   );
 }
