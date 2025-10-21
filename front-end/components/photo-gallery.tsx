@@ -12,11 +12,12 @@ interface PhotoGalleryProps {
   photos: Photo[];
   onPhotoPress?: (photo: Photo) => void;
   onDeletePhoto?: (photoId: string) => void;
+  onEditPhoto?: (photo: Photo) => void;
   lastGalleryVisit?: number;
   selectedPhotos?: Set<string>;
 }
 
-export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, lastGalleryVisit = 0, selectedPhotos = new Set() }: PhotoGalleryProps) {
+export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, onEditPhoto, lastGalleryVisit = 0, selectedPhotos = new Set() }: PhotoGalleryProps) {
   // Calculate responsive grid based on screen size and platform
   const screenWidth = Dimensions.get('window').width;
   const getNumColumns = () => {
@@ -38,52 +39,54 @@ export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, last
   const itemWidth = (screenWidth - containerPadding - totalMarginSpace) / numColumns;
 
   const renderPhoto = ({ item }: { item: Photo }) => {
-        try {
-          const isNew = item.timestamp > lastGalleryVisit;
-          const isSelected = selectedPhotos.has(item.id);
-          
-          return (
+    const isNew = item.timestamp > lastGalleryVisit;
+    const isSelected = selectedPhotos.has(item.id);
+    
+    return (
+      <TouchableOpacity
+        style={[
+          styles.photoContainer,
+          { 
+            width: itemWidth,
+            marginRight: marginBetween,
+            marginBottom: marginBetween
+          },
+          isNew && styles.newPhotoContainer,
+          isSelected && styles.selectedPhotoContainer
+        ]}
+        onPress={() => onPhotoPress?.(item)}
+      >
+        <Image 
+          source={{ uri: item.uri }} 
+          style={styles.photo}
+          onError={(error) => {
+            // Silently handle image load errors
+          }}
+        />
+        {isNew && (
+          <View style={styles.newPhotoBadge}>
+            <Text style={styles.newPhotoText}>NEW</Text>
+          </View>
+        )}
+        {isSelected && (
+          <View style={styles.selectionIndicator}>
+            <IconSymbol name="checkmark.circle.fill" size={24} color="#007AFF" />
+          </View>
+        )}
         <TouchableOpacity
-          style={[
-            styles.photoContainer,
-            { 
-              width: itemWidth,
-              marginRight: marginBetween,
-              marginBottom: marginBetween
-            },
-            isNew && styles.newPhotoContainer,
-            isSelected && styles.selectedPhotoContainer
-          ]}
-          onPress={() => onPhotoPress?.(item)}
+          style={styles.deleteButton}
+          onPress={() => onDeletePhoto?.(item.id)}
         >
-          <Image 
-            source={{ uri: item.uri }} 
-            style={styles.photo}
-            onError={(error) => {
-              // Silently handle image load errors
-            }}
-          />
-          {isNew && (
-            <View style={styles.newPhotoBadge}>
-              <Text style={styles.newPhotoText}>NEW</Text>
-            </View>
-          )}
-          {isSelected && (
-            <View style={styles.selectionIndicator}>
-              <IconSymbol name="checkmark.circle.fill" size={24} color="#007AFF" />
-            </View>
-          )}
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => onDeletePhoto?.(item.id)}
-          >
-            <IconSymbol name="trash" size={Platform.OS === 'web' ? 12 : 16} color="white" />
-          </TouchableOpacity>
+          <IconSymbol name="trash" size={Platform.OS === 'web' ? 12 : 16} color="white" />
         </TouchableOpacity>
-      );
-        } catch {
-          return null;
-        }
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => onEditPhoto?.(item)}
+        >
+          <IconSymbol name="pencil" size={Platform.OS === 'web' ? 12 : 16} color="white" />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
   };
 
   if (photos.length === 0) {
@@ -129,6 +132,17 @@ const styles = StyleSheet.create({
     top: 8,
     right: 8,
     backgroundColor: 'rgba(255, 0, 0, 0.7)',
+    borderRadius: Platform.OS === 'web' ? 12 : 15,
+    width: Platform.OS === 'web' ? 24 : 30,
+    height: Platform.OS === 'web' ? 24 : 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  editButton: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 122, 255, 0.8)',
     borderRadius: Platform.OS === 'web' ? 12 : 15,
     width: Platform.OS === 'web' ? 24 : 30,
     height: Platform.OS === 'web' ? 24 : 30,

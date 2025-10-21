@@ -5,7 +5,7 @@ import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
-type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
+type IconMapping = Record<string, ComponentProps<typeof MaterialIcons>['name']>;
 type IconSymbolName = keyof typeof MAPPING;
 
 /**
@@ -31,6 +31,12 @@ const MAPPING = {
   'xmark': 'close',
   'arrow.triangle.2.circlepath': 'flip-camera-android',
   'checkmark.circle.fill': 'check-circle',
+  // Editor icons
+  'pencil': 'edit',
+  'arrow.right': 'arrow-forward',
+  'circle': 'radio-button-unchecked',
+  'eraser': 'web-asset',
+  'paintpalette': 'palette',
 } as IconMapping;
 
 /**
@@ -55,5 +61,6 @@ export function IconSymbol({
     console.warn(`Icon "${name}" not found in mapping`);
     return <MaterialIcons color={color} size={size} name="help" style={style} />;
   }
+  
   return <MaterialIcons color={color} size={size} name={iconName} style={style} />;
 }
