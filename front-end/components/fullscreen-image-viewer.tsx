@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Platform, Dimensions, StatusBar } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Platform, Dimensions, StatusBar, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import Svg, { Path, Line, Circle, G } from 'react-native-svg';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Photo {
   id: string;
@@ -46,6 +47,7 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPath, setCurrentPath] = useState<string>('');
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
   
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#000000', '#FFFFFF'];
   
@@ -66,6 +68,9 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
       setOrientation(event.orientationInfo.orientation);
     });
     
+    // Load existing markup for this photo
+    loadExistingMarkup();
+    
     return () => {
       subscription?.remove();
       orientationSubscription?.remove();
@@ -73,6 +78,21 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
     };
   }, []);
+
+  const loadExistingMarkup = async () => {
+    try {
+      const existingMarkup = await AsyncStorage.getItem('photo_markup');
+      if (existingMarkup) {
+        const markupArray = JSON.parse(existingMarkup);
+        const photoMarkup = markupArray.find((item: any) => item.photoId === photo.id);
+        if (photoMarkup && photoMarkup.paths) {
+          setPaths(photoMarkup.paths);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading existing markup:', error);
+    }
+  };
   
   const isLandscape = orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT || 
                      orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT;
@@ -226,6 +246,58 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
 
   const clearAll = () => {
     setPaths([]);
+  };
+
+  const handleClose = () => {
+    if (paths.length > 0) {
+      setShowSaveModal(true);
+    } else {
+      onClose();
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      // For now, we'll save the markup data to AsyncStorage
+      // In a real implementation, you'd want to use a library like react-native-view-shot
+      // to capture the combined image + SVG as a single image
+      
+      const markupData = {
+        photoId: photo.id,
+        paths: paths,
+        timestamp: Date.now()
+      };
+      
+      // Get existing markup data
+      const existingMarkup = await AsyncStorage.getItem('photo_markup');
+      let markupArray = existingMarkup ? JSON.parse(existingMarkup) : [];
+      
+      // Update or add markup for this photo
+      const existingIndex = markupArray.findIndex((item: any) => item.photoId === photo.id);
+      if (existingIndex >= 0) {
+        markupArray[existingIndex] = markupData;
+      } else {
+        markupArray.push(markupData);
+      }
+      
+      // Save updated markup data
+      await AsyncStorage.setItem('photo_markup', JSON.stringify(markupArray));
+      
+      console.log('Markup saved for photo:', photo.id);
+      
+      setShowSaveModal(false);
+      onClose();
+      
+    } catch (error) {
+      console.error('Error saving markup data:', error);
+      setShowSaveModal(false);
+      onClose();
+    }
+  };
+
+  const handleDiscardChanges = () => {
+    setShowSaveModal(false);
+    onClose();
   };
   
   return (
@@ -385,7 +457,7 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
           
           <TouchableOpacity 
             style={styles.toolButton}
-            onPress={onClose}
+            onPress={handleClose}
           >
             <IconSymbol name="xmark" size={24} color="white" />
           </TouchableOpacity>
@@ -408,6 +480,38 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
                 }}
               />
             ))}
+          </View>
+        )}
+        
+        {/* Save Confirmation Modal */}
+        {showSaveModal && (
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <IconSymbol name="photo" size={32} color="#007AFF" />
+                <Text style={styles.modalTitle}>Save Changes?</Text>
+              </View>
+              
+              <Text style={styles.modalMessage}>
+                Do you want to save your changes to this photo?
+              </Text>
+              
+              <View style={styles.modalButtons}>
+                <TouchableOpacity 
+                  style={[styles.modalButton, styles.discardButton]}
+                  onPress={handleDiscardChanges}
+                >
+                  <Text style={styles.discardButtonText}>Discard</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={[styles.modalButton, styles.saveButton]}
+                  onPress={handleSaveChanges}
+                >
+                  <Text style={styles.saveButtonText}>Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         )}
       </View>
@@ -549,5 +653,84 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: 'white',
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 24,
+    margin: 20,
+    minWidth: 280,
+    maxWidth: 320,
+    ...(Platform.OS === 'web' ? {
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
+    } : {
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 10,
+      },
+      shadowOpacity: 0.3,
+      shadowRadius: 25,
+      elevation: 25,
+    }),
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginLeft: 12,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#666',
+    lineHeight: 24,
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  discardButton: {
+    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  saveButton: {
+    backgroundColor: '#007AFF',
+  },
+  discardButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666',
+  },
+  saveButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'white',
   },
 });
