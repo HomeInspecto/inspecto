@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Platform, Dimensions, StatusBar, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -59,8 +59,6 @@ export default function PhotoEditor({ photo, onClose }: PhotoEditorProps) {
   const [showCropControls, setShowCropControls] = useState(false);
   const [isCropping, setIsCropping] = useState(false);
   
-  // Refs for capturing the cropped area
-  const imageRef = useRef<any>(null);
   
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#000000', '#FFFFFF'];
   
@@ -524,7 +522,7 @@ export default function PhotoEditor({ photo, onClose }: PhotoEditorProps) {
   };
   
   const handleCropConfirm = async () => {
-    if (!cropRect || !imageRef.current) return;
+    if (!cropRect) return;
     
     try {
       setIsCropping(true);
@@ -579,7 +577,6 @@ export default function PhotoEditor({ photo, onClose }: PhotoEditorProps) {
       <StatusBar hidden={true} />
       <View style={styles.container}>
         <Image 
-          ref={imageRef}
           source={{ uri: photo.uri }} 
           style={[
             styles.image, 
@@ -951,33 +948,6 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : 30,
-    right: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...(Platform.OS === 'web' ? {
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-    } : {
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.3,
-      shadowRadius: 8,
-      elevation: 8,
-    }),
-  },
-  closeButtonLandscape: {
-    top: Platform.OS === 'ios' ? 30 : 20,
-    right: 30,
   },
   svgOverlay: {
     position: 'absolute',

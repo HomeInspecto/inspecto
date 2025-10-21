@@ -39,58 +39,54 @@ export default function PhotoGallery({ photos, onPhotoPress, onDeletePhoto, onEd
   const itemWidth = (screenWidth - containerPadding - totalMarginSpace) / numColumns;
 
   const renderPhoto = ({ item }: { item: Photo }) => {
-        try {
-          const isNew = item.timestamp > lastGalleryVisit;
-          const isSelected = selectedPhotos.has(item.id);
-          
-          return (
+    const isNew = item.timestamp > lastGalleryVisit;
+    const isSelected = selectedPhotos.has(item.id);
+    
+    return (
+      <TouchableOpacity
+        style={[
+          styles.photoContainer,
+          { 
+            width: itemWidth,
+            marginRight: marginBetween,
+            marginBottom: marginBetween
+          },
+          isNew && styles.newPhotoContainer,
+          isSelected && styles.selectedPhotoContainer
+        ]}
+        onPress={() => onPhotoPress?.(item)}
+      >
+        <Image 
+          source={{ uri: item.uri }} 
+          style={styles.photo}
+          onError={(error) => {
+            // Silently handle image load errors
+          }}
+        />
+        {isNew && (
+          <View style={styles.newPhotoBadge}>
+            <Text style={styles.newPhotoText}>NEW</Text>
+          </View>
+        )}
+        {isSelected && (
+          <View style={styles.selectionIndicator}>
+            <IconSymbol name="checkmark.circle.fill" size={24} color="#007AFF" />
+          </View>
+        )}
         <TouchableOpacity
-          style={[
-            styles.photoContainer,
-            { 
-              width: itemWidth,
-              marginRight: marginBetween,
-              marginBottom: marginBetween
-            },
-            isNew && styles.newPhotoContainer,
-            isSelected && styles.selectedPhotoContainer
-          ]}
-          onPress={() => onPhotoPress?.(item)}
+          style={styles.deleteButton}
+          onPress={() => onDeletePhoto?.(item.id)}
         >
-          <Image 
-            source={{ uri: item.uri }} 
-            style={styles.photo}
-            onError={(error) => {
-              // Silently handle image load errors
-            }}
-          />
-          {isNew && (
-            <View style={styles.newPhotoBadge}>
-              <Text style={styles.newPhotoText}>NEW</Text>
-            </View>
-          )}
-          {isSelected && (
-            <View style={styles.selectionIndicator}>
-              <IconSymbol name="checkmark.circle.fill" size={24} color="#007AFF" />
-            </View>
-          )}
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => onDeletePhoto?.(item.id)}
-          >
-            <IconSymbol name="trash" size={Platform.OS === 'web' ? 12 : 16} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => onEditPhoto?.(item)}
-          >
-            <IconSymbol name="pencil" size={Platform.OS === 'web' ? 12 : 16} color="white" />
-          </TouchableOpacity>
+          <IconSymbol name="trash" size={Platform.OS === 'web' ? 12 : 16} color="white" />
         </TouchableOpacity>
-      );
-        } catch {
-          return null;
-        }
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => onEditPhoto?.(item)}
+        >
+          <IconSymbol name="pencil" size={Platform.OS === 'web' ? 12 : 16} color="white" />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
   };
 
   if (photos.length === 0) {

@@ -40,6 +40,7 @@ const MAPPING = {
   'ellipsis': 'more-horiz',
   'hand.raised': 'pan-tool',
   'crop': 'crop',
+  'checkmark.circle.fill': 'check-circle',
 } as IconMapping;
 
 /**
