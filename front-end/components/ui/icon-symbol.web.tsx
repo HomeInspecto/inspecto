@@ -36,6 +36,10 @@ const MAPPING = {
   'circle': 'radio-button-unchecked',
   'eraser': 'web-asset',
   'paintpalette': 'palette',
+  // Missing icons for web
+  'ellipsis': 'more-horiz',
+  'hand.raised': 'pan-tool',
+  'crop': 'crop',
 } as IconMapping;
 
 /**
