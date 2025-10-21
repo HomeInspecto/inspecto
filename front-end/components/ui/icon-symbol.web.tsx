@@ -30,6 +30,12 @@ const MAPPING = {
   'arrow.clockwise': 'refresh',
   'xmark': 'close',
   'arrow.triangle.2.circlepath': 'flip-camera-android',
+  // Editor icons
+  'pencil': 'edit',
+  'arrow.right': 'arrow-forward',
+  'circle': 'radio-button-unchecked',
+  'eraser': 'web-asset',
+  'paintpalette': 'palette',
 } as IconMapping;
 
 /**
