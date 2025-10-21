@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Platform, Dimensions, StatusBar, Te
 import { Image } from 'expo-image';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import Svg, { Path, Line, Circle, G } from 'react-native-svg';
+import Svg, { Path, Line, Circle, G, Ellipse } from 'react-native-svg';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -31,6 +31,8 @@ interface PathData {
   cx?: number;
   cy?: number;
   r?: number;
+  rx?: number;
+  ry?: number;
 }
 
 type EditorTool = 'pen' | 'arrow' | 'circle' | 'eraser';
@@ -158,6 +160,21 @@ export default function PhotoEditor({ photo, onClose }: PhotoEditorProps) {
     if (currentTool === 'pen') {
       const newPath = `M${locationX},${locationY}`;
       setCurrentPath(newPath);
+    } else if (currentTool === 'circle') {
+      // For circle tool, start with a small oval that will be stretched
+      const newPath: PathData = {
+        id: Date.now().toString(),
+        d: '',
+        stroke: currentColor,
+        strokeWidth: brushSize,
+        tool: 'circle',
+        cx: locationX,
+        cy: locationY,
+        r: 1, // Start with minimal radius
+        rx: 1, // Add rx and ry for oval support
+        ry: 1
+      };
+      setCurrentPath(JSON.stringify(newPath));
     }
   };
 
@@ -213,10 +230,30 @@ export default function PhotoEditor({ photo, onClose }: PhotoEditorProps) {
       return;
     }
     
-    if (!isDrawing || currentTool === 'arrow' || currentTool === 'circle') return;
+    if (!isDrawing || !startPoint) return;
     
-    const updatedPath = `${currentPath} L${locationX},${locationY}`;
-    setCurrentPath(updatedPath);
+    if (currentTool === 'pen') {
+      const updatedPath = `${currentPath} L${locationX},${locationY}`;
+      setCurrentPath(updatedPath);
+    } else if (currentTool === 'circle') {
+      // Update the current oval in real-time
+      const deltaX = Math.abs(locationX - startPoint.x);
+      const deltaY = Math.abs(locationY - startPoint.y);
+      
+      const updatedOval: PathData = {
+        id: Date.now().toString(),
+        d: '',
+        stroke: currentColor,
+        strokeWidth: brushSize,
+        tool: 'circle',
+        cx: startPoint.x,
+        cy: startPoint.y,
+        r: Math.sqrt(deltaX * deltaX + deltaY * deltaY), // Keep r for compatibility
+        rx: deltaX, // Horizontal radius
+        ry: deltaY  // Vertical radius
+      };
+      setCurrentPath(JSON.stringify(updatedOval));
+    }
   };
 
   const handleTouchEnd = (event: any) => {
@@ -259,7 +296,10 @@ export default function PhotoEditor({ photo, onClose }: PhotoEditorProps) {
       };
       setPaths([...paths, newPath]);
     } else if (currentTool === 'circle') {
-      const radius = Math.sqrt((locationX - startPoint.x) ** 2 + (locationY - startPoint.y) ** 2);
+      // Finalize the oval with the final dimensions
+      const deltaX = Math.abs(locationX - startPoint.x);
+      const deltaY = Math.abs(locationY - startPoint.y);
+      
       const newPath: PathData = {
         id: Date.now().toString(),
         d: '',
@@ -268,7 +308,9 @@ export default function PhotoEditor({ photo, onClose }: PhotoEditorProps) {
         tool: 'circle',
         cx: startPoint.x,
         cy: startPoint.y,
-        r: radius
+        r: Math.sqrt(deltaX * deltaX + deltaY * deltaY), // Keep r for compatibility
+        rx: deltaX, // Horizontal radius
+        ry: deltaY  // Vertical radius
       };
       setPaths([...paths, newPath]);
     }
@@ -424,29 +466,70 @@ export default function PhotoEditor({ photo, onClose }: PhotoEditorProps) {
                   </G>
                 );
               } else if (path.tool === 'circle') {
-                return (
-                  <Circle
-                    key={path.id}
-                    cx={path.cx}
-                    cy={path.cy}
-                    r={path.r}
-                    stroke={path.stroke}
-                    strokeWidth={path.strokeWidth}
-                    fill="none"
-                  />
-                );
+                // Use ellipse for oval support, fallback to circle if rx/ry not available
+                if (path.rx !== undefined && path.ry !== undefined) {
+                  return (
+                    <Ellipse
+                      key={path.id}
+                      cx={path.cx}
+                      cy={path.cy}
+                      rx={path.rx}
+                      ry={path.ry}
+                      stroke={path.stroke}
+                      strokeWidth={path.strokeWidth}
+                      fill="none"
+                    />
+                  );
+                } else {
+                  return (
+                    <Circle
+                      key={path.id}
+                      cx={path.cx}
+                      cy={path.cy}
+                      r={path.r}
+                      stroke={path.stroke}
+                      strokeWidth={path.strokeWidth}
+                      fill="none"
+                    />
+                  );
+                }
               }
               return null;
             })}
             {currentPath && (
-              <Path
-                d={currentPath}
-                stroke={currentColor}
-                strokeWidth={brushSize}
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <>
+                {currentTool === 'pen' && (
+                  <Path
+                    d={currentPath}
+                    stroke={currentColor}
+                    strokeWidth={brushSize}
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                )}
+                {currentTool === 'circle' && (() => {
+                  try {
+                    const pathData = JSON.parse(currentPath);
+                    if (pathData.rx !== undefined && pathData.ry !== undefined) {
+                      return (
+                        <Ellipse
+                          cx={pathData.cx}
+                          cy={pathData.cy}
+                          rx={pathData.rx}
+                          ry={pathData.ry}
+                          stroke={currentColor}
+                          strokeWidth={brushSize}
+                          fill="none"
+                        />
+                      );
+                    }
+                  } catch (e) {
+                    // Fallback to path rendering if JSON parsing fails
+                  }
+                  return null;
+                })()}
+              </>
             )}
           </Svg>
         </View>
