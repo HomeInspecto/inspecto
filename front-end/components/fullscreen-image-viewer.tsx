@@ -101,9 +101,21 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
   const [startPoint, setStartPoint] = useState<{x: number, y: number} | null>(null);
   
   const handleTouchStart = (event: any) => {
+    // Handle both touch and mouse events for web compatibility
+    let locationX, locationY;
+    
+    if (event.nativeEvent) {
+      // Mobile touch events
+      locationX = event.nativeEvent.locationX || event.nativeEvent.clientX;
+      locationY = event.nativeEvent.locationY || event.nativeEvent.clientY;
+    } else {
+      // Web mouse events
+      locationX = event.clientX;
+      locationY = event.clientY;
+    }
+    
     if (currentTool === 'eraser') {
       // Handle eraser - remove paths that are touched
-      const { locationX, locationY } = event.nativeEvent;
       const eraserRadius = 30; // Larger eraser radius
       
       const newPaths = paths.filter(path => {
@@ -141,7 +153,6 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
     }
     
     setIsDrawing(true);
-    const { locationX, locationY } = event.nativeEvent;
     setStartPoint({ x: locationX, y: locationY });
     
     if (currentTool === 'pen') {
@@ -151,9 +162,21 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
   };
 
   const handleTouchMove = (event: any) => {
+    // Handle both touch and mouse events for web compatibility
+    let locationX, locationY;
+    
+    if (event.nativeEvent) {
+      // Mobile touch events
+      locationX = event.nativeEvent.locationX || event.nativeEvent.clientX;
+      locationY = event.nativeEvent.locationY || event.nativeEvent.clientY;
+    } else {
+      // Web mouse events
+      locationX = event.clientX;
+      locationY = event.clientY;
+    }
+    
     if (currentTool === 'eraser') {
       // Handle eraser while dragging
-      const { locationX, locationY } = event.nativeEvent;
       const eraserRadius = 30;
       
       const newPaths = paths.filter(path => {
@@ -192,7 +215,6 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
     
     if (!isDrawing || currentTool === 'arrow' || currentTool === 'circle') return;
     
-    const { locationX, locationY } = event.nativeEvent;
     const updatedPath = `${currentPath} L${locationX},${locationY}`;
     setCurrentPath(updatedPath);
   };
@@ -201,7 +223,18 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
     if (!isDrawing || !startPoint) return;
     
     setIsDrawing(false);
-    const { locationX, locationY } = event.nativeEvent;
+    // Handle both touch and mouse events for web compatibility
+    let locationX, locationY;
+    
+    if (event.nativeEvent) {
+      // Mobile touch events
+      locationX = event.nativeEvent.locationX || event.nativeEvent.clientX;
+      locationY = event.nativeEvent.locationY || event.nativeEvent.clientY;
+    } else {
+      // Web mouse events
+      locationX = event.clientX;
+      locationY = event.clientY;
+    }
     
     if (currentTool === 'pen' && currentPath) {
       const newPath: PathData = {
@@ -320,13 +353,20 @@ export default function FullscreenImageViewer({ photo, onClose }: FullscreenImag
         />
         
         {/* SVG Overlay for markup */}
-        <View style={styles.svgOverlay}>
+        <View 
+          style={styles.svgOverlay}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          {...(Platform.OS === 'web' && {
+            onMouseDown: handleTouchStart,
+            onMouseMove: handleTouchMove,
+            onMouseUp: handleTouchEnd,
+          })}
+        >
           <Svg
             width={screenDimensions.width}
             height={screenDimensions.height}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
           >
             {paths.map((path) => {
               if (path.tool === 'pen') {
