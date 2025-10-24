@@ -10,7 +10,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:4000/api', //URL to see endpoints in browser (swagger UI)
+        url: 'http://localhost:4000', //URL to see endpoints in browser (swagger UI)
         description: 'Development Server',
       },
     ],
@@ -30,7 +30,7 @@ const swaggerOptions = {
     }],
   },
 
-  apis: ['./src/routes/*.ts'], //where swagger looks to find endpoint files
+  apis: ['./server.ts', './src/routes/*.ts'], //where swagger looks to find endpoint files
 };
 
 export default swaggerOptions;
