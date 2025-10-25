@@ -8,7 +8,7 @@ export const COLORS = {
     onDark: {
       primary: '#F3F3F3',
       secondary: '#888888',
-      tertiary: 'linear-gradient(0deg, #5E5E5E 24%, #FFFFFF 20%)',
+      tertiary: '#5E5E5E', // todo: turn to linear gradient and use react native linear gradient component in rendering the bg
     },
   },
 
@@ -18,9 +18,8 @@ export const COLORS = {
       stroke: 'rgba(243, 243, 243, 0.8)',
     },
     secondary: {
-      fill: ['rgba(128, 128, 128, 0.4)', 'rgba(0, 0, 0, 0.12)'],
-      stroke:
-        'linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 41%, rgba(255,255,255,0) 57%, rgba(255,255,255,0.1) 100%)',
+      fill: 'rgba(128, 128, 128, 0.4)', // todo: linear gradient
+      stroke: 'rgba(255,255,255,0.1)', // todo: linear gradient
     },
   },
 
