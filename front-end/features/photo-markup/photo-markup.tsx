@@ -1,4 +1,4 @@
-import PhotoMarkupView from './components/photo-markup-view';
+import PhotoMarkupView from './views/photo-markup-view';
 import { usePhotoMarkup } from './hooks/use-photo-markup';
 
 export type Photo = {

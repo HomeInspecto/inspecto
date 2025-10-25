@@ -1,5 +1,5 @@
 import type { CameraView } from 'expo-camera';
-import CameraScreenView from './components/camera-screen-view';
+import CameraScreenView from './views/camera-screen-view';
 import { useCameraScreen } from './hooks/use-camera-screen';
 
 export interface CameraScreenProps {
@@ -28,6 +28,6 @@ export interface CameraScreenProps {
 }
 
 export default function CameraScreen() {
-  const hook = useCameraScreen();
-  return <CameraScreenView {...hook} />;
+  const props = useCameraScreen();
+  return <CameraScreenView {...props} />;
 }
