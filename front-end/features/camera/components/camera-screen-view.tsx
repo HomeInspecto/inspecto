@@ -3,33 +3,9 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { CameraView } from 'expo-camera';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import type { CameraScreenProps } from '../camera-screen';
 
-type Props = {
-  // state
-  facing: 'front' | 'back';
-  isCapturing: boolean;
-  zoom: number;
-  newPhotoCount: number;
-  isCameraActive: boolean;
-  cameraRef: React.RefObject<CameraView | null>;
-  panHandlers: any;
-
-  // actions
-  toggleCameraFacing: () => void;
-  takePicture: () => void;
-  goBack: () => void;
-  openGallery: () => void;
-
-  // permissions
-  permissionsLoading: boolean;
-  cameraGranted: boolean;
-  mediaGranted: boolean;
-  requestCameraPermission: () => void;
-  requestMediaPermission: () => void;
-  shouldCheckMediaLibraryPermissions: boolean;
-};
-
-export default function CameraScreenView(props: Props) {
+export default function CameraScreenView(props: CameraScreenProps) {
   const {
     facing,
     isCapturing,
@@ -41,7 +17,7 @@ export default function CameraScreenView(props: Props) {
     toggleCameraFacing,
     takePicture,
     goBack,
-    openGallery,
+    gotoEditPhotos,
     permissionsLoading,
     cameraGranted,
     mediaGranted,
@@ -128,7 +104,7 @@ export default function CameraScreenView(props: Props) {
       </View>
 
       {newPhotoCount > 0 && (
-        <TouchableOpacity style={styles.newPhotoCounter} onPress={openGallery}>
+        <TouchableOpacity style={styles.newPhotoCounter} onPress={gotoEditPhotos}>
           <View style={styles.counterBadge}>
             <Text style={styles.counterText}>{newPhotoCount}</Text>
           </View>

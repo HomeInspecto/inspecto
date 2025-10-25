@@ -2,10 +2,11 @@ import { Alert, PanResponder, Platform } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React from 'react';
+import type { CameraScreenProps } from '../camera-screen';
 
-export function useCameraScreen() {
+export function useCameraScreen(): CameraScreenProps {
   const [facing, setFacing] = React.useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [isCapturing, setIsCapturing] = React.useState(false);
@@ -13,6 +14,7 @@ export function useCameraScreen() {
   const [newPhotoCount, setNewPhotoCount] = React.useState(0);
   const [isCameraActive, setIsCameraActive] = React.useState(true);
   const cameraRef = React.useRef<CameraView>(null);
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   // Media library (iOS only requirement)
   const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
@@ -139,8 +141,8 @@ export function useCameraScreen() {
     router.back();
   }
 
-  function openGallery() {
-    router.push('/(tabs)/gallery');
+  function gotoEditPhotos() {
+    router.push(`/active-inspection/${id}/photo-markup`);
   }
 
   const permissionsLoading = !permission || !mediaLibraryPermission;
@@ -161,7 +163,7 @@ export function useCameraScreen() {
     toggleCameraFacing,
     takePicture,
     goBack,
-    openGallery,
+    gotoEditPhotos,
 
     // permissions (for View to render)
     permissionsLoading,
