@@ -142,7 +142,7 @@ export function useCameraScreen(): CameraScreenProps {
   }
 
   function gotoEditPhotos() {
-    router.push(`/active-inspection/${id}/photo-markup`);
+    router.push(`/active-inspection/${id}/edit-observation`);
   }
 
   const permissionsLoading = !permission || !mediaLibraryPermission;
