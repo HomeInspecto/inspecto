@@ -1,36 +1,10 @@
-// GalleryScreenView.tsx
-import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform, Dimensions } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import PhotoGallery from '@/components/photo-gallery';
 import PhotoEditor from '@/components/photo-editor';
-import type { Photo } from '../hooks/use-gallary-screen';
+import type { PhotoMarkupProps } from '../photo-markup';
 
-type Props = {
-  // state
-  photos: Photo[];
-  loading: boolean;
-  lastGalleryVisit: number;
-  selectedPhotos: Set<string>;
-  fullscreenPhoto: Photo | null;
-
-  // actions
-  loadPhotos: () => void;
-  goBack: () => void;
-  handlePhotoPress: (p: Photo) => void;
-  handleDeletePhoto: (id: string) => void;
-  handleEditPhoto: (p: Photo) => void;
-  handleCloseFullscreen: () => void;
-  clearAllPhotos: () => void;
-
-  // permissions
-  permissionsLoading: boolean;
-  permissionGranted: boolean;
-  requestPermission: () => void;
-  shouldCheckPermissions: boolean;
-};
-
-export default function GalleryScreenView(props: Props) {
+export default function GalleryScreenView(props: PhotoMarkupProps) {
   const {
     photos,
     loading,
@@ -91,68 +65,6 @@ export default function GalleryScreenView(props: Props) {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View
-        style={[styles.header, isWeb && styles.headerWeb]}
-        accessibilityRole="header"
-        accessibilityLabel="Photo Gallery Header"
-      >
-        <TouchableOpacity
-          style={[styles.backButton, isWeb && styles.backButtonWeb]}
-          onPress={goBack}
-        >
-          <IconSymbol
-            name="chevron.left"
-            size={isWeb ? (isLargeScreen ? 28 : 24) : 24}
-            color="#007AFF"
-          />
-        </TouchableOpacity>
-
-        <Text style={[styles.headerTitle, isWeb && styles.headerTitleWeb]}>Photo Gallery</Text>
-
-        <View style={[styles.headerActions, isWeb && styles.headerActionsWeb]}>
-          <TouchableOpacity
-            style={[styles.refreshButton, isWeb && styles.refreshButtonWeb]}
-            onPress={loadPhotos}
-          >
-            <IconSymbol
-              name="arrow.clockwise"
-              size={isWeb ? (isLargeScreen ? 28 : 24) : 24}
-              color="#007AFF"
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.clearButton, isWeb && styles.clearButtonWeb]}
-            onPress={clearAllPhotos}
-          >
-            <IconSymbol
-              name="trash"
-              size={isWeb ? (isLargeScreen ? 28 : 24) : 24}
-              color="#FF3B30"
-            />
-            {selectedPhotos.size > 0 && (
-              <View style={styles.selectionCount}>
-                <Text style={styles.selectionCountText}>{selectedPhotos.size}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Content */}
-      <View style={styles.content} accessibilityRole="none" accessibilityLabel="Photo Gallery">
-        <PhotoGallery
-          photos={photos}
-          onPhotoPress={handlePhotoPress}
-          onDeletePhoto={handleDeletePhoto}
-          onEditPhoto={handleEditPhoto}
-          lastGalleryVisit={lastGalleryVisit}
-          selectedPhotos={selectedPhotos}
-        />
-      </View>
-
-      {/* Editor overlay */}
       {fullscreenPhoto && <PhotoEditor photo={fullscreenPhoto} onClose={handleCloseFullscreen} />}
     </View>
   );

@@ -105,11 +105,8 @@ export default function CameraScreenView(props: CameraScreenProps) {
 
       {newPhotoCount > 0 && (
         <TouchableOpacity style={styles.newPhotoCounter} onPress={gotoEditPhotos}>
-          <View style={styles.counterBadge}>
-            <Text style={styles.counterText}>{newPhotoCount}</Text>
-          </View>
           <Text style={styles.counterLabel}>
-            {newPhotoCount === 1 ? 'new photo' : 'new photos'}
+            Edit photo{newPhotoCount === 1 && 's'} ({newPhotoCount})
           </Text>
         </TouchableOpacity>
       )}

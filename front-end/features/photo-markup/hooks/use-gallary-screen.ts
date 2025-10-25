@@ -4,14 +4,9 @@ import { Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as MediaLibrary from 'expo-media-library';
 import { router, useFocusEffect } from 'expo-router';
+import type { Photo, PhotoMarkupProps } from '../photo-markup';
 
-export type Photo = {
-  id: string;
-  uri: string;
-  timestamp: number;
-};
-
-export function useGalleryScreen() {
+export function useGalleryScreen(): PhotoMarkupProps {
   const [photos, setPhotos] = React.useState<Photo[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [lastGalleryVisit, setLastGalleryVisit] = React.useState<number>(0);
@@ -242,7 +237,6 @@ export function useGalleryScreen() {
     handleDeletePhoto,
     handleEditPhoto,
     handleCloseFullscreen,
-    clearSelection,
     clearAllPhotos,
 
     // permissions
