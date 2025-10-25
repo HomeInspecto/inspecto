@@ -1,5 +1,5 @@
-import GalleryScreenView from './components/gallary-view';
-import { useGalleryScreen } from './hooks/use-gallary-screen';
+import PhotoMarkupView from './components/photo-markup-view';
+import { usePhotoMarkup } from './hooks/use-photo-markup';
 
 export type Photo = {
   id: string;
@@ -12,17 +12,12 @@ export interface PhotoMarkupProps {
   photos: Photo[];
   loading: boolean;
   lastGalleryVisit: number;
-  selectedPhotos: Set<string>;
   fullscreenPhoto: Photo | null;
 
   // actions
   loadPhotos: () => void;
   goBack: () => void;
-  handlePhotoPress: (p: Photo) => void;
   handleDeletePhoto: (id: string) => void;
-  handleEditPhoto: (p: Photo) => void;
-  handleCloseFullscreen: () => void;
-  clearAllPhotos: () => void;
 
   // permissions
   permissionsLoading: boolean;
@@ -32,6 +27,6 @@ export interface PhotoMarkupProps {
 }
 
 export default function PhotoMarkup() {
-  const props = useGalleryScreen();
-  return <GalleryScreenView {...props} />;
+  const props = usePhotoMarkup();
+  return <PhotoMarkupView {...props} />;
 }

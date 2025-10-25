@@ -6,7 +6,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { router, useFocusEffect } from 'expo-router';
 import type { Photo, PhotoMarkupProps } from '../photo-markup';
 
-export function useGalleryScreen(): PhotoMarkupProps {
+export function usePhotoMarkup(): PhotoMarkupProps {
   const [photos, setPhotos] = React.useState<Photo[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [lastGalleryVisit, setLastGalleryVisit] = React.useState<number>(0);
@@ -73,6 +73,7 @@ export function useGalleryScreen(): PhotoMarkupProps {
       }
 
       setPhotos(valid);
+      setFullscreenPhoto(valid[0]);
     } catch (e) {
       console.error('Error loading photos:', e);
       try {
@@ -227,17 +228,12 @@ export function useGalleryScreen(): PhotoMarkupProps {
     photos,
     loading,
     lastGalleryVisit,
-    selectedPhotos,
     fullscreenPhoto,
 
     // actions
     loadPhotos,
     goBack,
-    handlePhotoPress,
     handleDeletePhoto,
-    handleEditPhoto,
-    handleCloseFullscreen,
-    clearAllPhotos,
 
     // permissions
     permissionsLoading,
