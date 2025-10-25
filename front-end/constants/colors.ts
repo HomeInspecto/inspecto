@@ -24,6 +24,8 @@ export const COLORS = {
     },
   },
 
+  pageBackground: '#424245',
+
   system: {
     white: '#FFFFFF',
     black: '#000000',

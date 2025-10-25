@@ -20,7 +20,7 @@ export default function HomeScreen() {
         flex: 1,
         padding: 16,
         gap: 24,
-        backgroundColor: '#424245',
+        backgroundColor: COLORS.pageBackground,
       }}
     >
       <View
