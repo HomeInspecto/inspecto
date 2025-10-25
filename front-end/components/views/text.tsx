@@ -1,6 +1,6 @@
 import { COLORS } from '@/constants/colors';
 import React from 'react';
-import { Text as RNText, TextProps, StyleProp, TextStyle, Platform } from 'react-native';
+import { Text as RNText, TextProps, StyleProp, TextStyle } from 'react-native';
 
 type TextVariant =
   | 'title1'
@@ -17,12 +17,13 @@ type TextVariant =
 interface Props extends TextProps {
   variant?: TextVariant;
   weight?: 'regular' | 'emphasized';
+  color?: 'default' | 'inverse';
   style?: StyleProp<TextStyle>;
   children: React.ReactNode;
 }
 
 const variantStyles: Record<TextVariant, TextStyle> = {
-  title1: { fontSize: 28, fontWeight: '300' }, // light weight for title1
+  title1: { fontSize: 28, fontWeight: '400' },
   title2: { fontSize: 22, fontWeight: '400' },
   title3: { fontSize: 20, fontWeight: '400' },
   headline: { fontSize: 17, fontWeight: '600' },
@@ -36,21 +37,22 @@ const variantStyles: Record<TextVariant, TextStyle> = {
 
 export const Text: React.FC<Props> = ({
   variant = 'body',
-  weight: type = 'regular',
+  weight = 'regular',
+  color = 'default',
   style,
   children,
   ...rest
 }) => {
   const variantStyle = variantStyles[variant];
+
+  const textColor =
+    color === 'inverse' ? COLORS.label.onLight.primary : COLORS.label.onDark.primary;
+
+  const fontWeight = weight === 'regular' ? '400' : '600';
   return (
     <RNText
-      style={[
-        variantStyle,
-        { color: COLORS.label.onDark.primary },
-        { fontWeight: type === 'regular' ? '400' : '600' },
-        style,
-      ]}
-      allowFontScaling={true}
+      style={[variantStyle, { color: textColor }, { fontWeight: fontWeight }, style]}
+      allowFontScaling
       {...rest}
     >
       {children}
