@@ -2,7 +2,7 @@ import { Pressable, StyleSheet } from 'react-native';
 import { Text } from '@/components/views/text';
 import { View } from 'react-native';
 import { COLORS } from '@/constants/colors';
-import Input from '@/components/views/input';
+import TextInput from '@/components/views/text-input';
 import { router } from 'expo-router';
 
 function handleGotoInspection() {}
@@ -41,7 +41,7 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        <Input
+        <TextInput
           value={''}
           placeholder="Enter your email"
           leftIcon="mail-outline"

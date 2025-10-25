@@ -1,11 +1,10 @@
 import {
   View,
-  TextInput,
+  TextInput as RNTextInput,
   StyleSheet,
   ViewStyle,
   TextStyle,
   Pressable,
-  ColorValue,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
@@ -22,7 +21,7 @@ type Props = {
   inputStyle?: TextStyle;
 };
 
-export default function Input({
+export default function TextInput({
   value,
   onChangeText,
   placeholder,
@@ -53,7 +52,7 @@ export default function Input({
         />
       )}
 
-      <TextInput
+      <RNTextInput
         style={[styles.input, { color: COLORS.label.onDark.primary }, inputStyle]}
         value={value}
         onChangeText={onChangeText}
