@@ -20,7 +20,6 @@ type Props = {
   secureTextEntry?: boolean;
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
-  isDark?: boolean;
 };
 
 export default function Input({
@@ -33,41 +32,39 @@ export default function Input({
   secureTextEntry,
   containerStyle,
   inputStyle,
-  isDark = true,
 }: Props) {
-  const palette = isDark ? COLORS.label.onDark : COLORS.label.onLight;
-  const fill = isDark ? COLORS.material.secondary.fill[0] : COLORS.material.primary.fill;
-  const textColor: ColorValue = palette.primary;
-  const placeholderColor: ColorValue = palette.secondary;
-
+  const rightIconColor = onRightIconPress
+    ? COLORS.label.onDark.primary
+    : COLORS.label.onDark.secondary;
   return (
-    <View style={[styles.container, { backgroundColor: fill }, containerStyle]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: COLORS.material.secondary.fill },
+        containerStyle,
+      ]}
+    >
       {leftIcon && (
         <Ionicons
           name={leftIcon}
           size={18}
-          color={placeholderColor as string}
+          color={COLORS.label.onDark.primary}
           style={styles.iconLeft}
         />
       )}
 
       <TextInput
-        style={[styles.input, { color: textColor }, inputStyle]}
+        style={[styles.input, { color: COLORS.label.onDark.primary }, inputStyle]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={placeholderColor as string}
+        placeholderTextColor={COLORS.label.onDark.tertiary}
         secureTextEntry={secureTextEntry}
       />
 
       {rightIcon && (
         <Pressable onPress={onRightIconPress} hitSlop={10}>
-          <Ionicons
-            name={rightIcon}
-            size={18}
-            color={placeholderColor as string}
-            style={styles.iconRight}
-          />
+          <Ionicons name={rightIcon} size={18} color={rightIconColor} style={styles.iconRight} />
         </Pressable>
       )}
     </View>
