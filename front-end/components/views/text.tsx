@@ -35,14 +35,14 @@ const variantStyles: Record<TextVariant, TextStyle> = {
   caption2: { fontSize: 11, fontWeight: '500' },
 };
 
-export const Text: React.FC<Props> = ({
+export default function Text({
   variant = 'body',
   weight = 'regular',
   color = 'default',
   style,
   children,
   ...rest
-}) => {
+}: Props) {
   const variantStyle = variantStyles[variant];
 
   const textColor =
@@ -58,4 +58,4 @@ export const Text: React.FC<Props> = ({
       {children}
     </RNText>
   );
-};
+}

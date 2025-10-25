@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet } from 'react-native';
-import { Text } from '@/components/views/text';
+import Text from '@/components/views/text';
 import { View } from 'react-native';
 import { COLORS } from '@/constants/colors';
 import TextInput from '@/components/views/text-input';

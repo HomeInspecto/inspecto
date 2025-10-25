@@ -21,7 +21,7 @@ type IconButtonProps = {
   accessibilityLabel?: string;
 };
 
-export function IconButton({
+export default function IconButton({
   onPress,
   size = 'md',
   color = 'primary',
