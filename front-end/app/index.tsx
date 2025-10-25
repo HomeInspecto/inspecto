@@ -5,8 +5,6 @@ import { COLORS } from '@/constants/colors';
 import TextInput from '@/components/views/text-input';
 import { router } from 'expo-router';
 
-function handleGotoInspection() {}
-
 export default function HomeScreen() {
   function handleGotoInspection() {
     // go to the inspections list screen
@@ -29,14 +27,10 @@ export default function HomeScreen() {
         }}
       >
         <View>
-          <Text
-            variant="footnote"
-            weight="emphasized"
-            style={{ color: COLORS.label.onDark.secondary }}
-          >
+          <Text variant="footnote" weight="emphasized">
             Tuesday, OCT 21
           </Text>
-          <Text variant="title1" weight="emphasized" style={{ color: COLORS.label.onDark.primary }}>
+          <Text variant="title1" weight="emphasized">
             Lockwood Inc.
           </Text>
         </View>
@@ -51,7 +45,7 @@ export default function HomeScreen() {
 
       <View>
         <Pressable onPress={handleGotoInspection}>
-          <Text variant="title1" weight="emphasized" style={{ color: COLORS.label.onDark.primary }}>
+          <Text variant="title1" weight="emphasized">
             Inspection 1
           </Text>
         </Pressable>
