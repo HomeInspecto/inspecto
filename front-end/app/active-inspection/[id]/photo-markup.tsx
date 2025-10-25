@@ -1,12 +1,12 @@
 import { COLORS } from '@/constants/colors';
-import CameraScreen from '@/features/camera/camera-screen';
+import PhotoMarkup from '@/features/photo-markup/photo-markup';
 import { useLocalSearchParams } from 'expo-router';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  return <View></View>;
+  return <PhotoMarkup></PhotoMarkup>;
 }
 
 const styles = StyleSheet.create({
