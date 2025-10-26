@@ -26,7 +26,7 @@ export interface PathData {
   ry?: number;
 }
 
-export type EditorTool = 'pen' | 'arrow' | 'circle' | 'eraser' | 'hand' | 'crop';
+export type EditorTool = 'pen' | 'arrow' | 'circle' | 'eraser' | 'hand';
 
 export interface PhotoEditorProps {
   photo: Photo;
@@ -52,9 +52,6 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
   const [showExpandedToolbar, setShowExpandedToolbar] = useState(false);
   const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null);
   const [isDraggingObject, setIsDraggingObject] = useState(false);
-  const [cropRect, setCropRect] = useState<{x: number, y: number, width: number, height: number} | null>(null);
-  const [showCropControls, setShowCropControls] = useState(false);
-  const [isCropping, setIsCropping] = useState(false);
   
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#000000', '#FFFFFF'];
   
@@ -176,15 +173,6 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
       return;
     }
     
-    // Handle crop tool
-    if (currentTool === 'crop') {
-      if (!cropRect) {
-        // Start new crop rectangle
-        setCropRect({ x: locationX, y: locationY, width: 0, height: 0 });
-        setStartPoint({ x: locationX, y: locationY });
-      }
-      return;
-    }
     
     if (currentTool === 'eraser') {
       // Handle eraser - remove paths that are touched
@@ -301,21 +289,6 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
       return;
     }
     
-    // Handle crop tool for rectangle resizing
-    if (currentTool === 'crop' && cropRect && startPoint) {
-      const newWidth = Math.abs(locationX - startPoint.x);
-      const newHeight = Math.abs(locationY - startPoint.y);
-      const newX = Math.min(startPoint.x, locationX);
-      const newY = Math.min(startPoint.y, locationY);
-      
-      setCropRect({
-        x: newX,
-        y: newY,
-        width: newWidth,
-        height: newHeight
-      });
-      return;
-    }
     
     if (currentTool === 'eraser') {
       // Handle eraser while dragging
@@ -402,14 +375,6 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
       return;
     }
     
-    // Handle crop tool - finalize crop rectangle and show controls
-    if (currentTool === 'crop') {
-      setStartPoint(null);
-      if (cropRect && cropRect.width > 10 && cropRect.height > 10) {
-        setShowCropControls(true);
-      }
-      return;
-    }
     
     if (!isDrawing || !startPoint) return;
     
@@ -517,56 +482,6 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
     onClose();
   };
   
-  const handleCropConfirm = async () => {
-    if (!cropRect) return;
-    
-    try {
-      setIsCropping(true);
-      
-      // For now, we'll simulate cropping by showing a success message
-      // In a real implementation, you'd use a library like react-native-image-crop-picker
-      // or implement server-side cropping
-      
-      console.log('Crop area:', cropRect);
-      
-      // Update the photo URI in AsyncStorage with a note that it's been cropped
-      const storedPhotos = await AsyncStorage.getItem('inspecto_photos');
-      if (storedPhotos) {
-        const photoList = JSON.parse(storedPhotos);
-        const updatedPhotos = photoList.map((p: Photo) => 
-          p.id === photo.id ? { 
-            ...p, 
-            uri: p.uri, // Keep original URI for now
-            cropped: true,
-            cropRect: cropRect // Store crop info for future use
-          } : p
-        );
-        await AsyncStorage.setItem('inspecto_photos', JSON.stringify(updatedPhotos));
-      }
-      
-      // Clear crop state
-      setCropRect(null);
-      setShowCropControls(false);
-      setCurrentTool('pen'); // Switch back to pen tool
-      setIsCropping(false);
-      
-      // Show success message
-      alert('Image crop area saved! (Note: Full cropping implementation requires additional image processing library)');
-      
-      // Close the editor to show the result
-      onClose();
-      
-    } catch (error) {
-      console.error('Error cropping image:', error);
-      setIsCropping(false);
-    }
-  };
-  
-  const handleCropCancel = () => {
-    setCropRect(null);
-    setShowCropControls(false);
-    setCurrentTool('pen');
-  };
 
   return {
     // State
@@ -583,9 +498,6 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
     showExpandedToolbar,
     selectedObjectId,
     isDraggingObject,
-    cropRect,
-    showCropControls,
-    isCropping,
     colors,
     isLandscape,
     startPoint,
@@ -602,9 +514,6 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
     setShowExpandedToolbar,
     setSelectedObjectId,
     setIsDraggingObject,
-    setCropRect,
-    setShowCropControls,
-    setIsCropping,
     setStartPoint,
     
     // Functions
@@ -615,8 +524,6 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
     handleClose,
     handleSaveChanges,
     handleDiscardChanges,
-    handleCropConfirm,
-    handleCropCancel,
     findObjectAtPoint,
   };
 }
