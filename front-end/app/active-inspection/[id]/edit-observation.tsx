@@ -1,19 +1,41 @@
+import Text from '@/components/views/text';
 import { COLORS } from '@/constants/colors';
 import PhotoMarkup from '@/features/photo-manager/photo-manager';
 import { useLocalSearchParams } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const insets = useSafeAreaInsets();
 
-  return <PhotoMarkup></PhotoMarkup>;
+  return (
+    <View style={styles.container}>
+      <View style={{ aspectRatio: '3 / 4', backgroundColor: 'red' }}>
+        <PhotoMarkup />
+      </View>
+
+      <View
+        style={{
+          height: 228,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
+          backgroundColor: '#2e2e2f',
+        }}
+      >
+        <Text>placeholder for swipe photos </Text>
+        <Text>placeholder for notes text area</Text>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
     backgroundColor: COLORS.pageBackground,
   },
 });
