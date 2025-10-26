@@ -1,5 +1,5 @@
 import { COLORS } from '@/constants/colors';
-import PhotoMarkup from '@/features/photo-markup/photo-markup';
+import PhotoMarkup from '@/features/photo-manager/photo-manager';
 import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet } from 'react-native';
 
