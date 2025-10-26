@@ -8,7 +8,7 @@ export const COLORS = {
     onDark: {
       primary: '#F3F3F3',
       secondary: '#888888',
-      tertiary: '#5E5E5E', // todo: turn to linear gradient and use react native linear gradient component in rendering the bg
+      tertiary: 'rgba(243, 243, 243, 0.4)', // todo: turn to linear gradient and use react native linear gradient component in rendering the bg
     },
   },
 

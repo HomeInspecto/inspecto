@@ -1,48 +1,29 @@
-import {
-  View,
-  TextInput as RNTextInput,
-  StyleSheet,
-  ViewStyle,
-  TextStyle,
-  Pressable,
-} from 'react-native';
+import { View, TextInput as RNTextInput, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 
 type Props = {
   value: string;
-  onChangeText?: (text: string) => void;
   placeholder?: string;
   leftIcon?: keyof typeof Ionicons.glyphMap;
   rightIcon?: keyof typeof Ionicons.glyphMap;
-  onRightIconPress?: () => void;
   secureTextEntry?: boolean;
-  containerStyle?: ViewStyle;
-  inputStyle?: TextStyle;
+
+  onChangeText?: (text: string) => void;
+  onRightIconPress?: () => void;
 };
 
 export default function TextInput({
   value,
-  onChangeText,
   placeholder,
   leftIcon,
   rightIcon,
-  onRightIconPress,
   secureTextEntry,
-  containerStyle,
-  inputStyle,
+  onChangeText,
+  onRightIconPress,
 }: Props) {
-  const rightIconColor = onRightIconPress
-    ? COLORS.label.onDark.primary
-    : COLORS.label.onDark.secondary;
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: COLORS.material.secondary.fill },
-        containerStyle,
-      ]}
-    >
+    <View style={[styles.container, { backgroundColor: COLORS.material.secondary.fill }]}>
       {leftIcon && (
         <Ionicons
           name={leftIcon}
@@ -53,7 +34,7 @@ export default function TextInput({
       )}
 
       <RNTextInput
-        style={[styles.input, { color: COLORS.label.onDark.primary }, inputStyle]}
+        style={[styles.input, { color: COLORS.label.onDark.primary }]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -61,10 +42,23 @@ export default function TextInput({
         secureTextEntry={secureTextEntry}
       />
 
-      {rightIcon && (
+      {rightIcon && onRightIconPress && (
         <Pressable onPress={onRightIconPress} hitSlop={10}>
-          <Ionicons name={rightIcon} size={18} color={rightIconColor} style={styles.iconRight} />
+          <Ionicons
+            name={rightIcon}
+            size={18}
+            color={COLORS.label.onDark.primary}
+            style={styles.iconRight}
+          />
         </Pressable>
+      )}
+      {rightIcon && !onRightIconPress && (
+        <Ionicons
+          name={rightIcon}
+          size={18}
+          color={COLORS.label.onDark.primary}
+          style={styles.iconRight}
+        />
       )}
     </View>
   );
@@ -76,7 +70,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 999,
     height: 44,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
   },
   input: {
     flex: 1,
