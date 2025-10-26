@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Custom hook that manages all photo editor state and logic
 export interface Photo {
   id: string;
   uri: string;
@@ -38,33 +39,37 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
   const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
   const [orientation, setOrientation] = useState(ScreenOrientation.Orientation.PORTRAIT_UP);
   
-  // Editor state
+  // Drawing tools and appearance state
   const [currentTool, setCurrentTool] = useState<EditorTool>('pen');
   const [currentColor, setCurrentColor] = useState('#FF0000');
   const [brushSize, setBrushSize] = useState(3);
   const [paths, setPaths] = useState<PathData[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPath, setCurrentPath] = useState<string>('');
+  
+  // UI state for modals and toolbars
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  
-  // Toolbar and selection state
   const [showExpandedToolbar, setShowExpandedToolbar] = useState(false);
+  
+  // Object selection and manipulation state
   const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null);
   const [isDraggingObject, setIsDraggingObject] = useState(false);
   
+  // Available colors for the color picker
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#000000', '#FFFFFF'];
   
+  // Setup screen orientation and dimension listeners
   useEffect(() => {
-    // Lock to all orientations when fullscreen opens
+    // Allow all orientations when editor opens
     ScreenOrientation.unlockAsync();
     
-    // Listen for orientation changes
+    // Listen for screen size changes (rotation, etc.)
     const subscription = Dimensions.addEventListener('change', ({ window }) => {
       setScreenDimensions(window);
     });
     
-    // Get current orientation
+    // Get current device orientation
     ScreenOrientation.getOrientationAsync().then(setOrientation);
     
     // Listen for orientation changes
@@ -72,9 +77,10 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
       setOrientation(event.orientationInfo.orientation);
     });
     
-    // Load existing markup for this photo
+    // Load any existing drawings for this photo
     loadExistingMarkup();
     
+    // Cleanup listeners when component unmounts
     return () => {
       subscription?.remove();
       orientationSubscription?.remove();
@@ -83,6 +89,7 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
     };
   }, []);
 
+  // Load any previously saved drawings for this photo
   const loadExistingMarkup = async () => {
     try {
       const existingMarkup = await AsyncStorage.getItem('photo_markup');
@@ -94,7 +101,6 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
         }
       }
     } catch (error) {
-      console.error('Error loading existing markup:', error);
     }
   };
   
@@ -129,22 +135,18 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
       
       if (path.tool === 'circle') {
         // Check if point is inside or near the circle/ellipse
-        let distance;
-        if (path.rx !== undefined && path.ry !== undefined) {
-          // Ellipse
-          const dx = (x - path.cx!) / path.rx;
-          const dy = (y - path.cy!) / path.ry;
-          distance = Math.abs(dx * dx + dy * dy - 1) * Math.min(path.rx, path.ry);
-        } else {
-          // Circle
-          distance = Math.sqrt((x - path.cx!) ** 2 + (y - path.cy!) ** 2) - path.r!;
-        }
+        const rx = path.rx || path.r || 0;
+        const ry = path.ry || path.r || 0;
+        const dx = (x - path.cx!) / rx;
+        const dy = (y - path.cy!) / ry;
+        const distance = Math.abs(dx * dx + dy * dy - 1) * Math.min(rx, ry);
         if (Math.abs(distance) < 20) return path;
       }
     }
     return null;
   };
   
+  // Start drawing when user touches the screen
   const handleTouchStart = (event: any) => {
     // Handle both touch and mouse events for web compatibility
     let locationX, locationY;
@@ -187,7 +189,7 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
             const distance = Math.sqrt((x - locationX) ** 2 + (y - locationY) ** 2);
             return distance < eraserRadius;
           });
-          return !isTouched; // Keep if not touched
+          return !isTouched;
         }
         
         // Check distance for arrow paths
@@ -195,13 +197,17 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
           const distance1 = Math.sqrt((path.x1! - locationX) ** 2 + (path.y1! - locationY) ** 2);
           const distance2 = Math.sqrt((path.x2! - locationX) ** 2 + (path.y2! - locationY) ** 2);
           const isTouched = distance1 < eraserRadius || distance2 < eraserRadius;
-          return !isTouched; // Keep if not touched
+          return !isTouched;
         }
         
-        // Check distance for circle paths
+        // Check distance for circle/ellipse paths
         if (path.tool === 'circle') {
-          const distance = Math.sqrt((path.cx! - locationX) ** 2 + (path.cy! - locationY) ** 2);
-          const isTouched = distance < (path.r! + eraserRadius);
+          const rx = path.rx || path.r || 0;
+          const ry = path.ry || path.r || 0;
+          const dx = (locationX - path.cx!) / rx;
+          const dy = (locationY - path.cy!) / ry;
+          const distance = Math.abs(dx * dx + dy * dy - 1) * Math.min(rx, ry);
+          const isTouched = distance < eraserRadius;
           return !isTouched; // Keep if not touched
         }
         
@@ -236,6 +242,7 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
     }
   };
 
+  // Continue drawing as user moves their finger/mouse
   const handleTouchMove = (event: any) => {
     // Handle both touch and mouse events for web compatibility
     let locationX, locationY;
@@ -314,10 +321,14 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
           return !isTouched;
         }
         
-        // Check distance for circle paths
+        // Check distance for circle/ellipse paths
         if (path.tool === 'circle') {
-          const distance = Math.sqrt((path.cx! - locationX) ** 2 + (path.cy! - locationY) ** 2);
-          const isTouched = distance < (path.r! + eraserRadius);
+          const rx = path.rx || path.r || 0;
+          const ry = path.ry || path.r || 0;
+          const dx = (locationX - path.cx!) / rx;
+          const dy = (locationY - path.cy!) / ry;
+          const distance = Math.abs(dx * dx + dy * dy - 1) * Math.min(rx, ry);
+          const isTouched = distance < eraserRadius;
           return !isTouched;
         }
         
@@ -354,6 +365,7 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
     }
   };
 
+  // Finish drawing when user lifts their finger/mouse
   const handleTouchEnd = (event: any) => {
     // Handle both touch and mouse events for web compatibility
     let locationX, locationY;
@@ -426,10 +438,12 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
     setStartPoint(null);
   };
 
+  // Clear all drawings from the photo
   const clearAll = () => {
     setPaths([]);
   };
 
+  // Handle closing the editor (show save modal if there are drawings)
   const handleClose = () => {
     if (paths.length > 0) {
       setShowSaveModal(true);
@@ -438,11 +452,11 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
     }
   };
 
+  // Save drawings to AsyncStorage and close editor
   const handleSaveChanges = async () => {
     try {
-      // For now, we'll save the markup data to AsyncStorage
-      // In a real implementation, you'd want to use a library like react-native-view-shot
-      // to capture the combined image + SVG as a single image
+      // Save the markup data to AsyncStorage
+
       
       const markupData = {
         photoId: photo.id,
@@ -465,18 +479,17 @@ export function usePhotoEditor({ photo, onClose }: PhotoEditorProps) {
       // Save updated markup data
       await AsyncStorage.setItem('photo_markup', JSON.stringify(markupArray));
       
-      console.log('Markup saved for photo:', photo.id);
       
       setShowSaveModal(false);
       onClose();
       
     } catch (error) {
-      console.error('Error saving markup data:', error);
       setShowSaveModal(false);
       onClose();
     }
   };
 
+  // Close editor without saving drawings
   const handleDiscardChanges = () => {
     setShowSaveModal(false);
     onClose();

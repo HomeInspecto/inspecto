@@ -77,7 +77,6 @@ export function usePhotoMarkup(): PhotoMarkupProps {
       setPhotos(valid);
       setFullscreenPhoto(valid[0]);
     } catch (e) {
-      console.error('Error loading photos:', e);
       // Clear corrupted data
       try {
         await AsyncStorage.removeItem('inspecto_photos');
@@ -118,7 +117,6 @@ export function usePhotoMarkup(): PhotoMarkupProps {
       setPhotos(cur => cur.filter(p => p.id !== photoId));
       Alert.alert('Success', 'Photo deleted successfully.');
     } catch (e) {
-      console.error('Error deleting photo:', e);
       Alert.alert('Error', 'Failed to delete photo.');
     }
   }

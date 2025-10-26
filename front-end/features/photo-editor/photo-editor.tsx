@@ -55,9 +55,7 @@ export default function PhotoEditor({ photo, onClose }: PhotoEditorProps) {
             }
           ]}
           contentFit="contain"
-          onError={(error) => {
-            console.error('Error loading fullscreen image:', error);
-          }}
+                  onError={() => {}}
         />
         
         <SvgOverlayView
