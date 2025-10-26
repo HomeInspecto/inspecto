@@ -1,5 +1,9 @@
 import PhotoManagerView from './views/photo-manager-view';
 import { usePhotoManager } from './hooks/use-photo-manager';
+import { View } from 'react-native';
+import PhotoEditor from '../photo-editor/photo-editor';
+import { COLORS } from '@/constants/colors';
+import { StyleSheet } from 'react-native';
 
 export type Photo = {
   id: string;
@@ -25,7 +29,20 @@ export interface PhotoManagerProps {
   shouldCheckPermissions: boolean;
 }
 
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.pageBackground },
+});
+
 export default function PhotoManager() {
   const props = usePhotoManager();
+
+  // Show photo editor when photo is available
+  if (props.fullscreenPhoto)
+    return (
+      <View style={styles.container}>
+        <PhotoEditor photo={props.fullscreenPhoto} onClose={props.goBack} />
+      </View>
+    );
+
   return <PhotoManagerView {...props} />;
 }

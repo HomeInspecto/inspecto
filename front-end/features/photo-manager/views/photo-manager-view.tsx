@@ -39,13 +39,6 @@ export default function PhotoManagerView(props: PhotoManagerProps) {
       </View>
     );
   }
-
-  // Show photo editor when photo is available
-  return (
-    <View style={styles.container}>
-      {fullscreenPhoto && <PhotoEditor photo={fullscreenPhoto} onClose={goBack} />}
-    </View>
-  );
 }
 
 const styles = StyleSheet.create({
