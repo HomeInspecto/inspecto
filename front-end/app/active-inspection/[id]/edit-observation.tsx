@@ -1,4 +1,4 @@
-import Text from '@/components/views/text';
+import Text from '@/components/views/text/text';
 import { COLORS } from '@/constants/colors';
 import { AddObservationNote } from '@/features/add-observation-note/add-observation-note';
 import PhotoMarkup from '@/features/photo-manager/photo-manager';

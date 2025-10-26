@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
 import { COLORS } from '@/constants/colors';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import Text from '@/components/views/text';
+import Text from '@/components/views/text/text';
 
 type IconName = Parameters<typeof IconSymbol>[0]['name'];
 

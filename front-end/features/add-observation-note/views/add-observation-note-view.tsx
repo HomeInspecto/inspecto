@@ -1,4 +1,4 @@
-import Text from '@/components/views/text';
+import Text from '@/components/views/text/text';
 import { View } from 'react-native';
 import type { AddObservationProps } from '../add-observation-note';
 
