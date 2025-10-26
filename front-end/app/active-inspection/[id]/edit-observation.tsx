@@ -1,5 +1,6 @@
 import Text from '@/components/views/text';
 import { COLORS } from '@/constants/colors';
+import { AddObservationNote } from '@/features/add-observation-note/add-observation-note';
 import PhotoMarkup from '@/features/photo-manager/photo-manager';
 import { useLocalSearchParams } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
@@ -26,7 +27,7 @@ export default function HomeScreen() {
         }}
       >
         <Text>placeholder for swipe photos </Text>
-        <Text>placeholder for notes text area</Text>
+        <AddObservationNote />
       </View>
     </View>
   );
