@@ -14,10 +14,18 @@ type TextVariant =
   | 'caption1'
   | 'caption2';
 
+type ColorKey =
+  | 'on-dark-primary'
+  | 'on-dark-secondary'
+  | 'on-dark-tertiary'
+  | 'on-light-primary'
+  | 'on-light-secondary'
+  | 'on-light-tertiary';
+
 interface Props extends TextProps {
   variant?: TextVariant;
   weight?: 'regular' | 'emphasized';
-  color?: 'default' | 'inverse';
+  color?: ColorKey;
   style?: StyleProp<TextStyle>;
   children: React.ReactNode;
 }
@@ -35,23 +43,31 @@ const variantStyles: Record<TextVariant, TextStyle> = {
   caption2: { fontSize: 11, fontWeight: '500' },
 };
 
+// Map color prop → actual hex from COLORS
+const textColorMap: Record<ColorKey, string> = {
+  'on-dark-primary': COLORS.label.onDark.primary,
+  'on-dark-secondary': COLORS.label.onDark.secondary,
+  'on-dark-tertiary': COLORS.label.onDark.tertiary,
+  'on-light-primary': COLORS.label.onLight.primary,
+  'on-light-secondary': COLORS.label.onLight.secondary,
+  'on-light-tertiary': COLORS.label.onLight.tertiary,
+};
+
 export default function Text({
   variant = 'body',
   weight = 'regular',
-  color = 'default',
+  color = 'on-dark-primary',
   style,
   children,
   ...rest
 }: Props) {
   const variantStyle = variantStyles[variant];
-
-  const textColor =
-    color === 'inverse' ? COLORS.label.onLight.primary : COLORS.label.onDark.primary;
-
   const fontWeight = weight === 'regular' ? '400' : '600';
+  const textColor = textColorMap[color] ?? COLORS.label.onDark.primary;
+
   return (
     <RNText
-      style={[variantStyle, { color: textColor }, { fontWeight: fontWeight }, style]}
+      style={[variantStyle, { color: textColor, fontWeight }, style]}
       allowFontScaling
       {...rest}
     >
