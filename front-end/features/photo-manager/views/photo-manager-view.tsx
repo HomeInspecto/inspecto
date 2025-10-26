@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import PhotoEditor from '@/features/photo-editor/photo-editor';
 import type { PhotoManagerProps } from '../photo-manager';
 import { COLORS } from '@/constants/colors';
 
