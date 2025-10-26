@@ -4,9 +4,9 @@ import { Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as MediaLibrary from 'expo-media-library';
 import { router, useFocusEffect } from 'expo-router';
-import type { Photo, PhotoMarkupProps } from '../photo-manager';
+import type { Photo, PhotoManagerProps } from '../photo-manager';
 
-export function usePhotoMarkup(): PhotoMarkupProps {
+export function usePhotoManager(): PhotoManagerProps {
   // State management
   const [photos, setPhotos] = React.useState<Photo[]>([]);
   const [loading, setLoading] = React.useState(true);

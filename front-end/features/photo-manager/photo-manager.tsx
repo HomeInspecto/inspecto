@@ -1,5 +1,5 @@
-import PhotoMarkupView from './views/photo-manager-view';
-import { usePhotoMarkup } from './hooks/use-photo-manager';
+import PhotoManagerView from './views/photo-manager-view';
+import { usePhotoManager } from './hooks/use-photo-manager';
 
 export type Photo = {
   id: string;
@@ -7,7 +7,7 @@ export type Photo = {
   timestamp: number;
 };
 
-export interface PhotoMarkupProps {
+export interface PhotoManagerProps {
   // state
   photos: Photo[];
   loading: boolean;
@@ -25,7 +25,7 @@ export interface PhotoMarkupProps {
   shouldCheckPermissions: boolean;
 }
 
-export default function PhotoMarkup() {
-  const props = usePhotoMarkup();
-  return <PhotoMarkupView {...props} />;
+export default function PhotoManager() {
+  const props = usePhotoManager();
+  return <PhotoManagerView {...props} />;
 }
