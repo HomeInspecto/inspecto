@@ -1,5 +1,5 @@
-import PhotoMarkupView from './views/photo-markup-view';
-import { usePhotoMarkup } from './hooks/use-photo-markup';
+import PhotoMarkupView from './views/photo-manager-view';
+import { usePhotoMarkup } from './hooks/use-photo-manager';
 
 export type Photo = {
   id: string;
@@ -11,7 +11,6 @@ export interface PhotoMarkupProps {
   // state
   photos: Photo[];
   loading: boolean;
-  lastGalleryVisit: number;
   fullscreenPhoto: Photo | null;
 
   // actions

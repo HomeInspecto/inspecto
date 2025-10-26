@@ -1,28 +1,21 @@
-import { View, Text, StyleSheet, TouchableOpacity, Platform, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import PhotoGallery from '@/components/photo-gallery';
-import PhotoEditor from '@/components/photo-editor';
-import type { PhotoMarkupProps } from '../photo-markup';
+import PhotoEditor from '@/features/photo-editor/photo-editor';
+import type { PhotoMarkupProps } from '../photo-manager';
 import { COLORS } from '@/constants/colors';
 
 export default function PhotoMarkupView(props: PhotoMarkupProps) {
+  // Extract props
   const {
-    photos,
-    loading,
     fullscreenPhoto,
-    loadPhotos,
     goBack,
-    handleDeletePhoto,
     permissionsLoading,
     permissionGranted,
     requestPermission,
     shouldCheckPermissions,
   } = props;
 
-  const screenWidth = Dimensions.get('window').width;
-  const isWeb = Platform.OS === 'web';
-  const isLargeScreen = screenWidth >= 768;
-
+  // Show loading while checking permissions
   if (permissionsLoading) {
     return (
       <View style={styles.container}>
@@ -31,6 +24,7 @@ export default function PhotoMarkupView(props: PhotoMarkupProps) {
     );
   }
 
+  // Show permission request if needed
   if (!permissionGranted && shouldCheckPermissions) {
     return (
       <View style={styles.container}>
@@ -46,16 +40,7 @@ export default function PhotoMarkupView(props: PhotoMarkupProps) {
     );
   }
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <View>
-          <Text>Loading photos...</Text>
-        </View>
-      </View>
-    );
-  }
-
+  // Show photo editor when photo is available
   return (
     <View style={styles.container}>
       {fullscreenPhoto && <PhotoEditor photo={fullscreenPhoto} onClose={goBack} />}
