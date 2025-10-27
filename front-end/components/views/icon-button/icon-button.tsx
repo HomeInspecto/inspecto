@@ -15,7 +15,7 @@ const SIZE_MAP: Record<IconButtonSize, number> = {
 type IconButtonProps = {
   onPress: () => void;
   size?: IconButtonSize; // enforce "sm", "md", "lg"
-  color?: 'primary' | 'secondary'; // primary = light, secondary = dark
+  color?: 'primary' | 'secondary' | 'critical'; // primary = light, secondary = dark
   icon: IconName;
   disabled?: boolean;
   accessibilityLabel?: string;

@@ -1,124 +1,39 @@
-import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import type { EditorTool } from '../hooks/use-photo-editor';
+import IconButton from '@/components/views/icon-button/icon-button';
+import type { Tool } from '../photo-editor';
 
 // Props for the drawing tools toolbar component
 interface DrawingToolsViewProps {
-  currentTool: EditorTool;
-  currentColor: string;
-  showExpandedToolbar: boolean;
-  isLandscape: boolean;
-  onToolSelect: (tool: EditorTool) => void;
-  onToggleExpandedToolbar: () => void;
-  onToggleColorPicker: () => void;
-  onClearAll: () => void;
-  onClose: () => void;
+  currentTool: Tool;
+  onToolSelect: (tool: Tool) => void;
+  clearMarkup: () => void;
 }
 
 export default function DrawingToolsView({
   currentTool,
-  currentColor,
-  showExpandedToolbar,
-  isLandscape,
   onToolSelect,
-  onToggleExpandedToolbar,
-  onToggleColorPicker,
-  onClearAll,
-  onClose,
+  clearMarkup,
 }: DrawingToolsViewProps) {
   return (
-    <>
-      {/* Main Toolbar */}
-      <View style={[styles.toolbar, isLandscape && styles.toolbarLandscape]}>
-        {/* Drawing tools */}
-        <TouchableOpacity 
-          style={[styles.toolButton, currentTool === 'pen' && styles.activeTool]}
-          onPress={() => onToolSelect('pen')}
-        >
-          <IconSymbol name="pencil" size={24} color="white" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.toolButton, currentTool === 'arrow' && styles.activeTool]}
-          onPress={() => onToolSelect('arrow')}
-        >
-          <IconSymbol name="arrow.right" size={24} color="white" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.toolButton, currentTool === 'circle' && styles.activeTool]}
-          onPress={() => onToolSelect('circle')}
-        >
-          <IconSymbol name="circle" size={24} color="white" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.toolButton, currentTool === 'eraser' && styles.activeTool]}
-          onPress={() => onToolSelect('eraser')}
-        >
-          <IconSymbol name="eraser" size={24} color="white" />
-        </TouchableOpacity>
-        
-        {/* Color picker button */}
-        <TouchableOpacity 
-          style={[styles.toolButton, styles.colorPickerButton]}
-          onPress={onToggleColorPicker}
-        >
-          <View style={[styles.colorIndicator, { backgroundColor: currentColor }]} />
-        </TouchableOpacity>
-        
-        {/* More tools button */}
-        <TouchableOpacity 
-          style={[styles.toolButton, showExpandedToolbar && styles.activeTool]}
-          onPress={onToggleExpandedToolbar}
-        >
-          <IconSymbol name="ellipsis" size={24} color="white" />
-        </TouchableOpacity>
-        
-        {/* Close button */}
-        <TouchableOpacity 
-          style={styles.toolButton}
-          onPress={onClose}
-        >
-          <IconSymbol name="xmark" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-      
-      {/* Expanded toolbar */}
-      {showExpandedToolbar && (
-        <View style={[styles.expandedToolbar, isLandscape && styles.expandedToolbarLandscape]}>
-          <TouchableOpacity 
-            style={[styles.toolButton, currentTool === 'hand' && styles.activeTool]}
-            onPress={() => {
-              onToolSelect('hand');
-              onToggleExpandedToolbar();
-            }}
-          >
-            <IconSymbol name="hand.raised" size={24} color="white" />
-          </TouchableOpacity>
-          
-          {/* Disabled crop tool */}
-          <TouchableOpacity 
-            style={[styles.toolButton, styles.disabledTool]}
-            disabled={true}
-          >
-            <IconSymbol name="crop" size={24} color="#666" />
-          </TouchableOpacity>
-          
-          {/* Clear all drawings */}
-          <TouchableOpacity 
-            style={styles.toolButton}
-            onPress={() => {
-              onClearAll();
-              onToggleExpandedToolbar();
-            }}
-          >
-            <IconSymbol name="trash" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      )}
-    </>
+    <View style={{ gap: 8, paddingRight: 20 }}>
+      <IconButton
+        icon="pencil"
+        onPress={() => onToolSelect('pen')}
+        color={currentTool === 'pen' ? 'primary' : 'secondary'}
+      />
+
+      <IconButton
+        icon="arrow.right"
+        onPress={() => onToolSelect('arrow')}
+        color={currentTool === 'arrow' ? 'primary' : 'secondary'}
+      />
+
+      <IconButton
+        icon="circle"
+        onPress={() => onToolSelect('circle')}
+        color={currentTool === 'circle' ? 'primary' : 'secondary'}
+      />
+    </View>
   );
 }
 

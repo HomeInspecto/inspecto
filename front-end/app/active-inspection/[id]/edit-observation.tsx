@@ -1,7 +1,7 @@
 import Text from '@/components/views/text/text';
 import { COLORS } from '@/constants/colors';
 import { AddObservationNote } from '@/features/add-observation-note/add-observation-note';
-import PhotoManager from '@/features/photo-manager/photo-manager';
+import PhotoEditor from '@/features/photo-editor/photo-editor';
 import { useLocalSearchParams } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,8 +12,8 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={{ aspectRatio: '3 / 4', backgroundColor: 'red' }}>
-        <PhotoManager />
+      <View style={{ aspectRatio: '3 / 4' }}>
+        <PhotoEditor />
       </View>
 
       <View

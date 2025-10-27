@@ -36,13 +36,5 @@ const styles = StyleSheet.create({
 export default function PhotoManager() {
   const props = usePhotoManager();
 
-  // Show photo editor when photo is available
-  if (props.fullscreenPhoto)
-    return (
-      <View style={styles.container}>
-        <PhotoEditor photo={props.fullscreenPhoto} onClose={props.goBack} />
-      </View>
-    );
-
   return <PhotoManagerView {...props} />;
 }
