@@ -4,12 +4,7 @@ import { View } from 'react-native';
 import PhotoEditor from '../photo-editor/photo-editor';
 import { COLORS } from '@/constants/colors';
 import { StyleSheet } from 'react-native';
-
-export type Photo = {
-  id: string;
-  uri: string;
-  timestamp: number;
-};
+import type { Photo } from '@/features/edit-observation/state';
 
 export interface PhotoManagerProps {
   // state

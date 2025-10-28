@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import type { CameraScreenProps } from '../camera-screen';
+import type { Photo } from '@/features/edit-observation/state';
 
 export function useCameraScreen(): CameraScreenProps {
   const [facing, setFacing] = React.useState<CameraType>('back');
@@ -113,11 +114,10 @@ export function useCameraScreen(): CameraScreenProps {
 
         // Track in app storage
         try {
-          const item = {
+          const item: Photo = {
             id: asset.id,
             uri: asset.uri,
             timestamp: Date.now(),
-            filename: asset.filename,
           };
           const existing = await AsyncStorage.getItem('inspecto_photos');
           const photos = existing ? JSON.parse(existing) : [];

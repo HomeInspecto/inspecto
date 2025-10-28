@@ -1,13 +1,13 @@
-import React from 'react';
+import type { Shape } from '@/features/edit-observation/state';
 import { View, StyleSheet, Platform } from 'react-native';
 import Svg, { Path, Line, G, Ellipse } from 'react-native-svg';
-import type { Shape } from '../photo-editor';
+import type { Tool } from '../photo-editor';
 
 // Props for the SVG overlay component that handles drawing
 interface SvgOverlayViewProps {
   shapes: Shape[];
   previewShape: string;
-  currentTool: string;
+  currentTool: Tool;
   onTouchStart: (event: any) => void;
   onTouchMove: (event: any) => void;
   onTouchEnd: (event: any) => void;

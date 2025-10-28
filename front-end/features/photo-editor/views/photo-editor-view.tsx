@@ -1,4 +1,4 @@
-import { View, StyleSheet, Platform, StatusBar } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { Image } from 'expo-image';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DrawingToolsView from './drawing-tools-view';

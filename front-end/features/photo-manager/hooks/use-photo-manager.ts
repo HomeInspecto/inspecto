@@ -4,7 +4,8 @@ import { Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as MediaLibrary from 'expo-media-library';
 import { router, useFocusEffect } from 'expo-router';
-import type { Photo, PhotoManagerProps } from '../photo-manager';
+import type { PhotoManagerProps } from '../photo-manager';
+import type { Photo } from '@/features/edit-observation/state';
 
 export function usePhotoManager(): PhotoManagerProps {
   // State management
@@ -34,7 +35,6 @@ export function usePhotoManager(): PhotoManagerProps {
   async function loadPhotos() {
     try {
       setLoading(true);
-
 
       // Load photos from storage
       const stored = await AsyncStorage.getItem('inspecto_photos');
@@ -88,7 +88,6 @@ export function usePhotoManager(): PhotoManagerProps {
       setLoading(false);
     }
   }
-
 
   // Navigation
   function goBack() {

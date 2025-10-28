@@ -1,42 +1,9 @@
-import Text from '@/components/views/text/text';
-import { COLORS } from '@/constants/colors';
-import { AddObservationNote } from '@/features/add-observation-note/add-observation-note';
-import PhotoEditor from '@/features/photo-editor/photo-editor';
+import EditObservation from '@/features/edit-observation/edit-observation';
 import { useLocalSearchParams } from 'expo-router';
-import { View, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function HomeScreen() {
+export default function Screen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const insets = useSafeAreaInsets();
+  // set active inspection state
 
-  return (
-    <View style={styles.container}>
-      <View style={{ aspectRatio: '3 / 4' }}>
-        <PhotoEditor />
-      </View>
-
-      <View
-        style={{
-          height: 228,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-evenly',
-          alignItems: 'center',
-          backgroundColor: '#2e2e2f',
-        }}
-      >
-        <Text>placeholder for swipe photos </Text>
-        <AddObservationNote />
-      </View>
-    </View>
-  );
+  return <EditObservation />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: COLORS.pageBackground,
-  },
-});

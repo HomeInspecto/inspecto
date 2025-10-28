@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, type GestureResponderEvent } from 'react-native';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { PhotoEditorProps, Shape, Tool } from '../photo-editor';
+import type { PhotoEditorProps, Tool } from '../photo-editor';
 import { router } from 'expo-router';
-
-export interface Photo {
-  id: string;
-  uri: string;
-  timestamp: number;
-}
+import type { Photo, Shape } from '@/features/edit-observation/state';
 
 type PhotoEditorPropsOptionalPhoto = Omit<PhotoEditorProps, 'photo'> & { photo: Photo | null };
 
