@@ -1,9 +1,15 @@
-import { View, TextInput as RNTextInput, Pressable, Platform } from 'react-native';
+import {
+  View,
+  TextInput as RNTextInput,
+  TextInputProps as RNTextInputProps,
+  Pressable,
+  Platform,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
-import { useState } from 'react';
+import { useState, type RefAttributes } from 'react';
 
-type Props = {
+interface Props {
   value: string;
   placeholder?: string;
   leftIcon?: keyof typeof Ionicons.glyphMap;
@@ -15,7 +21,7 @@ type Props = {
 
   numberOfLines?: number;
   multiline?: boolean;
-};
+}
 
 export default function TextInput({
   value,
@@ -25,7 +31,8 @@ export default function TextInput({
   onChangeText,
   onRightIconPress,
   multiline,
-}: Props) {
+  ...props
+}: Props & RNTextInputProps) {
   const [height, setHeight] = useState(44);
   const MIN = 44;
 
@@ -46,14 +53,6 @@ export default function TextInput({
       {leftIcon && <Ionicons name={leftIcon} size={18} color={COLORS.label.onDark.primary} />}
 
       <RNTextInput
-        style={{
-          flex: 1,
-          height,
-          maxHeight: '100%',
-          outline: 'none',
-          fontSize: 16,
-          color: COLORS.label.onDark.primary,
-        }}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -66,6 +65,18 @@ export default function TextInput({
           }
         }}
         autoComplete="off"
+        {...props}
+        style={[
+          {
+            flex: 1,
+            height,
+            maxHeight: '100%',
+            outline: 'none',
+            fontSize: 16,
+            color: COLORS.label.onDark.primary,
+          },
+          props.style,
+        ]}
       />
 
       {rightIcon && onRightIconPress && (

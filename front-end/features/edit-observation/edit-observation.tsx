@@ -11,6 +11,7 @@ export default function EditObservation() {
         flex: 1,
         justifyContent: 'flex-end',
         backgroundColor: COLORS.pageBackground,
+        position: 'relative',
       }}
     >
       <View style={{ aspectRatio: '3 / 4' }}>
@@ -19,17 +20,17 @@ export default function EditObservation() {
 
       <View
         style={{
-          height: 228,
           padding: 16,
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-evenly',
+          justifyContent: 'flex-start',
           backgroundColor: '#2e2e2f',
+          paddingBottom: 108, // hard coded value on text input height. not sure what the better way to do this is
         }}
       >
         <FilmStrip />
-        <AddObservationNote />
       </View>
+      <AddObservationNote />
     </View>
   );
 }
