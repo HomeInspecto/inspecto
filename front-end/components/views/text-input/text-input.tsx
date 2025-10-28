@@ -65,6 +65,7 @@ export default function TextInput({
             setHeight(Math.max(MIN, e.nativeEvent.contentSize.height));
           }
         }}
+        autoComplete="off"
       />
 
       {rightIcon && onRightIconPress && (

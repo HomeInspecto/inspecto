@@ -69,12 +69,7 @@ export const useActiveObservationStore = create<ActiveObservationState>(set => (
   removePhotoById: id =>
     set(state => {
       const { photos, setActivePhoto, activePhotoIndex } = state;
-      if (photos.length > 1) {
-        setActivePhoto(Math.max(activePhotoIndex - 1, 0));
-      } else {
-        router.back();
-      }
-
+      setActivePhoto(Math.max(activePhotoIndex - 1, 0));
       return {
         photos: photos.filter(p => p.id !== id),
       };

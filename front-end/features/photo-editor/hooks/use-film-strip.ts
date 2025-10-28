@@ -4,8 +4,9 @@ import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
 
 export function useFilmStrip() {
-  const photos = useActiveObservationStore(useShallow(s => s.photos));
-  const setActivePhoto = useActiveObservationStore(state => state.setActivePhoto);
+  const { photos, setActivePhoto } = useActiveObservationStore(
+    useShallow(s => ({ photos: s.photos, setActivePhoto: s.setActivePhoto }))
+  );
 
   const STEP = 53 + 6; // photo width + spacing
   const translateX = useRef(new Animated.Value(0)).current;
