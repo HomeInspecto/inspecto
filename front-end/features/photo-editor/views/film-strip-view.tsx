@@ -38,9 +38,8 @@ export function FilmStripView({ photos, translateX, panHandlers }: FilmStripView
           }}
         >
           {photos.map((photo, i) => (
-            <View style={{ userSelect: 'none', pointerEvents: 'none' }}>
+            <View style={{ userSelect: 'none', pointerEvents: 'none' }} key={photo.id}>
               <Image
-                key={photo.id}
                 style={{
                   height: activeWidth,
                   width: false ? activeWidth : width,
