@@ -33,6 +33,9 @@ export interface Photo {
   id: string;
   uri: string;
   timestamp: number;
+}
+
+export interface PhotoWithMarkup extends Photo {
   shapes?: Shape[];
 }
 
