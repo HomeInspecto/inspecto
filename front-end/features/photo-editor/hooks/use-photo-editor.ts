@@ -3,7 +3,12 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { PhotoEditorProps, Tool } from '../photo-editor';
 import { router } from 'expo-router';
-import type { Photo, Shape } from '@/features/edit-observation/state';
+import {
+  useActiveObservationStore,
+  type Photo,
+  type Shape,
+} from '@/features/edit-observation/state';
+import { useShallow } from 'zustand/shallow';
 
 type PhotoEditorPropsOptionalPhoto = Omit<PhotoEditorProps, 'photo'> & { photo: Photo | null };
 
@@ -12,55 +17,16 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
   const [shapes, setShape] = useState<Shape[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [previewShape, setPreviewShape] = useState<string>('');
-  const [photo, setPhoto] = useState<Photo | null>(null);
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
 
-  React.useEffect(() => {
-    loadPhotos();
-  }, []);
+  const { photos, activePhotoIndex } = useActiveObservationStore(
+    useShallow(state => ({
+      photos: state.photos,
+      activePhotoIndex: state.activePhotoIndex,
+    }))
+  );
 
-  async function loadPhotos() {
-    try {
-      const stored = await AsyncStorage.getItem('inspecto_photos');
-      if (!stored) return;
-
-      const list: Photo[] = JSON.parse(stored);
-
-      const valid = list.filter(p => {
-        if (!p || !p.id || !p.uri || !p.timestamp) return false;
-
-        if (Platform.OS === 'android') return p.uri.startsWith('file://');
-
-        if (Platform.OS === 'ios')
-          return (
-            p.uri.startsWith('file://') ||
-            p.uri.startsWith('content://') ||
-            p.uri.startsWith('ph://')
-          );
-
-        if (Platform.OS === 'web')
-          return (
-            p.uri.startsWith('blob:') || p.uri.startsWith('file://') || p.uri.startsWith('data:')
-          );
-
-        return true;
-      });
-
-      valid.sort((a, b) => b.timestamp - a.timestamp);
-
-      if (valid.length < list.length) {
-        await AsyncStorage.setItem('inspecto_photos', JSON.stringify(valid));
-      }
-
-      setPhoto(valid[0]);
-    } catch (e) {
-      try {
-        await AsyncStorage.removeItem('inspecto_photos');
-        await AsyncStorage.removeItem('last_gallery_visit');
-        await AsyncStorage.removeItem('gallery_seen_timestamp');
-      } catch {}
-    }
-  }
+  const photo = photos[activePhotoIndex];
 
   function goBack() {
     router.back();
