@@ -72,8 +72,7 @@ export default function IconButton({
         </Svg>
 
         <View
-          pointerEvents="none"
-          style={[styles.iconSlot, { width: pixelSize, height: pixelSize }]}
+          style={[styles.iconSlot, { width: pixelSize, height: pixelSize, pointerEvents: 'none' }]}
         >
           <IconSymbol name={icon} size={iconSize} color={iconColor} />
         </View>

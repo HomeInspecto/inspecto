@@ -69,8 +69,10 @@ export default function Button({
         </Svg>
 
         <View
-          pointerEvents="none"
-          style={[styles.content, { height, paddingHorizontal: 16, gap: icon ? 8 : 0 }]}
+          style={[
+            styles.content,
+            { height, pointerEvents: 'none', paddingHorizontal: 16, gap: icon ? 8 : 0 },
+          ]}
         >
           {icon && <IconSymbol name={icon} size={iconSize} color={iconColor} />}
           <Text variant="callout" weight="emphasized" style={{ color: textColor }}>
