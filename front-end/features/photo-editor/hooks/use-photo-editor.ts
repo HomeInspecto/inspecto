@@ -17,11 +17,12 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
   const [previewShape, setPreviewShape] = useState<string>('');
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
 
-  const { photos, activePhotoIndex, updatePhoto } = useActiveObservationStore(
+  const { photos, activePhotoIndex, updatePhoto, removePhotoById } = useActiveObservationStore(
     useShallow(state => ({
       photos: state.photos,
       activePhotoIndex: state.activePhotoIndex,
       updatePhoto: state.updatePhoto,
+      removePhotoById: state.removePhotoById,
     }))
   );
 
@@ -30,7 +31,10 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
   function goBack() {
     router.back();
   }
-  function deleteActivePhoto() {}
+
+  function deleteActivePhoto() {
+    removePhotoById(photo.id);
+  }
 
   useEffect(() => {
     loadExistingMarkup();

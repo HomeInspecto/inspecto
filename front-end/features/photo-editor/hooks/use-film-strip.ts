@@ -1,11 +1,11 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { Animated, PanResponder, PixelRatio, type PanResponderGestureState } from 'react-native';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
 
 export function useFilmStrip() {
   const photos = useActiveObservationStore(useShallow(s => s.photos));
-  const setActivePhoto = useActiveObservationStore(s => s.setActivePhoto);
+  const setActivePhoto = useActiveObservationStore(state => state.setActivePhoto);
 
   const STEP = 53 + 6; // photo width + spacing
   const translateX = useRef(new Animated.Value(0)).current;
@@ -13,10 +13,8 @@ export function useFilmStrip() {
 
   const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
-  function finalizeDrag(g: PanResponderGestureState) {
-    const total = offsetX.current + g.dx;
-    const idx = clamp(Math.round(-total / STEP), 0, Math.max(0, photos.length - 1));
-
+  // TODO make setTranslateX a zustand store so that delete photo can call it to fix the film strip position
+  const setTranslateX = (idx: number) => {
     const snapX = -idx * STEP;
 
     offsetX.current = snapX;
@@ -28,7 +26,13 @@ export function useFilmStrip() {
       friction: 8,
       tension: 100,
     }).start();
+  };
 
+  function finalizeDrag(g: PanResponderGestureState) {
+    const total = offsetX.current + g.dx;
+    const idx = clamp(Math.round(-total / STEP), 0, Math.max(0, photos.length - 1));
+
+    setTranslateX(idx);
     setActivePhoto(idx);
   }
 
@@ -36,7 +40,6 @@ export function useFilmStrip() {
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
-
         onPanResponderGrant: () => {
           translateX.setOffset(offsetX.current);
           translateX.setValue(0);

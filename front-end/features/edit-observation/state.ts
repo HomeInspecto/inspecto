@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { create } from 'zustand';
 
 interface BaseShape {
@@ -66,9 +67,18 @@ export const useActiveObservationStore = create<ActiveObservationState>(set => (
       photos: state.photos.map(p => (p.id === id ? { ...p, ...newPhoto } : p)),
     })),
   removePhotoById: id =>
-    set(state => ({
-      photos: state.photos.filter(p => p.id !== id),
-    })),
+    set(state => {
+      const { photos, setActivePhoto, activePhotoIndex } = state;
+      if (photos.length > 1) {
+        setActivePhoto(Math.max(activePhotoIndex - 1, 0));
+      } else {
+        router.back();
+      }
+
+      return {
+        photos: photos.filter(p => p.id !== id),
+      };
+    }),
 
   setFieldNote: note => set({ fieldNote: note }),
   clearFieldNote: () => set({ fieldNote: '' }),
