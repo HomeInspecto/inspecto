@@ -1,8 +1,8 @@
-import Text from '@/components/views/text/text';
 import { COLORS } from '@/constants/colors';
 import { AddObservationNote } from '@/features/add-observation-note/add-observation-note';
 import PhotoEditor from '@/features/photo-editor/photo-editor';
 import { View } from 'react-native';
+import { FilmStrip } from '../photo-editor/film-strip';
 
 export default function EditObservation() {
   return (
@@ -27,7 +27,7 @@ export default function EditObservation() {
           backgroundColor: '#2e2e2f',
         }}
       >
-        <Text>placeholder for swipe photos </Text>
+        <FilmStrip />
         <AddObservationNote />
       </View>
     </View>

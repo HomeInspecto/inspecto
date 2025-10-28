@@ -35,28 +35,28 @@ type Story = StoryObj<typeof FilmStripView>;
 
 // Active index stories
 export const ActiveAtZero: Story = {
-  render: () => <FilmStripView photos={makePhotos(3)} activeIndex={0} />,
+  render: () => <FilmStripView photos={makePhotos(3)} activePhotoIndex={0} />,
 };
 
 export const ActiveInMiddle: Story = {
   render: () => {
     const photos = makePhotos(3);
-    return <FilmStripView photos={photos} activeIndex={Math.floor(photos.length / 2)} />;
+    return <FilmStripView photos={photos} activePhotoIndex={Math.floor(photos.length / 2)} />;
   },
 };
 
 export const ActiveAtEnd: Story = {
   render: () => {
     const photos = makePhotos(3);
-    return <FilmStripView photos={photos} activeIndex={photos.length - 1} />;
+    return <FilmStripView photos={photos} activePhotoIndex={photos.length - 1} />;
   },
 };
 
 // Count variations
 export const OnePhoto: Story = {
-  render: () => <FilmStripView photos={makePhotos(1)} activeIndex={0} />,
+  render: () => <FilmStripView photos={makePhotos(1)} activePhotoIndex={0} />,
 };
 
 export const TenPhotos: Story = {
-  render: () => <FilmStripView photos={makePhotos(10)} activeIndex={5} />,
+  render: () => <FilmStripView photos={makePhotos(10)} activePhotoIndex={5} />,
 };

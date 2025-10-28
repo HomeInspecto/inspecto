@@ -2,16 +2,18 @@ import type { Photo } from '@/features/edit-observation/state';
 import { Image } from 'expo-image';
 import { View } from 'react-native';
 
-interface FilmStripViewProps {
+export interface FilmStripViewProps {
   photos: Photo[];
-  activeIndex: number;
+  activePhotoIndex: number;
 }
 
-export function FilmStripView({ photos, activeIndex }: FilmStripViewProps) {
-  const before = photos.slice(0, activeIndex);
-  const after = photos.slice(activeIndex + 1);
+export function FilmStripView({ photos, activePhotoIndex }: FilmStripViewProps) {
+  if (!photos.length) return;
 
-  const activePhoto = photos[activeIndex];
+  const before = photos.slice(0, activePhotoIndex);
+  const after = photos.slice(activePhotoIndex + 1);
+
+  const activePhoto = photos[activePhotoIndex];
 
   const activeWidth = 70;
   const width = 53;
