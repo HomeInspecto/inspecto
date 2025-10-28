@@ -1,6 +1,7 @@
-import { View, TextInput as RNTextInput, Pressable } from 'react-native';
+import { View, TextInput as RNTextInput, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
+import { useState } from 'react';
 
 type Props = {
   value: string;
@@ -13,6 +14,7 @@ type Props = {
   secureTextEntry?: boolean;
 
   numberOfLines?: number;
+  multiline?: boolean;
 };
 
 export default function TextInput({
@@ -22,9 +24,10 @@ export default function TextInput({
   rightIcon,
   onChangeText,
   onRightIconPress,
-  numberOfLines,
+  multiline,
 }: Props) {
-  const multiline = numberOfLines && numberOfLines > 1;
+  const [height, setHeight] = useState(44);
+  const MIN = 44;
 
   return (
     <View
@@ -33,11 +36,11 @@ export default function TextInput({
         flexDirection: 'row',
         width: '100%',
         paddingHorizontal: 16,
-        gap: 14,
-        alignItems: multiline ? 'flex-start' : 'center', // allows top-aligned multiline content
+        gap: 10,
+        alignItems: multiline ? 'flex-start' : 'center',
         borderRadius: multiline ? 20 : 50,
-        height: multiline ? (numberOfLines || 1) * 34 : 44,
         paddingVertical: multiline ? 16 : 0,
+        maxHeight: '100%',
       }}
     >
       {leftIcon && <Ionicons name={leftIcon} size={18} color={COLORS.label.onDark.primary} />}
@@ -45,6 +48,9 @@ export default function TextInput({
       <RNTextInput
         style={{
           flex: 1,
+          height,
+          maxHeight: '100%',
+          outline: 'none',
           fontSize: 16,
           color: COLORS.label.onDark.primary,
         }}
@@ -52,8 +58,13 @@ export default function TextInput({
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={COLORS.label.onDark.tertiary}
-        numberOfLines={numberOfLines ? numberOfLines : undefined}
-        returnKeyType={'default'}
+        multiline={multiline}
+        returnKeyType={multiline ? 'default' : 'done'}
+        onContentSizeChange={e => {
+          if (Platform.OS === 'web') {
+            setHeight(Math.max(MIN, e.nativeEvent.contentSize.height));
+          }
+        }}
       />
 
       {rightIcon && onRightIconPress && (
