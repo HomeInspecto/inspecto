@@ -7,10 +7,13 @@ type Props = {
   placeholder?: string;
   leftIcon?: keyof typeof Ionicons.glyphMap;
   rightIcon?: keyof typeof Ionicons.glyphMap;
-  secureTextEntry?: boolean;
 
   onChangeText?: (text: string) => void;
   onRightIconPress?: () => void;
+  secureTextEntry?: boolean;
+
+  multiline?: boolean;
+  numberOfLines?: number;
 };
 
 export default function TextInput({
@@ -18,12 +21,23 @@ export default function TextInput({
   placeholder,
   leftIcon,
   rightIcon,
-  secureTextEntry,
   onChangeText,
   onRightIconPress,
+  numberOfLines,
 }: Props) {
   return (
-    <View style={[styles.container, { backgroundColor: COLORS.material.secondary.fill }]}>
+    <View
+      style={{
+        backgroundColor: COLORS.material.secondary.fill,
+        flexDirection: 'row',
+        alignItems: 'flex-start', // allows top-aligned multiline content
+        borderRadius: numberOfLines === 1 ? 50 : 20,
+        width: '100%',
+        height: !numberOfLines || numberOfLines === 1 ? 44 : numberOfLines * 34,
+        paddingHorizontal: 16,
+        paddingVertical: numberOfLines === 1 ? 0 : 16,
+      }}
+    >
       {leftIcon && (
         <Ionicons
           name={leftIcon}
@@ -39,7 +53,8 @@ export default function TextInput({
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={COLORS.label.onDark.tertiary}
-        secureTextEntry={secureTextEntry}
+        numberOfLines={numberOfLines ? numberOfLines : undefined}
+        returnKeyType={'default'}
       />
 
       {rightIcon && onRightIconPress && (
@@ -65,22 +80,16 @@ export default function TextInput({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 999,
-    height: 44,
-    paddingHorizontal: 16,
-  },
   input: {
     flex: 1,
     fontSize: 16,
-    paddingVertical: 0,
   },
   iconLeft: {
     marginRight: 8,
+    paddingTop: 13, // visually centers vs. single-line baseline
   },
   iconRight: {
     marginLeft: 8,
+    paddingTop: 13,
   },
 });

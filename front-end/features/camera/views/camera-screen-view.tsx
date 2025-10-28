@@ -40,7 +40,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
           }}
         >
           <View style={{ flex: 1 }}>
-            <IconButton size="sm" icon="TODO-add-flash-icon" onPress={toggleFlash} /> <View></View>
+            <IconButton size="sm" icon="TODO-add-flash-icon" onPress={toggleFlash} />
           </View>
 
           <View style={{ flex: 1, alignItems: 'center' }}>

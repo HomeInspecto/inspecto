@@ -20,10 +20,10 @@ export default function EditObservation() {
       <View
         style={{
           height: 228,
+          padding: 16,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-evenly',
-          alignItems: 'center',
           backgroundColor: '#2e2e2f',
         }}
       >
