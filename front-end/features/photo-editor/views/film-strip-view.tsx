@@ -47,7 +47,7 @@ export function FilmStripView({ photos, translateX, panHandlers }: FilmStripView
                   width: false ? activeWidth : width,
                   marginHorizontal: false ? 10 : 3,
                   borderRadius: 6,
-                  transform: [{ translateX: '50%' }],
+                  transform: [{ translateX: '-50%' }],
                 }}
                 source={{ uri: photo.uri }}
                 contentFit="cover"
