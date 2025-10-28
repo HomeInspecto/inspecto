@@ -1,220 +1,77 @@
-// CameraScreenView.tsx
-import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { CameraView } from 'expo-camera';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import type { CameraScreenProps } from '../camera-screen';
+import IconButton from '@/components/views/icon-button/icon-button';
 
 export default function CameraScreenView(props: CameraScreenProps) {
-  const {
-    facing,
-    isCapturing,
-    zoom,
-    newPhotoCount,
-    isCameraActive,
-    cameraRef,
-    panHandlers,
-    toggleCameraFacing,
-    takePicture,
-    goBack,
-    gotoEditPhotos,
-    permissionsLoading,
-    cameraGranted,
-    mediaGranted,
-    requestCameraPermission,
-    requestMediaPermission,
-    shouldCheckMediaLibraryPermissions,
-  } = props;
-
-  if (permissionsLoading) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>Loading permissions...</Text>
-      </View>
-    );
-  }
-
-  if (!cameraGranted) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.permissionContainer}>
-          <Text style={styles.message}>We need your permission to show the camera</Text>
-          <TouchableOpacity style={styles.button} onPress={requestCameraPermission}>
-            <Text style={styles.buttonText}>Grant Camera Permission</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
-
-  if (!mediaGranted && shouldCheckMediaLibraryPermissions) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.permissionContainer}>
-          <Text style={styles.message}>We need permission to save photos to your device</Text>
-          <TouchableOpacity style={styles.button} onPress={requestMediaPermission}>
-            <Text style={styles.buttonText}>Grant Photo Permission</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
+  const { goBack, gotoEditPhotos, photos, setCamera, flash, toggleFlash, takePhoto } = props;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.cameraContainer} {...panHandlers}>
-        {isCameraActive ? (
-          <CameraView style={styles.camera} facing={facing} zoom={zoom} ref={cameraRef} />
-        ) : (
-          <View style={styles.cameraPlaceholder}>
-            <Text style={styles.cameraPlaceholderText}>Camera Inactive</Text>
-          </View>
-        )}
-
-        {zoom > 0 && (
-          <View style={styles.zoomIndicator}>
-            <Text style={styles.zoomText}>{Math.round((zoom + 1) * 100)}%</Text>
-          </View>
-        )}
-      </View>
-
-      {/* overlay controls */}
-      <View style={styles.controlsContainer}>
-        <View style={styles.topControls}>
-          <TouchableOpacity style={styles.controlButton} onPress={goBack}>
-            <IconSymbol name="xmark" size={24} color="white" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.controlButton} onPress={toggleCameraFacing}>
-            <IconSymbol name="arrow.triangle.2.circlepath" size={24} color="white" />
-          </TouchableOpacity>
+    <View style={{ flex: 1 }}>
+      <CameraView style={{ flex: 1 }} ref={setCamera} facing="back" flash={flash} />
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          justifyContent: 'space-between',
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingTop: 70,
+            paddingHorizontal: 16,
+          }}
+        >
+          <IconButton icon="TODO-get-back-icon" onPress={goBack} />
         </View>
 
-        <View style={styles.bottomControls}>
-          <View style={styles.captureContainer}>
-            <TouchableOpacity
-              style={[styles.captureButton, isCapturing && styles.captureButtonDisabled]}
-              onPress={takePicture}
-              disabled={isCapturing}
-            >
-              <View style={styles.captureButtonInner} />
-            </TouchableOpacity>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingBottom: 50,
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <IconButton size="sm" icon="TODO-add-flash-icon" onPress={toggleFlash} /> <View></View>
+          </View>
+
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <IconButton size="lg" icon="camera" onPress={takePhoto} />
+          </View>
+
+          <View style={{ flex: 1 }}>
+            {photos.length > 0 && (
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 20,
+                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                  borderRadius: 20,
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  minWidth: 80,
+                }}
+                onPress={gotoEditPhotos}
+              >
+                <Text style={{ color: 'white', fontSize: 12, fontWeight: '500' }}>
+                  Edit photo{photos.length === 1 && 's'} ({photos.length})
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
-
-      {newPhotoCount > 0 && (
-        <TouchableOpacity style={styles.newPhotoCounter} onPress={gotoEditPhotos}>
-          <Text style={styles.counterLabel}>
-            Edit photo{newPhotoCount === 1 && 's'} ({newPhotoCount})
-          </Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'black' },
-  cameraContainer: { flex: 1 },
-  camera: { flex: 1 },
-  cameraPlaceholder: {
-    flex: 1,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cameraPlaceholderText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  zoomIndicator: {
-    position: 'absolute',
-    top: 100,
-    left: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  zoomText: { color: 'white', fontSize: 14, fontWeight: '600' },
-  message: { textAlign: 'center', paddingBottom: 10, color: 'white', fontSize: 16 },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignSelf: 'center',
-  },
-  buttonText: { color: 'white', fontSize: 16, fontWeight: '600' },
-  permissionContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingBottom: 120,
-    paddingHorizontal: 20,
-  },
-  controlsContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'space-between',
-  },
-  topControls: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 50,
-    paddingHorizontal: 20,
-  },
-  bottomControls: { paddingBottom: 50, alignItems: 'center' },
-  controlButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 25,
-    width: 50,
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  captureContainer: { alignItems: 'center' },
-  captureButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 4,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  captureButtonDisabled: { opacity: 0.5 },
-  captureButtonInner: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'white',
-    borderWidth: 2,
-    borderColor: '#007AFF',
-  },
-  newPhotoCounter: {
-    position: 'absolute',
-    bottom: 120,
-    right: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    minWidth: 80,
-  },
-  counterBadge: {
-    backgroundColor: '#FF3B30',
-    borderRadius: 10,
-    minWidth: 20,
-    height: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  counterText: { color: 'white', fontSize: 12, fontWeight: 'bold' },
-  counterLabel: { color: 'white', fontSize: 12, fontWeight: '500' },
-});

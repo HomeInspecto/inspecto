@@ -43,15 +43,28 @@ interface ActiveObservationState {
   photos: Photo[];
   fieldNote: string;
   activePhotoIndex: number;
+
   setActivePhoto: (i: number) => void;
+  addPhoto: (photo: Photo) => void;
+  removePhotoById: (id: string) => void;
+
+  setFieldNote: (note: string) => void;
+  clearFieldNote: () => void;
 }
 
 export const useActiveObservationStore = create<ActiveObservationState>(set => ({
   photos: [],
   fieldNote: '',
   activePhotoIndex: 0,
-  setActivePhoto: i =>
-    set(() => ({
-      activePhotoIndex: i,
+
+  setActivePhoto: i => set({ activePhotoIndex: i }),
+
+  addPhoto: photo => set(state => ({ photos: [...state.photos, photo] })),
+  removePhotoById: id =>
+    set(state => ({
+      photos: state.photos.filter(p => p.id !== id),
     })),
+
+  setFieldNote: note => set({ fieldNote: note }),
+  clearFieldNote: () => set({ fieldNote: '' }),
 }));

@@ -1,33 +1,32 @@
-import type { CameraView } from 'expo-camera';
+import { useCameraPermissions, type CameraView, type FlashMode } from 'expo-camera';
 import CameraScreenView from './views/camera-screen-view';
 import { useCameraScreen } from './hooks/use-camera-screen';
+import type { Photo } from '../edit-observation/state';
+import type { Dispatch, SetStateAction } from 'react';
 
 export interface CameraScreenProps {
-  // state
-  facing: 'front' | 'back';
-  isCapturing: boolean;
-  zoom: number;
-  newPhotoCount: number;
-  isCameraActive: boolean;
-  cameraRef: React.RefObject<CameraView | null>;
-  panHandlers: any;
+  photos: Photo[];
 
-  // actions
-  toggleCameraFacing: () => void;
-  takePicture: () => void;
+  setCamera: Dispatch<SetStateAction<CameraView | null>>;
+
+  flash: FlashMode;
+  takePhoto: () => void;
+  toggleFlash: () => void;
+
   goBack: () => void;
   gotoEditPhotos: () => void;
-
-  // permissions
-  permissionsLoading: boolean;
-  cameraGranted: boolean;
-  mediaGranted: boolean;
-  requestCameraPermission: () => void;
-  requestMediaPermission: () => void;
-  shouldCheckMediaLibraryPermissions: boolean;
 }
 
 export default function CameraScreen() {
+  const [permission, requestPermission] = useCameraPermissions();
   const props = useCameraScreen();
-  return <CameraScreenView {...props} />;
+
+  if (!permission?.granted) {
+    requestPermission();
+    return;
+  }
+
+  if (permission?.granted) {
+    return <CameraScreenView {...props} />;
+  }
 }

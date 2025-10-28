@@ -53,7 +53,7 @@ export function PhotoEditorView({
         />
 
         <View style={{ paddingLeft: 20 }}>
-          <IconButton icon="back" onPress={goBack} color={'critical'} />
+          <IconButton icon="TODO-get-back-icon" onPress={goBack} color={'critical'} />
         </View>
 
         <View

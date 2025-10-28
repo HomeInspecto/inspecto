@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "front-end",
-    "slug": "front-end",
+    "name": "Inspection App",
+    "slug": "inspection-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
