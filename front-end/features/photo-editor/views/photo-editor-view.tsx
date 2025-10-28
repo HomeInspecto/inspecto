@@ -7,7 +7,6 @@ import type { PhotoEditorProps } from '../photo-editor';
 import IconButton from '@/components/views/icon-button/icon-button';
 
 export function PhotoEditorView({
-  shapes,
   currentTool,
   photo,
   clearMarkup,
@@ -45,7 +44,7 @@ export function PhotoEditorView({
         />
 
         <SvgOverlayView
-          shapes={shapes}
+          shapes={photo.shapes || []}
           previewShape={previewShape}
           currentTool={currentTool}
           onTouchStart={handleTouchStart}

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Platform } from 'react-native';
+import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { PhotoEditorProps, Tool } from '../photo-editor';
 import { router } from 'expo-router';
@@ -14,15 +13,15 @@ type PhotoEditorPropsOptionalPhoto = Omit<PhotoEditorProps, 'photo'> & { photo: 
 
 export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
   const [currentTool, setCurrentTool] = useState<Tool>('pen');
-  const [shapes, setShape] = useState<Shape[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [previewShape, setPreviewShape] = useState<string>('');
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
 
-  const { photos, activePhotoIndex } = useActiveObservationStore(
+  const { photos, activePhotoIndex, updatePhoto } = useActiveObservationStore(
     useShallow(state => ({
       photos: state.photos,
       activePhotoIndex: state.activePhotoIndex,
+      updatePhoto: state.updatePhoto,
     }))
   );
 
@@ -37,6 +36,16 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
     loadExistingMarkup();
   }, []);
 
+  function setShapes(shapes: Shape[]) {
+    photo.shapes = shapes;
+    updatePhoto(photo.id, photo);
+  }
+
+  function addShape(shape: Shape) {
+    photo.shapes = [...(photo.shapes || []), shape];
+    updatePhoto(photo.id, photo);
+  }
+
   const loadExistingMarkup = async () => {
     try {
       const existingMarkup = await AsyncStorage.getItem('photo_markup');
@@ -44,7 +53,7 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
         const markupArray = JSON.parse(existingMarkup);
         const photoMarkup = markupArray.find((item: any) => item.photoId === photo?.id);
         if (photoMarkup && photoMarkup.paths) {
-          setShape(photoMarkup.paths);
+          setShapes(photoMarkup.paths);
         }
       }
     } catch (error) {}
@@ -129,7 +138,7 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
         strokeWidth: 2,
         type: 'pen',
       };
-      setShape(prev => [...prev, newPath]);
+      addShape(newPath);
     } else if (currentTool === 'arrow') {
       const newArrow: Shape = {
         id: Date.now().toString(),
@@ -141,7 +150,7 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
         x2: x,
         y2: y,
       };
-      setShape(prev => [...prev, newArrow]);
+      addShape(newArrow);
     } else if (currentTool === 'circle') {
       const deltaX = Math.abs(x - startPoint.x);
       const deltaY = Math.abs(y - startPoint.y);
@@ -156,44 +165,19 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
         rx: deltaX,
         ry: deltaY,
       };
-      setShape(prev => [...prev, newCircle]);
+      addShape(newCircle);
     }
 
     setPreviewShape('');
     setStartPoint(null);
-    handleSaveChanges();
   };
 
   // Clear all drawings from the photo
   const clearMarkup = () => {
-    setShape([]);
-  };
-
-  const handleSaveChanges = async () => {
-    if (!photo) return;
-    try {
-      const markupData = {
-        photoId: photo.id,
-        shapes: shapes,
-        timestamp: Date.now(),
-      };
-
-      const existingMarkup = await AsyncStorage.getItem('photo_markup');
-      let markupArray = existingMarkup ? JSON.parse(existingMarkup) : [];
-
-      const existingIndex = markupArray.findIndex((item: any) => item.photoId === photo?.id);
-      if (existingIndex >= 0) {
-        markupArray[existingIndex] = markupData;
-      } else {
-        markupArray.push(markupData);
-      }
-
-      await AsyncStorage.setItem('photo_markup', JSON.stringify(markupArray));
-    } catch (error) {}
+    setShapes([]);
   };
 
   return {
-    shapes,
     currentTool,
     photo,
     clearMarkup,

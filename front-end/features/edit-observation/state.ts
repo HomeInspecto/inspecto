@@ -40,13 +40,14 @@ export interface PhotoWithMarkup extends Photo {
 }
 
 interface ActiveObservationState {
-  photos: Photo[];
+  photos: PhotoWithMarkup[];
   fieldNote: string;
   activePhotoIndex: number;
 
   setActivePhoto: (i: number) => void;
-  addPhoto: (photo: Photo) => void;
+  addPhoto: (photo: PhotoWithMarkup) => void;
   removePhotoById: (id: string) => void;
+  updatePhoto: (id: string, newPhoto: PhotoWithMarkup) => void;
 
   setFieldNote: (note: string) => void;
   clearFieldNote: () => void;
@@ -60,6 +61,10 @@ export const useActiveObservationStore = create<ActiveObservationState>(set => (
   setActivePhoto: i => set({ activePhotoIndex: i }),
 
   addPhoto: photo => set(state => ({ photos: [...state.photos, photo] })),
+  updatePhoto: (id, newPhoto) =>
+    set(state => ({
+      photos: state.photos.map(p => (p.id === id ? { ...p, ...newPhoto } : p)),
+    })),
   removePhotoById: id =>
     set(state => ({
       photos: state.photos.filter(p => p.id !== id),
