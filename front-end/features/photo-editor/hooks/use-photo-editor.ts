@@ -106,19 +106,24 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
     if (currentTool === 'pen') {
       setPreviewShape(prev => (prev ? `${prev} L${x},${y}` : `M${x},${y}`));
     } else if (currentTool === 'circle') {
-      const deltaX = Math.abs(x - startPoint.x);
-      const deltaY = Math.abs(y - startPoint.y);
+      const width = Math.abs(x - startPoint.x);
+      const height = Math.abs(y - startPoint.y);
+
+      const left = Math.min(startPoint.x, x);
+      const top = Math.min(startPoint.y, y);
 
       const updatedOval: Shape = {
         id: Date.now().toString(),
         strokeColor: 'red',
         strokeWidth: 2,
         type: 'circle',
-        cx: startPoint.x,
-        cy: startPoint.y,
-        rx: deltaX,
-        ry: deltaY,
+        // Center = corner + radius
+        cx: left + width / 2,
+        cy: top + height / 2,
+        rx: width / 2,
+        ry: height / 2,
       };
+
       setPreviewShape(JSON.stringify(updatedOval));
     }
   };
@@ -152,20 +157,24 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
       };
       addShape(newArrow);
     } else if (currentTool === 'circle') {
-      const deltaX = Math.abs(x - startPoint.x);
-      const deltaY = Math.abs(y - startPoint.y);
+      const width = Math.abs(x - startPoint.x);
+      const height = Math.abs(y - startPoint.y);
 
-      const newCircle: Shape = {
+      const left = Math.min(startPoint.x, x);
+      const top = Math.min(startPoint.y, y);
+
+      const updatedOval: Shape = {
         id: Date.now().toString(),
         strokeColor: 'red',
         strokeWidth: 2,
         type: 'circle',
-        cx: startPoint.x,
-        cy: startPoint.y,
-        rx: deltaX,
-        ry: deltaY,
+        // Center = corner + radius
+        cx: left + width / 2,
+        cy: top + height / 2,
+        rx: width / 2,
+        ry: height / 2,
       };
-      addShape(newCircle);
+      addShape(updatedOval);
     }
 
     setPreviewShape('');
