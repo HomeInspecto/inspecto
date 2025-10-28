@@ -5,7 +5,9 @@ import multer from 'multer';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import swaggerOptions from './swagger.config';
-import { transcribeAndRewrite } from './controllers/transcribeController';
+import { transcribeAudio } from './controllers/transcriptionController';
+import { polishTranscription, repolishTranscription } from './controllers/polishController';
+
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -40,13 +42,18 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'healthy', service: 'back-end' });
 });
 
-// Transcribe route, uses controller logic
-app.post('/api/transcribe-and-rewrite', upload.single('file'), transcribeAndRewrite);
+//routes
+app.post('/api/transcriptions', upload.single('file'), transcribeAudio);
+app.post('/api/polish', polishTranscription);
+app.post('/api/repolish', repolishTranscription);
+
 
 // Start server
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
   console.log(`📡 Health:  http://localhost:${port}/health`);
   console.log(`📘 Docs:    http://localhost:${port}/docs`);
-  console.log(`🎧 Endpoint: POST /api/transcribe-and-rewrite`);
+  console.log(`🎧 Endpoint: POST /api/transcriptions`);
+  console.log(`Endpoint: POST /api/polish`);
+  console.log(`Endpoint: POST /api/repolish`);
 });
