@@ -37,9 +37,10 @@ export function PhotoEditorView({
             position: 'absolute',
             width: '100%',
             height: '100%',
+            aspectRatio: '3/4',
           }}
           source={{ uri: photo.uri }}
-          contentFit="contain"
+          contentFit="cover"
           onError={() => {}}
         />
 

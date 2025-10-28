@@ -8,7 +8,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
 
   return (
     <View style={{ flex: 1 }}>
-      <CameraView style={{ flex: 1 }} ref={setCamera} facing="back" flash={flash} />
+      <CameraView style={{ width: '100%' }} ref={setCamera} facing="back" flash={flash} />
       <View
         style={{
           position: 'absolute',

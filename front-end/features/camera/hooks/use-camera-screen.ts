@@ -48,7 +48,8 @@ export function useCameraScreen(): CameraScreenProps {
   };
 
   const goBack = () => {
-    router.back();
+    if (router.canGoBack()) router.back();
+    else router.push('/');
   };
   const gotoEditPhotos = () => {
     router.push(`/active-inspection/${id}/edit-observation`);
