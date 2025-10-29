@@ -67,7 +67,7 @@ export default function Home() {
           <Text variant="title1" weight="emphasized">
             Dev buttons
           </Text>
-          <Button text="storybook" onPress={() => router.push('/create-inspection')} />
+          <Button text="storybook" onPress={() => router.push('/storybook')} />
         </View>
       )}
     </View>
