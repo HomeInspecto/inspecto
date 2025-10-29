@@ -46,31 +46,36 @@ export default function Button({
       accessibilityLabel={accessibilityLabel}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.wrap,
-        {
-          opacity: disabled ? 0.5 : 1,
-          transform: [{ scale: pressed ? 0.98 : 1 }],
-        },
-      ]}
+      style={({ pressed }) => ({
+        width: '100%',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        opacity: disabled ? 0.5 : pressed ? 0.9 : 1,
+        backgroundColor: fillColor,
+        borderRadius: radius,
+        borderColor: strokeColor,
+        borderWidth: strokeWidth,
+      })}
     >
-      <View style={styles.svgWrap}>
-        <Svg width="100%" height={height} viewBox={`0 0 100 ${height}`}>
-          <Rect
-            x={0.5}
-            y={0.5}
-            width={99}
-            height={height - 1}
-            rx={radius}
-            fill={fillColor}
-            stroke={strokeColor}
-            strokeWidth={strokeWidth}
-          />
-        </Svg>
-
+      <View
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <View
           style={[
-            styles.content,
+            {
+              position: 'absolute',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+            },
             { height, pointerEvents: 'none', paddingHorizontal: 16, gap: icon ? 8 : 0 },
           ]}
         >
@@ -83,26 +88,3 @@ export default function Button({
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  wrap: {
-    width: '100%',
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  svgWrap: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-});
