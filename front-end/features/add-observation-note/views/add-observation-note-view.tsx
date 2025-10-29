@@ -46,11 +46,11 @@ export const AddObservationNoteView = ({
         width: '100%',
         height: '100%',
         pointerEvents: 'none',
+        justifyContent: 'flex-end',
       }}
     >
       <View
         style={{
-          flex: 1,
           gap: 16,
           padding: 16,
           flexDirection: 'column',
