@@ -5,8 +5,8 @@ import { COLORS } from '@/constants/colors';
 import TextInput from '@/components/views/text-input/text-input';
 import { router } from 'expo-router';
 import { InspectionsList } from './inspections-list/inspections-list';
-import Button from '@/components/views/button/button';
 import IconButton from '@/components/views/icon-button/icon-button';
+import Button from '@/components/views/button/button';
 
 export default function Home() {
   function handleGotoInspection() {
@@ -25,6 +25,7 @@ export default function Home() {
     <View
       style={{
         flex: 1,
+        paddingTop: 80,
         padding: 16,
         gap: 24,
         backgroundColor: COLORS.pageBackground,
@@ -51,7 +52,6 @@ export default function Home() {
           rightIcon="close"
         />
       </View>
-
       <View>
         <Pressable onPress={handleGotoInspection}>
           <Text variant="title1" weight="emphasized">
@@ -59,10 +59,17 @@ export default function Home() {
           </Text>
         </Pressable>
       </View>
-
       <InspectionsList />
-
       <IconButton icon="TODO-add-plus-button" onPress={handleGotoCreateInspection} />
+
+      {__DEV__ && (
+        <View>
+          <Text variant="title1" weight="emphasized">
+            Dev buttons
+          </Text>
+          <Button text="storybook" onPress={() => router.push('/create-inspection')} />
+        </View>
+      )}
     </View>
   );
 }
