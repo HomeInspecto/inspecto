@@ -1,5 +1,5 @@
 import { COLORS } from '@/constants/colors';
-import { AddObservationNote } from '@/features/add-observation-note/add-observation-note';
+import { AddFieldNote } from '@/features/add-field-note/add-field-note';
 import PhotoEditor from '@/features/photo-editor/photo-editor';
 import { View } from 'react-native';
 import { FilmStrip } from '../photo-editor/film-strip';
@@ -36,7 +36,7 @@ export default function EditObservation() {
       >
         <FilmStrip />
       </View>
-      <AddObservationNote bottomSheetRef={ref} />
+      <AddFieldNote bottomSheetRef={ref} />
 
       <Sheet ref={ref} initialIndex={-1}>
         <LogObservation />

@@ -1,11 +1,11 @@
 import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useState, useRef, type RefObject } from 'react';
-import type { AddObservationProps } from '../views/add-observation-note-view';
+import type { AddFieldNoteProps } from '../views/add-field-note-view';
 import type { BottomSheetRef } from '@/components/views/bottom-sheet/bottom-sheet';
 
-export function useObservationNotes(
+export function useFieldNotes(
   bottomSheetRef?: RefObject<BottomSheetRef | null>
-): AddObservationProps {
+): AddFieldNoteProps {
   const note = useActiveObservationStore(s => s.fieldNote);
   const setFieldNote = useActiveObservationStore(s => s.setFieldNote);
 

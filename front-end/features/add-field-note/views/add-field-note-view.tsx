@@ -4,7 +4,7 @@ import { Animated, KeyboardAvoidingView, Platform, View } from 'react-native';
 import TextInput from '@/components/views/text-input/text-input';
 import { useRef, useEffect } from 'react';
 
-export interface AddObservationProps {
+export interface AddFieldNoteProps {
   note: string;
 
   onMicStart?: () => void;
@@ -17,7 +17,7 @@ export interface AddObservationProps {
   onChangeText?: (text: string) => void;
 }
 
-export const AddObservationNoteView = ({
+export const AddFieldNoteView = ({
   note,
   onNextPress,
   focused,
@@ -26,7 +26,7 @@ export const AddObservationNoteView = ({
   onChangeText,
   onMicStart,
   onMicStop,
-}: AddObservationProps) => {
+}: AddFieldNoteProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   // Animate the text opacity whenever focus changes
