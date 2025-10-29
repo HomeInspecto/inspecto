@@ -74,7 +74,7 @@ app.get('/supabase/test', async (req, res) => {
 });
 
 // Organizations API
-app.get('/api/organizations', async (req, res) => {
+app.get('/organizations', async (req, res) => {
   try {
     const { data, error } = await DatabaseService.fetchData('organizations');
     
