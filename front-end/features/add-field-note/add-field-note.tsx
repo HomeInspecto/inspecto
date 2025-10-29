@@ -1,12 +1,11 @@
-import type { BottomSheetRef } from '@/components/views/bottom-sheet/bottom-sheet';
 import { useFieldNotes as useFieldNotes } from './hooks/use-field-note';
 import { AddFieldNoteView } from './views/add-field-note-view';
 
 type Props = {
-  bottomSheetRef?: React.RefObject<BottomSheetRef | null>;
+  goToLogObservation: () => void;
 };
 
-export function AddFieldNote({ bottomSheetRef }: Props) {
-  const props = useFieldNotes(bottomSheetRef);
+export function AddFieldNote({ goToLogObservation }: Props) {
+  const props = useFieldNotes(goToLogObservation);
   return <AddFieldNoteView {...props} />;
 }

@@ -9,7 +9,11 @@ import { LogObservation } from '../log-observation/log-observation';
 import Sheet from '@/components/views/bottom-sheet/bottom-sheet';
 
 export default function EditObservation() {
-  const ref = useRef<BottomSheetRef>(null);
+  const bottomSheetRef = useRef<BottomSheetRef>(null);
+
+  function goToLogObservation() {
+    bottomSheetRef?.current?.expand();
+  }
 
   return (
     <View
@@ -36,9 +40,9 @@ export default function EditObservation() {
       >
         <FilmStrip />
       </View>
-      <AddFieldNote bottomSheetRef={ref} />
+      <AddFieldNote goToLogObservation={goToLogObservation} />
 
-      <Sheet ref={ref} initialIndex={-1}>
+      <Sheet ref={bottomSheetRef} initialIndex={-1}>
         <LogObservation />
       </Sheet>
     </View>

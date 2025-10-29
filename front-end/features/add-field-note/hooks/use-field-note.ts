@@ -1,11 +1,8 @@
 import { useActiveObservationStore } from '@/features/edit-observation/state';
-import { useState, useRef, type RefObject } from 'react';
+import { useState, useRef } from 'react';
 import type { AddFieldNoteProps } from '../views/add-field-note-view';
-import type { BottomSheetRef } from '@/components/views/bottom-sheet/bottom-sheet';
 
-export function useFieldNotes(
-  bottomSheetRef?: RefObject<BottomSheetRef | null>
-): AddFieldNoteProps {
+export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps {
   const note = useActiveObservationStore(s => s.fieldNote);
   const setFieldNote = useActiveObservationStore(s => s.setFieldNote);
 
@@ -30,7 +27,7 @@ export function useFieldNotes(
   }
 
   function onNextPress() {
-    bottomSheetRef?.current?.expand();
+    goToLogObservation();
   }
 
   function onChangeText(text: string) {
