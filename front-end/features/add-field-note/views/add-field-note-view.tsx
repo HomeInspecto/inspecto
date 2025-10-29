@@ -62,48 +62,50 @@ export const AddFieldNoteView = ({
           onBlur?.();
         }}
       >
-        {/* background blur */}
-        <Animated.View
-          style={[
-            StyleSheet.absoluteFill,
-            {
-              backgroundColor: 'rgba(0,0,0,0.8)',
-              opacity: fadeAnim,
-              display: focused ? 'flex' : 'none',
-              width: '100%',
-              height: '100%',
-            },
-          ]}
-        ></Animated.View>
-        <View
-          style={{
-            gap: 16,
-            padding: 16,
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            position: 'relative',
-            pointerEvents: 'auto',
-          }}
-        >
-          <Animated.View style={{ opacity: fadeAnim, display: focused ? 'flex' : 'none' }}>
-            <Text variant="title3" weight="emphasized" style={{ textAlign: 'center' }}>
-              What did you observe?
-            </Text>
-          </Animated.View>
-          <TextInput
-            value={note}
-            onChangeText={onChangeText}
-            placeholder="Write a field note"
-            multiline
-            onFocus={onFocus}
-            onBlur={onBlur}
+        <>
+          {/* background blur */}
+          <Animated.View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                opacity: fadeAnim,
+                display: focused ? 'flex' : 'none',
+                width: '100%',
+                height: '100%',
+              },
+            ]}
+          ></Animated.View>
+          <View
             style={{
-              opacity: 1,
+              gap: 16,
+              padding: 16,
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              position: 'relative',
+              pointerEvents: 'auto',
             }}
-            rightIcon={'navigate'}
-            onRightIconPress={note ? onNextPress : undefined}
-          />
-        </View>
+          >
+            <Animated.View style={{ opacity: fadeAnim, display: focused ? 'flex' : 'none' }}>
+              <Text variant="title3" weight="emphasized" style={{ textAlign: 'center' }}>
+                What did you observe?
+              </Text>
+            </Animated.View>
+            <TextInput
+              value={note}
+              onChangeText={onChangeText}
+              placeholder="Write a field note"
+              multiline
+              onFocus={onFocus}
+              onBlur={onBlur}
+              style={{
+                opacity: 1,
+              }}
+              rightIcon={'navigate'}
+              onRightIconPress={note ? onNextPress : undefined}
+            />
+          </View>
+        </>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
