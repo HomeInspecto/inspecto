@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import multer from 'multer';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import swaggerOptions from './swagger.config';
@@ -19,6 +18,7 @@ import inspectionsRoutes from './routes/inspections';
 import inspectorsRoutes from './routes/inspectors';
 import observationsRoutes from './routes/observations';
 import supabaseRoutes from './routes/supabase';
+import transcribeRoutes from './routes/transcribe';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -36,10 +36,6 @@ app.use(
   })
 );
 
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 25 * 1024 * 1024 },
-});
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
@@ -57,9 +53,7 @@ app.use('/api/observations', observationsRoutes); // ✅ Observation-related rou
 app.use('/supabase', supabaseRoutes); // ✅ Supabase test routes
 
 //routes
-app.post('/api/transcriptions', upload.single('file'), transcribeAudio);
-app.post('/api/polish', polishTranscription);
-app.post('/api/repolish', repolishTranscription);
+app.use('/api/transcriptions', transcribeRoutes);
 
 
 // Start server
