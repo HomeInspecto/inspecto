@@ -58,3 +58,19 @@ export const createInspection = async (req: Request, res: Response) => {
   }
 };
 
+export const createInspectionSection = async (req: Request, res: Response) => {
+  try {
+    const { inspection_id, section_name, notes, priority_rating } = req.body;
+    const { data, error } = await DatabaseService.insertData('inspection_sections', { inspection_id, section_name, notes, priority_rating });
+    if (error) {
+    return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
+  }
+  return res.json({ inspection_section: data });
+  } catch (err) {
+    console.error('Database insert error:', err);
+    return res.status(500).json({ 
+      error: 'Database insert failed', 
+      details: err instanceof Error ? err.message : 'Unknown error'
+    });
+  }
+};

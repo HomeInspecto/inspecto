@@ -1,0 +1,13 @@
+{
+  "id": "8bf439e8-8f82-4d19-a184-2a9eb955d4d3",
+  "inspector_id": "b6f1818b-e4b7-40ad-8866-bb781d3b8a89",
+  "property_id": "5065a014-8aa8-4833-89a5-84538752c24e",
+  "organization_id": "e5c5b32c-1fdc-4348-bb97-b254e3ea7c35",
+  "status": "draft", // till here is ok for the body
+  "created_at": "2025-10-29T19:00:07.012834+00:00",
+  "scheduled_for": null,
+  "started_at": null,
+  "completed_at": null,
+  "updated_at": "2025-10-29T19:00:07.012834+00:00",
+  "summary": null
+}

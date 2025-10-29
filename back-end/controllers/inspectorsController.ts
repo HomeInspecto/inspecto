@@ -25,3 +25,21 @@ export const getAllInspectors = async (req: Request, res: Response) => {
   }
 };
 
+export const createInspector = async (req: Request, res: Response) => {
+  try {
+    const { organization_id, user_id, full_name, email, phone, license_number, certifications, signature_image_url, timezone, bio, active } = req.body;
+    const { data, error } = await DatabaseService.insertData('inspectors', { organization_id, user_id, full_name, email, phone, license_number, certifications, signature_image_url, timezone, bio, active });
+  if (error) {
+    return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
+  }
+  return res.json({ inspector: data });
+  } catch (err) {
+    console.error('Database query error:', err);
+    return res.status(500).json({ 
+      error: 'Database query failed', 
+      details: err instanceof Error ? err.message : 'Unknown error'
+    });
+  }
+};  
+
+

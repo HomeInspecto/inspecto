@@ -39,11 +39,11 @@ const cohere = new CohereClient({
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 //serve swagger UI at URL
-app.use('/api', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+app.use('/api/swagger', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // Routes
 app.use('/', healthRoutes); // ✅ Health check routes (/, /health)
-app.use('/organizations', organizationsRoutes); // ✅ Organization-related routes
+app.use('/api/organizations', organizationsRoutes); // ✅ Organization-related routes
 app.use('/api/properties', propertiesRoutes); // ✅ Property-related routes
 app.use('/api/inspections', inspectionsRoutes); // ✅ Inspection-related routes
 app.use('/api/inspectors', inspectorsRoutes); // ✅ Inspector-related routes

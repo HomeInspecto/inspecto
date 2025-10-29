@@ -4,7 +4,7 @@ import * as observationsController from '../controllers/observationsController';
 const router = Router();
 
 router.get('/', observationsController.getAllObservations);
-router.post('/', observationsController.createObservation);
+router.post('/createObservation', observationsController.createObservation);
 
 export default router;
 

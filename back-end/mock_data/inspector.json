@@ -1,0 +1,16 @@
+{
+  "id": "b6f1818b-e4b7-40ad-8866-bb781d3b8a89",
+  "organization_id": "e5c5b32c-1fdc-4348-bb97-b254e3ea7c35",
+  "user_id": null,
+  "full_name": "John Doe",
+  "email": "john.doe@example.com",
+  "phone": "1234567890",
+  "license_number": "1234567890", // till here is ok for the body
+  "certifications": [],
+  "signature_image_url": null,
+  "timezone": null,
+  "bio": null,
+  "active": true,
+  "created_at": "2025-10-29T18:53:04.000834+00:00",
+  "updated_at": "2025-10-29T18:53:04.000834+00:00"
+}
