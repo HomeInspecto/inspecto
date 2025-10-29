@@ -1,11 +1,14 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUI from 'swagger-ui-express';
+import swaggerOptions from './swagger.config';
+import { transcribeAudio } from './controllers/transcriptionController';
+import { polishTranscription, repolishTranscription } from './controllers/polishController';
 import { CohereClient } from 'cohere-ai';
 import dotenv from 'dotenv';
 
-import swaggerJSDoc from 'swagger-jsdoc'; //specification generator
-import swaggerUI from 'swagger-ui-express'; //hosts GUI server
-import swaggerOptions from './swagger.config'; //configuration file that includes settings for the guide
 
 // Routes
 import healthRoutes from './routes/health';
@@ -15,6 +18,7 @@ import inspectionsRoutes from './routes/inspections';
 import inspectorsRoutes from './routes/inspectors';
 import observationsRoutes from './routes/observations';
 import supabaseRoutes from './routes/supabase';
+import transcribeRoutes from './routes/transcribe';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -24,19 +28,17 @@ dotenv.config();
 
 // Middleware
 app.use(express.json());
-
-app.use(cors({ 
-    origin: 'http://localhost:3000', 
+app.use(
+  cors({
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+  })
+);
 
-// Initialize Cohere client
-const cohere = new CohereClient({
-  token: process.env.COHERE_API_KEY || 'your-api-key-here',
-});
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 //serve swagger UI at URL
 app.use('/api/swagger', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
@@ -49,6 +51,10 @@ app.use('/api/inspections', inspectionsRoutes); // ✅ Inspection-related routes
 app.use('/api/inspectors', inspectorsRoutes); // ✅ Inspector-related routes
 app.use('/api/observations', observationsRoutes); // ✅ Observation-related routes
 app.use('/supabase', supabaseRoutes); // ✅ Supabase test routes
+
+//routes
+app.use('/api/transcriptions', transcribeRoutes);
+
 
 // Start server
 app.listen(port, () => {

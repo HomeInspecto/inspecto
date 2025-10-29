@@ -1,7 +1,7 @@
+import path from 'path';
+
 const swaggerOptions = {
   definition: {
-
-    //API info
     openapi: '3.0.0',
     info: {
       title: 'Inspecto API',
@@ -10,12 +10,10 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:4000/api', //URL to see endpoints in browser (swagger UI)
+        url: 'http://localhost:4000',
         description: 'Development Server',
       },
     ],
-
-    //security info for authorizing on swagger UI
     components: {
       securitySchemes: {
         BearerAuth: {
@@ -25,12 +23,15 @@ const swaggerOptions = {
         },
       },
     },
-    security: [{
-        BearerAuth: [], //login token for endpoints
-    }],
+    security: [{ BearerAuth: [] }],
   },
 
-  apis: ['./routes/*.ts'], //where swagger looks to find endpoint files
+  // 👇 Use absolute paths; include controllers and (optionally) routes
+  apis: [
+    path.resolve(process.cwd(), './server.ts'),
+    path.resolve(process.cwd(), './controllers/*.ts'),
+    path.resolve(process.cwd(), './routes/*.ts'),
+  ],
 };
 
 export default swaggerOptions;
