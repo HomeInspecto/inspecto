@@ -26,16 +26,12 @@ const swaggerOptions = {
     security: [{ BearerAuth: [] }],
   },
 
-<<<<<<< HEAD
   // 👇 Use absolute paths; include controllers and (optionally) routes
   apis: [
     path.resolve(process.cwd(), './server.ts'),
     path.resolve(process.cwd(), './controllers/*.ts'),
     path.resolve(process.cwd(), './routes/*.ts'),
   ],
-=======
-  apis: ['./routes/*.ts'], //where swagger looks to find endpoint files
->>>>>>> d00002fa78ab3bb309a270591524a6c599552bc0
 };
 
 export default swaggerOptions;
