@@ -44,7 +44,7 @@ export const AddFieldNoteView = ({
       useNativeDriver: true,
     }).start();
   }, [focused]);
-  //test
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -57,6 +57,7 @@ export const AddFieldNoteView = ({
       ]}
     >
       <TouchableWithoutFeedback
+        style={{ pointerEvents: 'auto' }}
         disabled={!focused}
         onPress={() => {
           onBlur?.();
