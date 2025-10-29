@@ -30,7 +30,7 @@ const swaggerOptions = {
     }],
   },
 
-  apis: ['./src/routes/*.ts'], //where swagger looks to find endpoint files
+  apis: ['./routes/*.ts'], //where swagger looks to find endpoint files
 };
 
 export default swaggerOptions;

@@ -24,4 +24,4 @@ COPY . .
 EXPOSE 8081
 
 # Define the command to run the app
-CMD ["npx", "expo", "start", "--web"]
+CMD ["npx", "expo", "start"]
