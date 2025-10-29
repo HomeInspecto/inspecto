@@ -49,6 +49,19 @@ export const AddFieldNoteView = ({
         },
       ]}
     >
+      {/* background blur */}
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            opacity: fadeAnim,
+            display: focused ? 'flex' : 'none',
+            width: '100%',
+            height: '100%',
+          },
+        ]}
+      ></Animated.View>
       <View
         style={{
           gap: 16,
@@ -56,7 +69,6 @@ export const AddFieldNoteView = ({
           flexDirection: 'column',
           justifyContent: 'flex-end',
           position: 'relative',
-          zIndex: 10,
           pointerEvents: 'auto',
         }}
       >
@@ -79,19 +91,6 @@ export const AddFieldNoteView = ({
           onRightIconPress={note ? onNextPress : undefined}
         />
       </View>
-      {/* background blur */}
-      <Animated.View
-        style={[
-          StyleSheet.absoluteFill,
-          {
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            opacity: fadeAnim,
-            display: focused ? 'flex' : 'none',
-            width: '100%',
-            height: '100%',
-          },
-        ]}
-      ></Animated.View>
     </KeyboardAvoidingView>
   );
 };
