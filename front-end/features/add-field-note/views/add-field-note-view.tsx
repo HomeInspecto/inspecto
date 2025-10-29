@@ -1,5 +1,5 @@
 import Text from '@/components/views/text/text';
-import { Animated, KeyboardAvoidingView, Platform, View } from 'react-native';
+import { Animated, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
 import TextInput from '@/components/views/text-input/text-input';
 import { useRef, useEffect } from 'react';
@@ -41,13 +41,13 @@ export const AddFieldNoteView = ({
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'box-none',
-        justifyContent: 'flex-end',
-      }}
+      style={[
+        StyleSheet.absoluteFill,
+        {
+          pointerEvents: 'box-none',
+          justifyContent: 'flex-end',
+        },
+      ]}
     >
       <View
         style={{
@@ -81,14 +81,16 @@ export const AddFieldNoteView = ({
       </View>
       {/* background blur */}
       <Animated.View
-        style={{
-          position: 'absolute',
-          backgroundColor: 'rgba(0,0,0,0.8)',
-          opacity: fadeAnim,
-          display: focused ? 'flex' : 'none',
-          width: '100%',
-          height: '100%',
-        }}
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            opacity: fadeAnim,
+            display: focused ? 'flex' : 'none',
+            width: '100%',
+            height: '100%',
+          },
+        ]}
       ></Animated.View>
     </KeyboardAvoidingView>
   );
