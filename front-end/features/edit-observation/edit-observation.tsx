@@ -3,8 +3,14 @@ import { AddObservationNote } from '@/features/add-observation-note/add-observat
 import PhotoEditor from '@/features/photo-editor/photo-editor';
 import { View } from 'react-native';
 import { FilmStrip } from '../photo-editor/film-strip';
+import { useRef } from 'react';
+import type { BottomSheetRef } from '@/components/views/bottom-sheet/bottom-sheet';
+import { LogObservation } from '../log-observation/log-observation';
+import Sheet from '@/components/views/bottom-sheet/bottom-sheet';
 
 export default function EditObservation() {
+  const ref = useRef<BottomSheetRef>(null);
+
   return (
     <View
       style={{
@@ -30,7 +36,11 @@ export default function EditObservation() {
       >
         <FilmStrip />
       </View>
-      <AddObservationNote />
+      <AddObservationNote bottomSheetRef={ref} />
+
+      <Sheet ref={ref} initialIndex={-1}>
+        <LogObservation />
+      </Sheet>
     </View>
   );
 }

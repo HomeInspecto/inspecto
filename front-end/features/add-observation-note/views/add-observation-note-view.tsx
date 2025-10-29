@@ -45,6 +45,7 @@ export const AddObservationNoteView = ({
         position: 'absolute',
         width: '100%',
         height: '100%',
+        pointerEvents: 'none',
       }}
     >
       <View
@@ -56,6 +57,7 @@ export const AddObservationNoteView = ({
           justifyContent: 'flex-end',
           position: 'relative',
           zIndex: 10,
+          pointerEvents: 'auto',
         }}
       >
         <Animated.View style={{ opacity: fadeAnim, display: focused ? 'flex' : 'none' }}>
@@ -70,7 +72,11 @@ export const AddObservationNoteView = ({
           multiline
           onFocus={onFocus}
           onBlur={onBlur}
-          style={{ opacity: 1 }}
+          style={{
+            opacity: 1,
+          }}
+          rightIcon={'navigate'}
+          onRightIconPress={note ? onNextPress : undefined}
         />
       </View>
       {/* background blur */}

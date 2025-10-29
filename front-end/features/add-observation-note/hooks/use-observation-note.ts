@@ -1,8 +1,11 @@
 import { useActiveObservationStore } from '@/features/edit-observation/state';
-import { useState, useRef } from 'react';
+import { useState, useRef, type RefObject } from 'react';
 import type { AddObservationProps } from '../views/add-observation-note-view';
+import type { BottomSheetRef } from '@/components/views/bottom-sheet/bottom-sheet';
 
-export function useObservationNotes(): AddObservationProps {
+export function useObservationNotes(
+  bottomSheetRef?: RefObject<BottomSheetRef | null>
+): AddObservationProps {
   const note = useActiveObservationStore(s => s.fieldNote);
   const setFieldNote = useActiveObservationStore(s => s.setFieldNote);
 
@@ -17,18 +20,21 @@ export function useObservationNotes(): AddObservationProps {
   };
 
   function onMicStart() {
-    // hook up your recorder.start() here
+    // recorder.start() here
     isRecordingRef.current = true;
   }
 
   function onMicStop() {
-    // hook up your recorder.stop() here
+    // recorder.stop() here
     isRecordingRef.current = false;
   }
 
   function onNextPress() {
-    // advance your flow (e.g., navigate or commit the observation)
-    // you can also validate `note` here if needed
+    bottomSheetRef?.current?.expand();
+  }
+
+  function onChangeText(text: string) {
+    setFieldNote(text);
   }
 
   return {
@@ -36,7 +42,7 @@ export function useObservationNotes(): AddObservationProps {
     focused,
     onFocus,
     onBlur,
-    onChangeText: setFieldNote,
+    onChangeText,
     onMicStart,
     onMicStop,
     onNextPress,

@@ -52,6 +52,8 @@ interface ActiveObservationState {
 
   setFieldNote: (note: string) => void;
   clearFieldNote: () => void;
+
+  clearObservation: () => void;
 }
 
 export const useActiveObservationStore = create<ActiveObservationState>(set => ({
@@ -77,4 +79,10 @@ export const useActiveObservationStore = create<ActiveObservationState>(set => (
 
   setFieldNote: note => set({ fieldNote: note }),
   clearFieldNote: () => set({ fieldNote: '' }),
+  clearObservation: () =>
+    set({
+      photos: [],
+      fieldNote: '',
+      activePhotoIndex: 0,
+    }),
 }));
