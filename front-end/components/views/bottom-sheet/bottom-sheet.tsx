@@ -50,6 +50,7 @@ const Sheet = forwardRef<BottomSheetRef, BottomSheetProps>(
           shadowOpacity: 0.25,
           shadowRadius: 8,
           shadowOffset: { width: 0, height: 4 },
+          zIndex: 100,
           ...(Platform.OS === 'android' ? { elevation: 8 } : null),
         }}
         onChange={onChange}
