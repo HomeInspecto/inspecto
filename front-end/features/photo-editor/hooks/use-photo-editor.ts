@@ -8,6 +8,7 @@ import {
   type Shape,
 } from '@/features/edit-observation/state';
 import { useShallow } from 'zustand/shallow';
+import type { GestureResponderEvent } from 'react-native';
 
 type PhotoEditorPropsOptionalPhoto = Omit<PhotoEditorProps, 'photo'> & { photo: Photo | null };
 
@@ -63,20 +64,34 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
     } catch (error) {}
   };
 
-  function getRelativePoint(event: any): { x: number; y: number } {
-    // if (Platform.OS === 'ios' || Platform.OS === 'android') {
-    // TODO figure out for ios/androd
-    // return {
-    //   x: event.nativeEvent.locationX,
-    //   y: event.nativeEvent.locationY,
-    // };
+  type AnyEvt = GestureResponderEvent | React.MouseEvent<HTMLElement> | any;
 
-    const el = event.currentTarget as HTMLElement;
-    const rect = el.getBoundingClientRect();
-    return {
-      x: (event as MouseEvent).clientX - rect.left,
-      y: (event as MouseEvent).clientY - rect.top,
-    };
+  function getRelativePoint(event: AnyEvt): { x: number; y: number } {
+    const ne = event?.nativeEvent;
+
+    // 1) Pure React Native (iOS/Android): locationX/Y are already relative to the target
+    if (ne && typeof ne.locationX === 'number' && typeof ne.locationY === 'number') {
+      return { x: ne.locationX, y: ne.locationY };
+    }
+
+    // 2) Some react-native-web builds expose offsetX/offsetY on nativeEvent
+    if (ne && typeof ne.offsetX === 'number' && typeof ne.offsetY === 'number') {
+      return { x: ne.offsetX, y: ne.offsetY };
+    }
+
+    // 3) DOM mouse/pointer events: compute relative to bounding rect
+    const target: HTMLElement | null =
+      (event?.currentTarget as HTMLElement) ?? (event?.target as HTMLElement) ?? null;
+
+    const rect = target?.getBoundingClientRect?.();
+    const clientX = event?.clientX ?? ne?.clientX ?? event?.pageX ?? ne?.pageX;
+    const clientY = event?.clientY ?? ne?.clientY ?? event?.pageY ?? ne?.pageY;
+
+    if (rect && typeof clientX === 'number' && typeof clientY === 'number') {
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    return { x: 0, y: 0 };
   }
 
   const handleTouchStart = (event: any) => {
