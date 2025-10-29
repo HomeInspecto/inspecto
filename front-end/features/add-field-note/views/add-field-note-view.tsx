@@ -45,7 +45,7 @@ export const AddFieldNoteView = ({
         position: 'absolute',
         width: '100%',
         height: '100%',
-        pointerEvents: 'none',
+        pointerEvents: 'box-none',
         justifyContent: 'flex-end',
       }}
     >
