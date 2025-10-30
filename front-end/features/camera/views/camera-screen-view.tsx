@@ -1,15 +1,41 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 import { CameraView } from 'expo-camera';
-import type { CameraScreenProps } from '../camera-screen';
+import { useRef } from 'react';
 import IconButton from '@/components/views/icon-button/icon-button';
 import Button from '@/components/views/button/button';
+import type { CameraScreenProps } from '../camera-screen';
+import { COLORS } from '@/constants/colors';
 
 export default function CameraScreenView(props: CameraScreenProps) {
-  const { goBack, gotoEditPhotos, photos, setCamera, flash, toggleFlash, takePhoto } = props;
+  const { goBack, gotoEditPhotos, photos, cameraRef, flash, toggleFlash, takePhoto } = props;
+
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  const handleTakePhoto = async () => {
+    Animated.sequence([
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    takePhoto();
+  };
 
   return (
-    <View style={{ flex: 1 }}>
-      <CameraView style={StyleSheet.absoluteFill} ref={setCamera} facing="back" flash={flash} />
+    <View style={{ flex: 1, backgroundColor: COLORS.pageBackground }}>
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: 'black' }]}>
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity }]}>
+          <CameraView style={StyleSheet.absoluteFill} ref={cameraRef} facing="back" flash={flash} />
+        </Animated.View>
+      </View>
+
       <View
         style={{
           position: 'absolute',
@@ -45,7 +71,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
           </View>
 
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <IconButton size="lg" icon="camera" onPress={takePhoto} />
+            <IconButton size="lg" icon="camera" onPress={handleTakePhoto} />
           </View>
 
           <View style={{ flex: 1 }}>

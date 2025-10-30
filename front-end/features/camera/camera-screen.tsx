@@ -2,12 +2,12 @@ import { useCameraPermissions, type CameraView, type FlashMode } from 'expo-came
 import CameraScreenView from './views/camera-screen-view';
 import { useCameraScreen } from './hooks/use-camera-screen';
 import type { Photo } from '../edit-observation/state';
-import type { Dispatch, SetStateAction } from 'react';
+import type { RefObject } from 'react';
 
 export interface CameraScreenProps {
   photos: Photo[];
 
-  setCamera: Dispatch<SetStateAction<CameraView | null>>;
+  cameraRef: RefObject<CameraView | null>;
 
   flash: FlashMode;
   takePhoto: () => void;

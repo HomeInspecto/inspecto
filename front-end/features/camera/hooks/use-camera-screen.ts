@@ -2,14 +2,14 @@ import { Alert } from 'react-native';
 import { CameraView, type FlashMode } from 'expo-camera';
 import type { CameraScreenProps } from '../camera-screen';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useShallow } from 'zustand/shallow';
 
 export function useCameraScreen(): CameraScreenProps {
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const [camera, setCamera] = useState<CameraView | null>(null);
+  const cameraRef = useRef<CameraView>(null);
   const [flash, setFlash] = useState<FlashMode>('off');
 
   const { photos, addPhoto } = useActiveObservationStore(
@@ -31,6 +31,7 @@ export function useCameraScreen(): CameraScreenProps {
 
   const takePhoto = () => {
     (async () => {
+      const camera = cameraRef.current;
       if (!camera) return;
       try {
         const photo = await camera.takePictureAsync?.({ quality: 0.8, base64: false });
@@ -57,7 +58,7 @@ export function useCameraScreen(): CameraScreenProps {
   return {
     photos,
 
-    setCamera,
+    cameraRef,
 
     goBack,
     gotoEditPhotos,
