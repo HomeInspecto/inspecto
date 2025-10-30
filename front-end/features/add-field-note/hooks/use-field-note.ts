@@ -1,6 +1,7 @@
 import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useState, useRef } from 'react';
 import type { AddFieldNoteProps } from '../views/add-field-note-view';
+import { Keyboard } from 'react-native';
 
 export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps {
   const note = useActiveObservationStore(s => s.fieldNote);
@@ -27,6 +28,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
   }
 
   function onNextPress() {
+    Keyboard.dismiss();
     goToLogObservation();
   }
 
