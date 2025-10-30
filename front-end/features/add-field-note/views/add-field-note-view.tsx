@@ -1,6 +1,7 @@
 import Text from '@/components/views/text/text';
 import {
   Animated,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -10,7 +11,6 @@ import {
 
 import TextInput from '@/components/views/text-input/text-input';
 import { useRef, useEffect } from 'react';
-import { KeyboardController } from 'react-native-keyboard-controller';
 
 export interface AddFieldNoteProps {
   note: string;
@@ -38,9 +38,7 @@ export const AddFieldNoteView = (props: AddFieldNoteProps) => {
   }, [focused]);
 
   const dismiss = () => {
-    // Use the controller's dismiss; it plays nice with its animations
-    KeyboardController.dismiss({ animated: true, keepFocus: false });
-    // Let TextInput's native onBlur fire; call prop as a fallback if you need
+    Keyboard.dismiss();
     onBlur?.();
   };
 
