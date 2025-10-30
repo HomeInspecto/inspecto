@@ -58,7 +58,7 @@ export const AddFieldNoteView = ({
       ]}
     >
       <TouchableWithoutFeedback
-        style={{ pointerEvents: 'auto' }}
+        style={{ pointerEvents: 'auto', flex: 1 }}
         disabled={!focused}
         onPress={() => {
           Keyboard.dismiss();
