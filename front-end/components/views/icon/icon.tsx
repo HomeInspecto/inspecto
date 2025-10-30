@@ -1,7 +1,7 @@
 import { COLORS } from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SymbolView, SymbolWeight } from 'expo-symbols';
-import { ComponentProps, useEffect } from 'react';
+import { ComponentProps } from 'react';
 import { OpaqueColorValue, Platform } from 'react-native';
 
 type IconMapping = Partial<
@@ -68,20 +68,6 @@ export function Icon({
   color?: string | OpaqueColorValue;
   weight?: SymbolWeight;
 }) {
-  // Ensure Material Icons font is loaded on web
-  useEffect(() => {
-    if (Platform.OS === 'web' && typeof document !== 'undefined') {
-      const linkId = 'material-icons-css';
-      if (!document.getElementById(linkId)) {
-        const link = document.createElement('link');
-        link.id = linkId;
-        link.rel = 'stylesheet';
-        link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
-        document.head.appendChild(link);
-      }
-    }
-  }, []);
-
   if (Platform.OS === 'ios') return <SymbolView size={size} name={name} tintColor={color} />;
 
   const iconName = MAPPING[name];
