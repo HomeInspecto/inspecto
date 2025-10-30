@@ -23,7 +23,7 @@ export default function DrawingToolsView({
       />
 
       <IconButton
-        icon="arrow.right"
+        icon="arrow.up.right"
         onPress={() => onToolSelect('arrow')}
         color={currentTool === 'arrow' ? 'primary' : 'secondary'}
       />
@@ -35,7 +35,7 @@ export default function DrawingToolsView({
       />
 
       <IconButton
-        icon="arrow.uturn.left.circle"
+        icon="arrow.uturn.left"
         onPress={() => undoLastShape()}
         color={currentTool === 'circle' ? 'primary' : 'secondary'}
       />

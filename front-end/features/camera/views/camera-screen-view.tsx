@@ -67,20 +67,16 @@ export default function CameraScreenView(props: CameraScreenProps) {
           }}
         >
           <View style={{ flex: 1 }}>
-            <IconButton size="sm" icon="bolt" onPress={toggleFlash} />
+            <IconButton size="sm" icon="bolt.fill" onPress={toggleFlash} />
           </View>
 
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <IconButton size="lg" icon="camera" onPress={handleTakePhoto} />
+            <IconButton size="lg" icon="camera.fill" onPress={handleTakePhoto} />
           </View>
 
           <View style={{ flex: 1 }}>
             {photos.length > 0 && (
-              <Button
-                color="secondary"
-                text={`Edit photo${photos.length === 1 ? '' : 's'} (${photos.length})`}
-                onPress={gotoEditPhotos}
-              />
+              <Button color="secondary" text={`Edit (${photos.length})`} onPress={gotoEditPhotos} />
             )}
           </View>
         </View>

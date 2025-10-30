@@ -29,7 +29,6 @@ const MAPPING: IconMapping = {
 
   // Action icons
   trash: 'delete',
-  camera: 'camera-alt',
   photo: 'photo',
   'arrow.clockwise': 'refresh',
   xmark: 'close',
@@ -44,9 +43,10 @@ const MAPPING: IconMapping = {
   paintpalette: 'palette',
 
   plus: 'add',
-  bolt: 'flash-on',
+  'bolt.fill': 'flash-on',
   checkmark: 'check',
-  'arrow.uturn.left.circle': 'undo',
+  'arrow.uturn.left': 'undo',
+  'arrow.up.right': 'arrow-outward',
 } as const;
 
 export type IconName = keyof typeof MAPPING;
