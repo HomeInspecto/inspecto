@@ -4,10 +4,9 @@ import "../../../styles/style.css";
 
 // const { reportID } = Astro.props;
 
+import inspectionReport from "../../../../mock.json";
 
-import inspectionReport from '../../../../mock.json';
-
-const { organization, inspection } = inspectionReport;  
+const { organization, inspection } = inspectionReport;
 
 export interface Media {
   caption: string;
@@ -41,7 +40,8 @@ export interface Property {
   bedrooms?: number;
   bathrooms?: number;
   garage?: boolean;
-  notes?: string;}
+  notes?: string;
+}
 
 export interface Inspector {
   name: string;
@@ -59,71 +59,106 @@ export interface Organization {
   logo?: string;
   website?: string;
   contact: ContactInfo;
-  inspector: Inspector;
+  inspector: Inspector | null;
   properties: Property[];
 }
 
 export interface ReportData {
   organization: Organization;
-  inspection: Inspection
+  inspection: Inspection;
 }
-
 ---
 
 <body>
   <main class="report-container">
     <header class="report-header">
-      {organization.logo && <img src={organization.logo} alt={`${organization.name} logo`} class="logo" />}
+      {
+        organization.logo && (
+          <img
+            src={organization.logo}
+            alt={`${organization.name} logo`}
+            class="logo"
+          />
+        )
+      }
       <h1>{organization.name}</h1>
 
       <p><strong>Address:</strong> {organization.contact.address}</p>
-      {organization.contact.phone && <p><strong>Phone:</strong> {organization.contact.phone}</p>}
+      {
+        organization.contact.phone && (
+          <p>
+            <strong>Phone:</strong> {organization.contact.phone}
+          </p>
+        )
+      }
 
-      {organization.website && (
-        <p>
-          <strong>Website:</strong>
-          <a href={organization.website} target="_blank">{organization.website}</a>
-        </p>
-      )}
+      {
+        organization.website && (
+          <p>
+            <strong>Website:</strong>
+            <a href={organization.website} target="_blank">
+              {organization.website}
+            </a>
+          </p>
+        )
+      }
 
-      <h2>Inspector</h2>
-      <p>{organization.inspector.name}</p>
-      <p>{organization.inspector.email}</p>
-      <p>{organization.inspector.phone}</p>
+      <!-- ignoring inspector field for now -->
+      <!-- {
+        organization.inspector && (
+          <>
+            <h2>Inspector</h2>
+            <p>{organization.inspector.name}</p>
+            <p>{organization.inspector.email}</p>
+            <p>{organization.inspector.phone}</p>
+          </>
+        )
+      } -->
 
       <h2>Inspection Summary</h2>
       <p>{inspection.summary}</p>
-      <p><strong>Date:</strong> {new Date(inspection.created_at).toLocaleDateString()}</p>
+      <p>
+        <strong>Date:</strong>
+        {new Date(inspection.created_at).toLocaleDateString()}
+      </p>
     </header>
 
-    {inspection.sections.map((section) => (
-      <section class="section-card">
-        <h2>{section.name}</h2>
-        <p>{section.note}</p>
+    {
+      inspection.sections.map((section) => (
+        <section class="section-card">
+          <h2>{section.name}</h2>
+          <p>{section.note}</p>
 
-        {section.observations.length > 0 && (
-          <div class="observations">
-            {section.observations.map((obs) => (
-              <div class="observation-card">
-                <h3>{obs.name}</h3>
-                <p><strong>Severity:</strong> {obs.severity}</p>
-                <p>{obs.description}</p>
+          {section.observations.length > 0 && (
+            <div class="observations">
+              {section.observations.map((obs) => (
+                <div class="observation-card">
+                  <h3>{obs.name}</h3>
+                  <p>
+                    <strong>Severity:</strong> {obs.severity}
+                  </p>
+                  <p>{obs.description}</p>
 
-                {obs.media && obs.media.length > 0 && (
-                  <div class="media-gallery">
-                    {obs.media.map((m) => (
-                      <figure>
-                        <img src={m.url} alt={m.caption} class="media-photo" />
-                        <figcaption>{m.caption}</figcaption>
-                      </figure>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-    ))}
+                  {obs.media && obs.media.length > 0 && (
+                    <div class="media-gallery">
+                      {obs.media.map((m) => (
+                        <figure>
+                          <img
+                            src={m.url}
+                            alt={m.caption}
+                            class="media-photo"
+                          />
+                          <figcaption>{m.caption}</figcaption>
+                        </figure>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      ))
+    }
   </main>
 </body>
