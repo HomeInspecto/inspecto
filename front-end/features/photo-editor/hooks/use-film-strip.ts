@@ -45,7 +45,7 @@ export function useFilmStrip() {
     Animated.timing(isDragging, {
       toValue: 0,
       duration: 180,
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
   }
 
