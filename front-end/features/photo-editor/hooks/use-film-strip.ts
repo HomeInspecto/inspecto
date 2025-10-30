@@ -28,7 +28,7 @@ export function useFilmStrip() {
 
     Animated.spring(translateX, {
       toValue: snapX,
-      useNativeDriver: true,
+      useNativeDriver: false,
       friction: 8,
       tension: 100,
     }).start();
@@ -45,7 +45,7 @@ export function useFilmStrip() {
     Animated.timing(isDragging, {
       toValue: 0,
       duration: 180,
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start();
   }
 

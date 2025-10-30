@@ -21,12 +21,6 @@ export function FilmStripView({
 }: FilmStripViewProps) {
   if (!photos.length) return null;
 
-  const idleActiveWidth = 70;
-  const normalWidth = 53;
-
-  const idleActiveMargin = 13;
-  const normalMargin = 3;
-
   return (
     <View
       style={{
@@ -39,7 +33,6 @@ export function FilmStripView({
       <View
         style={{
           transform: [{ translateX: '50%' }],
-          marginRight: idleActiveWidth,
         }}
       >
         <Animated.View
@@ -53,39 +46,22 @@ export function FilmStripView({
         >
           {photos.map((photo, i) => {
             const isActive = i === activeIndex;
-
-            // When idle (isDragging=0) we want 70; when dragging (isDragging=1) we want 53
-            const animatedWidth = isActive
-              ? isDragging.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [idleActiveWidth, normalWidth],
-                  extrapolate: 'clamp',
-                })
-              : normalWidth;
-
-            const animatedWidthWithMargin = isActive
-              ? isDragging.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [idleActiveWidth + idleActiveMargin, normalWidth + normalMargin],
-                  extrapolate: 'clamp',
-                })
-              : normalWidth + normalMargin;
-
             return (
               <Animated.View
                 key={photo.id}
                 style={{
                   userSelect: 'none',
                   pointerEvents: 'none',
-                  width: animatedWidthWithMargin as any,
                   alignItems: 'center',
+                  marginHorizontal: 3,
                 }}
               >
                 <AnimatedImage
                   style={{
-                    height: idleActiveWidth, // keep a consistent height
-                    width: animatedWidth as any,
+                    height: 70, // keep a consistent height
+                    width: 53,
                     borderRadius: 6,
+                    transform: [{ translateX: '-50%' }],
                   }}
                   source={{ uri: photo.uri }}
                   contentFit="cover"
