@@ -1,0 +1,128 @@
+{
+  "organization": {
+    "name": "Pacific Coast Inspections",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjfTpar9w8KjDerpd2NRSiEJLm8A_3SuaDgw&s",
+    "website": "https://pacificinspections.ca",
+    "contact": {
+      "phone": "+1-250-555-0174",
+      "address": "1020 View Street, Victoria, BC V8V 3Z5"
+    },
+    "inspector": {
+      "name": "Josh Beaman",
+      "email": "josh@pacificinspections.ca",
+      "phone": "+1-250-555-0102"
+    },
+    "properties": [
+      {
+        "address": "456 Beacon Avenue, Unit 3B, Victoria, BC",
+        "year_built": 1998,
+        "type": "Condo",
+        "sqft": 1150,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "garage": false,
+        "notes": "Corner unit with southern exposure and partial ocean view."
+      }
+    ]
+  },
+  "inspection": {
+    "summary": "General pre-purchase inspection for a 2-bedroom condo unit. Overall in good condition with minor maintenance issues.",
+    "created_at": "2025-10-29T14:30:00Z",
+    "sections": [
+      {
+        "name": "Roof",
+        "note": "Roof is part of the strata responsibility; visually inspected from ground level and upper balcony.",
+        "observations": [
+          {
+            "name": "Moss growth along north edge",
+            "severity": "minor",
+            "description": "Some moss accumulation visible on shaded sections. Recommend routine cleaning.",
+            "media": [
+              {
+                "caption": "Moss visible from balcony",
+                "url": "https://alibhutto.com/wp-content/uploads/2024/07/pic-1.jpg?w=256&h=256&crop=1"
+              }
+            ]
+          },
+          {
+            "name": "Flashing sealant wear",
+            "severity": "moderate",
+            "description": "Sealant at flashing joints appears cracked; could lead to moisture intrusion over time.",
+            "media": [
+              {
+                "caption": "Close-up of cracked sealant",
+                "url": "https://wurthlac.com/_next/image?url=https%3A%2F%2Fxcart.wurthlac.com%2Fimages%2FD%2FWR5983146300-1.png&w=256&q=75"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Electrical",
+        "note": "Panel located in entry hallway; 100A service with labeled breakers.",
+        "observations": [
+          {
+            "name": "Missing GFCI protection",
+            "severity": "moderate",
+            "description": "No GFCI outlets in kitchen or bathrooms. Recommend upgrading for safety.",
+            "media": [
+              {
+                "caption": "Standard outlet near kitchen sink",
+                "url": "https://media.distributordatasolutions.com/476/csv_leviton/small/ee76f860eca4dd68677becec54840fb537db3782-small.png"
+              }, {
+                "caption": "Bathroom outlet without GFCI",
+                "url": "https://i.sstatic.net/gF4Bt.jpg"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Plumbing",
+        "note": "Copper supply lines and ABS drains observed throughout.",
+        "observations": [
+          {
+            "name": "Slow bathroom drain",
+            "severity": "minor",
+            "description": "Primary bathroom sink drains slowly, likely due to minor buildup.",
+            "media": [
+              {
+                "caption": "Sink with standing water after test",
+                "url": "https://abchomedoitbest.com/web/image/product.template/33245/image_256/%5BRHTKS11159%20-%20RH953002%20RHUDBKS11159%5D%20Royal%20Homes%20Undermount%20Double%20Bowl%20Kitchen%20Sink%2032%20x%2019%20x%2010%20In.?unique=f5f61b5"
+              }
+            ]
+          },
+          {
+            "name": "Leaking shutoff valve",
+            "severity": "major",
+            "description": "Active leak observed at cold-water shutoff under kitchen sink.",
+            "media": [
+              {
+                "caption": "Water droplets on valve connection",
+                "url": "https://styles.redditmedia.com/t5_29obra/styles/communityIcon_eaz7goq4akt51.png"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Interior",
+        "note": "All rooms inspected; general wear consistent with age.",
+        "observations": [
+          {
+            "name": "Cracked drywall at window corner",
+            "severity": "minor",
+            "description": "Hairline crack noted at living room window corner, likely due to minor settling.",
+            "media": [
+              {
+                "caption": "Crack near window trim",
+                "url": "https://public.blenderkit.com/thumbnails/assets/d54e45d7a85449769f453a2db33f8d9e/files/thumbnail_35859760-62c6-4f16-8c39-e3f7f80ff6b8.png.256x256_q85.png.webp?webp_generated=1695322651"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+
