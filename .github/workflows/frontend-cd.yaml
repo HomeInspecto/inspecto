@@ -1,4 +1,4 @@
-name: Frontend CD (Vercel Production)
+name: Frontend CD (Vercel Production) / Preview
 
 on:
   push:
@@ -6,9 +6,15 @@ on:
     paths:
       - 'front-end/**'
       - '.github/workflows/frontend-cd.yaml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'front-end/**'
+      - '.github/workflows/frontend-cd.yaml'
 
 jobs:
   deploy:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -47,4 +53,45 @@ jobs:
 
       - name: Deploy dist/ to Vercel (production)
         run: vercel deploy dist --yes --prod=true --token ${{ secrets.VERCEL_TOKEN }}
+
+  preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front-end
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: front-end/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Expo web export
+        run: npx expo export -p web --output-dir dist
+        env:
+          EXPO_NO_DOTENV: 1
+      
+      - name: Verify dist output
+        run: |
+          echo "Checking dist directory contents..."
+          ls -la dist/ || echo "dist directory not found"
+          find dist -name "*.woff*" -o -name "*.ttf" | head -5 || echo "No font files found"
+          find dist -name "*.js" | head -3 || echo "No JS files found"
+
+      - name: Install Vercel CLI
+        run: npm i -g vercel
+
+      - name: Vercel pull (preview)
+        run: vercel pull --yes --environment=preview --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy dist/ to Vercel (preview)
+        run: vercel deploy dist --yes --prod=false --token ${{ secrets.VERCEL_TOKEN }}
 
