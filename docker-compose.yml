@@ -8,8 +8,11 @@ services:
     ports:
       - 4000:4000
     volumes:
-      - ./back-end:/app
-      - /app/node_modules
+      - ./back-end:/back-end
+      - /back-end/node_modules
+    working_dir: /back-end
+    environment:
+      - NODE_ENV=development
     networks:
       - app-network
 
