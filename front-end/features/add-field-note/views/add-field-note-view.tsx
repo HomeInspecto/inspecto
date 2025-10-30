@@ -1,16 +1,16 @@
 import Text from '@/components/views/text/text';
 import {
   Animated,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 
 import TextInput from '@/components/views/text-input/text-input';
 import { useRef, useEffect } from 'react';
+import { KeyboardController } from 'react-native-keyboard-controller';
 
 export interface AddFieldNoteProps {
   note: string;
@@ -25,19 +25,10 @@ export interface AddFieldNoteProps {
   onChangeText?: (text: string) => void;
 }
 
-export const AddFieldNoteView = ({
-  note,
-  onNextPress,
-  focused,
-  onFocus,
-  onBlur,
-  onChangeText,
-  onMicStart,
-  onMicStop,
-}: AddFieldNoteProps) => {
+export const AddFieldNoteView = (props: AddFieldNoteProps) => {
+  const { note, onNextPress, focused, onFocus, onBlur, onChangeText } = props;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  // Animate the text opacity whenever focus changes
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: focused ? 1 : 0,
@@ -46,60 +37,44 @@ export const AddFieldNoteView = ({
     }).start();
   }, [focused]);
 
+  const dismiss = () => {
+    // Use the controller's dismiss; it plays nice with its animations
+    KeyboardController.dismiss({ animated: true, keepFocus: false });
+    // Let TextInput's native onBlur fire; call prop as a fallback if you need
+    onBlur?.();
+  };
+
   return (
     <>
-      {/* background blur */}
       <Animated.View
-        style={[
-          StyleSheet.absoluteFill,
-          {
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            opacity: fadeAnim,
-            display: focused ? 'flex' : 'none',
-          },
-        ]}
-      ></Animated.View>
+        pointerEvents={focused ? 'auto' : 'none'}
+        style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.8)', opacity: fadeAnim }]}
+      />
+
+      {focused && <Pressable style={[StyleSheet.absoluteFill, { zIndex: 1 }]} onPress={dismiss} />}
+
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={[
-          {
-            justifyContent: 'flex-end',
-          },
-        ]}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ justifyContent: 'flex-end' }}
       >
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <>
-            <View
-              style={{
-                gap: 16,
-                paddingHorizontal: 16,
-                paddingBottom: 16,
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                position: 'relative',
-              }}
-            >
-              <Animated.View style={{ opacity: fadeAnim, display: focused ? 'flex' : 'none' }}>
-                <Text variant="title3" weight="emphasized" style={{ textAlign: 'center' }}>
-                  What did you observe?
-                </Text>
-              </Animated.View>
-              <TextInput
-                value={note}
-                onChangeText={onChangeText}
-                placeholder="Write a field note"
-                multiline
-                onFocus={onFocus}
-                onBlur={onBlur}
-                style={{
-                  opacity: 1,
-                }}
-                rightIcon={'navigate'}
-                onRightIconPress={note ? onNextPress : undefined}
-              />
-            </View>
-          </>
-        </TouchableWithoutFeedback>
+        <View style={{ gap: 16, paddingHorizontal: 16, paddingBottom: 16 }}>
+          <Animated.View style={{ opacity: fadeAnim, display: focused ? 'flex' : 'none' }}>
+            <Text variant="title3" weight="emphasized" style={{ textAlign: 'center' }}>
+              What did you observe?
+            </Text>
+          </Animated.View>
+
+          <TextInput
+            value={note}
+            onChangeText={onChangeText}
+            placeholder="Write a field note"
+            multiline
+            onFocus={onFocus}
+            onBlur={onBlur}
+            rightIcon="navigate"
+            onRightIconPress={note ? onNextPress : undefined}
+          />
+        </View>
       </KeyboardAvoidingView>
     </>
   );
