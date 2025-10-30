@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "front-end",
-    "slug": "front-end",
+    "name": "Inspection App",
+    "slug": "inspection-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -31,7 +31,10 @@
         "android.permission.READ_MEDIA_VIDEO",
         "android.permission.READ_MEDIA_AUDIO"
       ],
-      "package": "com.inspecto.app"
+      "package": "com.inspecto.app",
+      "android": {
+        "windowSoftInputMode": "adjustResize"
+      }
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
