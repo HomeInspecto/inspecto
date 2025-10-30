@@ -12,7 +12,7 @@ export default function EditObservation() {
   const bottomSheetRef = useRef<BottomSheetRef>(null);
 
   function goToLogObservation() {
-    bottomSheetRef?.current?.expand();
+    bottomSheetRef?.current?.snapToIndex(2);
   }
 
   return (

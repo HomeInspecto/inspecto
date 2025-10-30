@@ -37,7 +37,7 @@ export const LogObservationView = ({
   setSeverity,
 }: LogObservationProps) => {
   return (
-    <View style={{ flex: 1, gap: 20 }}>
+    <View style={{ flex: 1, gap: 20, paddingBottom: 80 }}>
       <Text variant="title3" style={{ textAlign: 'center' }}>
         Edit observation
       </Text>
