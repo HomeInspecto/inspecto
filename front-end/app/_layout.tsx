@@ -10,13 +10,25 @@ const isDevelopment = __DEV__ || process.env.NODE_ENV === 'development';
 export default function RootLayout() {
   useEffect(() => {
     if (Platform.OS === 'web') {
-      // Ensure Material Icons font is loaded
+      // Ensure Material Icons font is loaded (fallback if +html.tsx doesn't work)
       const linkId = 'material-icons-font';
       if (!document.getElementById(linkId)) {
+        // Preconnect for faster loading
+        const preconnect1 = document.createElement('link');
+        preconnect1.rel = 'preconnect';
+        preconnect1.href = 'https://fonts.googleapis.com';
+        document.head.appendChild(preconnect1);
+        
+        const preconnect2 = document.createElement('link');
+        preconnect2.rel = 'preconnect';
+        preconnect2.href = 'https://fonts.gstatic.com';
+        preconnect2.crossOrigin = 'anonymous';
+        document.head.appendChild(preconnect2);
+        
         const link = document.createElement('link');
         link.id = linkId;
         link.rel = 'stylesheet';
-        link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
+        link.href = 'https://fonts.googleapis.com/css2?family=Material+Icons';
         document.head.appendChild(link);
       }
     }

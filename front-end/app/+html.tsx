@@ -13,10 +13,19 @@ export default function Root({ children }: PropsWithChildren) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-        {/* Material Icons Font */}
+        {/* Material Icons Font - Required for @expo/vector-icons on web */}
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          href="https://fonts.googleapis.com/css2?family=Material+Icons"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
         />
 
         <meta name="description" content="Inspection App" />
