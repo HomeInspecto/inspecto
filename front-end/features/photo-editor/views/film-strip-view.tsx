@@ -39,7 +39,7 @@ export function FilmStripView({
       <View
         style={{
           transform: [{ translateX: '50%' }],
-          marginRight: idleActiveWidth + idleActiveMargin,
+          marginRight: idleActiveWidth,
         }}
       >
         <Animated.View
@@ -63,13 +63,13 @@ export function FilmStripView({
                 })
               : normalWidth;
 
-            const animatedMargin = isActive
+            const animatedWidthWithMargin = isActive
               ? isDragging.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [idleActiveMargin, normalMargin],
+                  outputRange: [idleActiveWidth + idleActiveMargin, normalWidth + normalMargin],
                   extrapolate: 'clamp',
                 })
-              : normalMargin;
+              : normalWidth + normalMargin;
 
             return (
               <Animated.View
@@ -77,7 +77,8 @@ export function FilmStripView({
                 style={{
                   userSelect: 'none',
                   pointerEvents: 'none',
-                  marginHorizontal: animatedMargin as any,
+                  width: animatedWidthWithMargin as any,
+                  alignItems: 'center',
                 }}
               >
                 <AnimatedImage
