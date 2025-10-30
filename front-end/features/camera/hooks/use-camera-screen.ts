@@ -31,17 +31,28 @@ export function useCameraScreen(): CameraScreenProps {
     addPhoto(newPhoto);
   }
 
+  const isTakingRef = useRef(false);
+
   const takePhoto = () => {
+    if (isTakingRef.current) return;
+    isTakingRef.current = true;
+
     (async () => {
       const camera = cameraRef.current;
-      if (!camera) return;
+      if (!camera) {
+        isTakingRef.current = false;
+        return;
+      }
       try {
         const photo = await camera.takePictureAsync?.({ quality: 0.8, base64: false });
         if (photo?.uri) {
-          handleAddPhoto(photo?.uri);
+          handleAddPhoto(photo.uri);
         }
       } catch (e) {
         Alert.alert('Error', 'Failed to take picture. Please try again.');
+      } finally {
+        // allow taking another photo after this operation completes
+        isTakingRef.current = false;
       }
     })();
   };
