@@ -1,6 +1,17 @@
 {
   "version": 2,
   "routes": [
-    { "src": "/(.*)", "dest": "/$1" }
+    {
+      "src": "/MaterialIcons\\.[a-f0-9]{32}\\.ttf",
+      "dest": "/MaterialIcons.ttf"
+    },
+    {
+      "src": "/Ionicons\\.[a-f0-9]{32}\\.ttf",
+      "dest": "/Ionicons.ttf"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
   ]
 }

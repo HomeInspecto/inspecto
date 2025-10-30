@@ -40,22 +40,22 @@ jobs:
       
       - name: Copy vector-icons fonts to dist
         run: |
-          # Copy font files that @expo/vector-icons expects
+          # Copy font files to root - Vercel rewrites will map hashed requests to these
           FONTS_SRC="node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts"
           if [ -d "$FONTS_SRC" ]; then
-            echo "Copying font files..."
-            # Copy to multiple locations for compatibility
-            mkdir -p dist/_expo/static/fonts dist/fonts 2>/dev/null || true
-            cp "$FONTS_SRC"/*.ttf dist/_expo/static/fonts/ 2>/dev/null || true
-            cp "$FONTS_SRC"/*.ttf dist/fonts/ 2>/dev/null || true
-            # Also copy to root for webpack-style requests
+            echo "Copying font files to dist root..."
             cp "$FONTS_SRC"/MaterialIcons.ttf dist/ 2>/dev/null || true
             cp "$FONTS_SRC"/Ionicons.ttf dist/ 2>/dev/null || true
-            echo "Font files copied successfully"
-            ls -la dist/*.ttf 2>/dev/null || echo "Checking root level fonts..."
+            echo "Font files copied. Vercel rewrites will map hashed requests to these files."
+            ls -la dist/*.ttf 2>/dev/null || echo "Font files not found in dist root"
           else
             echo "Warning: Font source directory not found: $FONTS_SRC"
           fi
+      
+      - name: Copy vercel.json to dist
+        run: |
+          # Copy vercel.json to dist so rewrites work when deploying dist folder
+          cp vercel.json dist/ 2>/dev/null || echo "vercel.json not found"
       
       - name: Verify dist output
         run: |
@@ -64,6 +64,8 @@ jobs:
           echo "Searching for font files..."
           find dist -name "*.woff*" -o -name "*.ttf" 2>/dev/null | head -10 || echo "No font files found"
           find dist -name "*.js" | head -3 || echo "No JS files found"
+          echo "Checking for vercel.json..."
+          ls -la dist/vercel.json 2>/dev/null || echo "vercel.json not in dist"
 
       - name: Install Vercel CLI
         run: npm i -g vercel
@@ -101,22 +103,22 @@ jobs:
       
       - name: Copy vector-icons fonts to dist
         run: |
-          # Copy font files that @expo/vector-icons expects
+          # Copy font files to root - Vercel rewrites will map hashed requests to these
           FONTS_SRC="node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts"
           if [ -d "$FONTS_SRC" ]; then
-            echo "Copying font files..."
-            # Copy to multiple locations for compatibility
-            mkdir -p dist/_expo/static/fonts dist/fonts 2>/dev/null || true
-            cp "$FONTS_SRC"/*.ttf dist/_expo/static/fonts/ 2>/dev/null || true
-            cp "$FONTS_SRC"/*.ttf dist/fonts/ 2>/dev/null || true
-            # Also copy to root for webpack-style requests
+            echo "Copying font files to dist root..."
             cp "$FONTS_SRC"/MaterialIcons.ttf dist/ 2>/dev/null || true
             cp "$FONTS_SRC"/Ionicons.ttf dist/ 2>/dev/null || true
-            echo "Font files copied successfully"
-            ls -la dist/*.ttf 2>/dev/null || echo "Checking root level fonts..."
+            echo "Font files copied. Vercel rewrites will map hashed requests to these files."
+            ls -la dist/*.ttf 2>/dev/null || echo "Font files not found in dist root"
           else
             echo "Warning: Font source directory not found: $FONTS_SRC"
           fi
+      
+      - name: Copy vercel.json to dist
+        run: |
+          # Copy vercel.json to dist so rewrites work when deploying dist folder
+          cp vercel.json dist/ 2>/dev/null || echo "vercel.json not found"
       
       - name: Verify dist output
         run: |
@@ -125,6 +127,8 @@ jobs:
           echo "Searching for font files..."
           find dist -name "*.woff*" -o -name "*.ttf" 2>/dev/null | head -10 || echo "No font files found"
           find dist -name "*.js" | head -3 || echo "No JS files found"
+          echo "Checking for vercel.json..."
+          ls -la dist/vercel.json 2>/dev/null || echo "vercel.json not in dist"
 
       - name: Install Vercel CLI
         run: npm i -g vercel
