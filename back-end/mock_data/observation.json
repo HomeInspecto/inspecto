@@ -1,0 +1,12 @@
+{
+  "id": "57198f26-f452-4046-be73-a6aeecd07747",
+  "section_id": "b504a4ec-8c10-491d-8402-102a3f6f22e1",
+  "obs_name": "Observation 1",
+  "description": "Description for Observation 1",
+  "severity": "minor",
+  "status": "open",
+  "created_at": "2025-10-29T19:16:07.179209+00:00",
+  "updated_at": "2025-10-29T19:16:07.179209+00:00",
+  "implication": null,
+  "recommendation": null
+}
