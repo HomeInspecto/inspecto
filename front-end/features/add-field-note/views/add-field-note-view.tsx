@@ -1,6 +1,7 @@
 import Text from '@/components/views/text/text';
 import {
   Animated,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -60,6 +61,7 @@ export const AddFieldNoteView = ({
         style={{ pointerEvents: 'auto' }}
         disabled={!focused}
         onPress={() => {
+          Keyboard.dismiss();
           onBlur?.();
         }}
       >
