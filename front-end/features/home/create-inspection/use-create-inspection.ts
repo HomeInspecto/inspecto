@@ -17,13 +17,16 @@ export function useCreateInspection(): CreateInspectionViewProps {
 
   const onCreate = useCallback(() => {
     if (!client || !address) return;
+
+    const id = Math.random().toString(36).slice(2);
     useInspectionsStore.getState().createInspection({
-      id: Math.random().toString(36).slice(2),
+      id,
       client,
       address,
       createdAt: Date.now(),
     });
-    goBack();
+
+    router.push(`/active-inspection/${id}`);
   }, [client, address]);
 
   function goBack() {
