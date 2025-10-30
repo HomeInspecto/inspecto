@@ -11,7 +11,7 @@ const upload = multer({
 
 const router = Router();
 
-router.post('/transcribe',  upload.single('file'), transcriptionController.transcribeAudio);
+router.post('/transcription',  upload.single('file'), transcriptionController.transcribeAudio);
 router.post('/polish', polishController.polishTranscription);
 router.post('/repolish', polishController.repolishTranscription);
 
