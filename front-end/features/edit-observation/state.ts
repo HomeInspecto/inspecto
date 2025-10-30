@@ -64,7 +64,7 @@ export const useActiveObservationStore = create<ActiveObservationState>(set => (
   fieldNote: '',
   activePhotoIndex: 0,
 
-  setActivePhoto: i => set({ activePhotoIndex: i }),
+  setActivePhoto: i => set(state => ({ activePhotoIndex: Math.min(Math.max(0,i), state.photos.length-1) })),
 
   addPhoto: photo => set(state => ({ photos: [...state.photos, photo] })),
   updatePhoto: (id, newPhoto) =>

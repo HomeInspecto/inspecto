@@ -8,7 +8,7 @@ import {
   type Shape,
 } from '@/features/edit-observation/state';
 import { useShallow } from 'zustand/shallow';
-import type { GestureResponderEvent } from 'react-native';
+import { type GestureResponderEvent } from 'react-native';
 
 type PhotoEditorPropsOptionalPhoto = Omit<PhotoEditorProps, 'photo'> & { photo: Photo | null };
 
@@ -18,12 +18,15 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
   const [previewShape, setPreviewShape] = useState<string>('');
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
 
-  const { photos, activePhotoIndex, updatePhoto, removePhotoById } = useActiveObservationStore(
+  const { photos, activePhotoIndex, updatePhoto, removePhotoById ,
+    setActivePhoto
+  } = useActiveObservationStore(
     useShallow(state => ({
       photos: state.photos,
       activePhotoIndex: state.activePhotoIndex,
       updatePhoto: state.updatePhoto,
       removePhotoById: state.removePhotoById,
+      setActivePhoto:state.setActivePhoto
     }))
   );
 
@@ -154,6 +157,21 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
   };
 
   const handleTouchEnd = (event: any) => {
+
+    if (!currentTool&&startPoint) {
+      
+      const { x, y } = getRelativePoint(event);
+
+      const dx = x-startPoint.x
+      if (dx < 0 && Math.abs(dx)>100) {
+        setActivePhoto(activePhotoIndex+1);
+      }
+      if (dx > 0 && Math.abs(dx)>100){
+        setActivePhoto(activePhotoIndex-1);
+      }
+      return
+    }
+
     if (!isDrawing || !startPoint) return;
 
     setIsDrawing(false);
