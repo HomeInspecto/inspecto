@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Icon } from '@/components/views/icon/icon';
 import type { PhotoManagerProps } from '../photo-manager';
 import { COLORS } from '@/constants/colors';
 
@@ -28,7 +28,7 @@ export default function PhotoManagerView(props: PhotoManagerProps) {
     return (
       <View style={styles.container}>
         <View>
-          <IconSymbol name="photo" size={64} color="#ccc" />
+          <Icon name="photo" size={64} color="#ccc" />
           <Text>Photo Access Required</Text>
           <Text>We need access to your photos to show them in the gallery.</Text>
           <TouchableOpacity onPress={requestPermission}>

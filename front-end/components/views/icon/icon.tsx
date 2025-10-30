@@ -1,66 +1,68 @@
-// Fallback for using MaterialIcons on Android and web.
-
+import { COLORS } from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
+import { SymbolWeight } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
 type IconMapping = Record<string, ComponentProps<typeof MaterialIcons>['name']>;
-type IconSymbolName = keyof typeof MAPPING;
 
 /**
- * Add your SF Symbols to Material Icons mappings here.
+ * SF Symbols to Material Icons mapping
  * - see Material Icons in the [Icons Directory](https://icons.expo.fyi).
  * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
  */
-const MAPPING = {
+const MAPPING: IconMapping = {
   'house.fill': 'home',
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+
   // Navigation icons
   'camera.fill': 'camera-alt',
   'photo.on.rectangle': 'photo-library',
   'xmark.square': 'close',
+
   // Action icons
-  'trash': 'delete',
-  'camera': 'camera-alt',
-  'photo': 'photo',
+  trash: 'delete',
+  camera: 'camera-alt',
+  photo: 'photo',
   'chevron.left': 'chevron-left',
   'arrow.clockwise': 'refresh',
-  'xmark': 'close',
+  xmark: 'close',
   'arrow.triangle.2.circlepath': 'flip-camera-android',
   'checkmark.circle.fill': 'check-circle',
+
   // Editor icons
-  'pencil': 'edit',
+  pencil: 'edit',
   'arrow.right': 'arrow-forward',
-  'circle': 'radio-button-unchecked',
-  'eraser': 'web-asset',
-  'paintpalette': 'palette',
-} as IconMapping;
+  circle: 'radio-button-unchecked',
+  eraser: 'web-asset',
+  paintpalette: 'palette',
+} as const;
+
+export type IconName = keyof typeof MAPPING;
+
+export const ICONS = Object.keys(MAPPING) as IconName[];
 
 /**
  * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.
- * This ensures a consistent look across platforms, and optimal resource usage.
- * Icon `name`s are based on SF Symbols and require manual mapping to Material Icons.
  */
-export function IconSymbol({
+export function Icon({
   name,
   size = 24,
-  color,
+  color = COLORS.label.onDark.secondary,
   style,
 }: {
-  name: IconSymbolName;
+  name: IconName;
   size?: number;
-  color: string | OpaqueColorValue;
+  color?: string | OpaqueColorValue;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
   const iconName = MAPPING[name];
   if (!iconName) {
-    console.warn(`Icon "${name}" not found in mapping`);
     return <MaterialIcons color={color} size={size} name="help" style={style} />;
   }
-  
+
   return <MaterialIcons color={color} size={size} name={iconName} style={style} />;
 }

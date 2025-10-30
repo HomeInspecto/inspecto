@@ -1,11 +1,7 @@
-import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import Svg, { Rect } from 'react-native-svg';
+import { Pressable, View } from 'react-native';
 import { COLORS } from '@/constants/colors';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Icon, type IconName } from '@/components/views/icon/icon';
 import Text from '@/components/views/text/text';
-
-type IconName = Parameters<typeof IconSymbol>[0]['name'];
 
 type ButtonProps = {
   onPress: () => void;
@@ -79,7 +75,7 @@ export default function Button({
             { height, pointerEvents: 'none', paddingHorizontal: 16, gap: icon ? 8 : 0 },
           ]}
         >
-          {icon && <IconSymbol name={icon} size={iconSize} color={iconColor} />}
+          {icon && <Icon name={icon} size={iconSize} color={iconColor} />}
           <Text variant="callout" weight="emphasized" style={{ color: textColor }}>
             {text}
           </Text>

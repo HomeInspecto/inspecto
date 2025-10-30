@@ -1,9 +1,8 @@
 import { COLORS } from '@/constants/colors';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Icon, type IconName } from '@/components/views/icon/icon';
 
-type IconName = Parameters<typeof IconSymbol>[0]['name'];
 type IconButtonSize = 'sm' | 'md' | 'lg';
 
 const SIZE_MAP: Record<IconButtonSize, number> = {
@@ -74,7 +73,7 @@ export default function IconButton({
         <View
           style={[styles.iconSlot, { width: pixelSize, height: pixelSize, pointerEvents: 'none' }]}
         >
-          <IconSymbol name={icon} size={iconSize} color={iconColor} />
+          <Icon name={icon} size={iconSize} color={iconColor} />
         </View>
       </View>
     </Pressable>
