@@ -1,20 +1,22 @@
-import { View, FlatList } from 'react-native';
+import { View, FlatList, Pressable } from 'react-native';
 import Text from '@/components/views/text/text';
 import Button from '@/components/views/button/button';
 import type { Inspection } from '../state';
+import { COLORS } from '@/constants/colors';
 
 export interface InspectionsListViewProps {
   inspections: Inspection[];
-  onSelect: (id: string) => void;
+  onSelectInspection: (id: string) => void;
 }
 
-export function InspectionsListView({ inspections, onSelect }: InspectionsListViewProps) {
+export function InspectionsListView({
+  inspections,
+  onSelectInspection: onSelect,
+}: InspectionsListViewProps) {
   return (
     <View style={{ flex: 1, gap: 16 }}>
       <View>
-        <Text variant="title3" style={{ textAlign: 'center' }}>
-          Inspections
-        </Text>
+        <Text variant="headline">This week</Text>
       </View>
 
       <FlatList
@@ -22,15 +24,27 @@ export function InspectionsListView({ inspections, onSelect }: InspectionsListVi
         keyExtractor={item => item.id}
         contentContainerStyle={{ gap: 12, paddingBottom: 24 }}
         renderItem={({ item }) => (
-          <View style={{ gap: 8, paddingVertical: 8 }}>
-            <Text variant="headline">{item.client}</Text>
-            <Text variant="body" style={{ color: '#666' }}>
-              {item.address}
-            </Text>
-            <View style={{ marginTop: 8 }}>
-              <Button text="Open" onPress={() => onSelect(item.id)} />
+          <Pressable onPress={() => onSelect(item.id)}>
+            <View
+              style={{
+                gap: 4,
+                padding: 16,
+                borderRadius: 20,
+                backgroundColor: COLORS.material.secondary.fill,
+              }}
+            >
+              <Text variant="headline" color="on-dark-primary">
+                {item.address}
+              </Text>
+              <Text variant="body" color="on-dark-secondary">
+                {new Date(item.createdAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </Text>
             </View>
-          </View>
+          </Pressable>
         )}
       />
     </View>

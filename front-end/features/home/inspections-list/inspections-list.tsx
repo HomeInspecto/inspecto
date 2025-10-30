@@ -1,8 +1,8 @@
 import { InspectionsListView } from './inspections-list-view';
-import { useInspections } from './use-inspections';
+import { useInspectionsList } from './use-inspections-list';
 
 export function InspectionsList() {
-  const { inspections, selectInspection } = useInspections();
+  const { inspections, onSelectInspection } = useInspectionsList();
 
-  return <InspectionsListView inspections={inspections} onSelect={selectInspection} />;
+  return <InspectionsListView inspections={inspections} onSelectInspection={onSelectInspection} />;
 }

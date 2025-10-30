@@ -1,4 +1,5 @@
 import Button from '@/components/views/button/button';
+import IconButton from '@/components/views/icon-button/icon-button';
 import TextInput from '@/components/views/text-input/text-input';
 import Text from '@/components/views/text/text';
 import { COLORS } from '@/constants/colors';
@@ -12,6 +13,7 @@ export interface CreateInspectionViewProps {
   onAddressChange: (value: string) => void;
 
   onCreate: () => void;
+  goBack: () => void;
 }
 
 export function CreateInspectionView({
@@ -20,6 +22,7 @@ export function CreateInspectionView({
   onClientChange,
   onAddressChange,
   onCreate,
+  goBack,
 }: CreateInspectionViewProps) {
   return (
     <View
@@ -30,9 +33,15 @@ export function CreateInspectionView({
         backgroundColor: COLORS.pageBackground,
       }}
     >
-      <Text variant="title3" style={{ textAlign: 'center' }}>
-        Create Inspection
-      </Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <View style={{ flex: 1 }}>
+          <IconButton onPress={goBack} size="sm" color="secondary" icon="back" />
+        </View>
+        <Text variant="title2" weight="emphasized" style={{ textAlign: 'center' }}>
+          New inspection
+        </Text>
+        <View style={{ flex: 1 }}></View>
+      </View>
 
       <View style={{ gap: 12 }}>
         <Text variant="headline">Client</Text>

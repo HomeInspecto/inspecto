@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 import type { CreateInspectionViewProps } from './create-inspection-view';
+import { router } from 'expo-router';
+import { useInspectionsStore } from '../state';
 
 export function useCreateInspection(): CreateInspectionViewProps {
   const [client, setClient] = useState<string>('');
@@ -14,10 +16,20 @@ export function useCreateInspection(): CreateInspectionViewProps {
   }, []);
 
   const onCreate = useCallback(() => {
-    // placeholder: implement create logic here
-    // e.g. validate and submit
-    // console.log('create', { client, address });
+    if (!client || !address) return;
+    useInspectionsStore.getState().createInspection({
+      id: Math.random().toString(36).slice(2),
+      client,
+      address,
+      createdAt: Date.now(),
+    });
+    goBack();
   }, [client, address]);
+
+  function goBack() {
+    if (router.canGoBack()) router.back();
+    else router.push('/');
+  }
 
   return {
     client,
@@ -25,5 +37,6 @@ export function useCreateInspection(): CreateInspectionViewProps {
     onClientChange,
     onAddressChange,
     onCreate,
+    goBack,
   };
 }

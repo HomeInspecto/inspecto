@@ -9,24 +9,16 @@ import IconButton from '@/components/views/icon-button/icon-button';
 import Button from '@/components/views/button/button';
 
 export default function Home() {
-  function handleGotoInspection() {
-    // go to the inspections list screen
-    router.push('/active-inspection/123id');
-    // or replace history: router.replace("/inspections");
-  }
-
   function handleGotoCreateInspection() {
-    // go to the inspections list screen
     router.push('/create-inspection');
-    // or replace history: router.replace("/inspections");
   }
 
   return (
     <View
       style={{
         flex: 1,
-        paddingTop: 80,
         padding: 16,
+        paddingTop: 80,
         gap: 24,
         backgroundColor: COLORS.pageBackground,
       }}
@@ -52,15 +44,10 @@ export default function Home() {
           rightIcon="close"
         />
       </View>
-      <View>
-        <Pressable onPress={handleGotoInspection}>
-          <Text variant="title1" weight="emphasized">
-            Inspection 1
-          </Text>
-        </Pressable>
-      </View>
       <InspectionsList />
-      <IconButton icon="TODO-add-plus-button" onPress={handleGotoCreateInspection} />
+      <View style={{ width: '100%', justifyContent: 'center', flexDirection: 'row' }}>
+        <IconButton icon="TODO-add-plus-button" onPress={handleGotoCreateInspection} />
+      </View>
 
       {__DEV__ && (
         <View>
