@@ -6,13 +6,13 @@ import type { Tool } from '../photo-editor';
 interface DrawingToolsViewProps {
   currentTool: Tool;
   onToolSelect: (tool: Tool) => void;
-  clearMarkup: () => void;
+  undoLastShape: () => void;
 }
 
 export default function DrawingToolsView({
   currentTool,
   onToolSelect,
-  clearMarkup,
+  undoLastShape,
 }: DrawingToolsViewProps) {
   return (
     <View style={{ gap: 8, paddingRight: 20 }}>
@@ -31,6 +31,12 @@ export default function DrawingToolsView({
       <IconButton
         icon="circle"
         onPress={() => onToolSelect('circle')}
+        color={currentTool === 'circle' ? 'primary' : 'secondary'}
+      />
+
+      <IconButton
+        icon="TODO-get-undo-icon"
+        onPress={() => undoLastShape()}
         color={currentTool === 'circle' ? 'primary' : 'secondary'}
       />
     </View>

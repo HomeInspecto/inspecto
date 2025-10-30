@@ -9,7 +9,7 @@ import IconButton from '@/components/views/icon-button/icon-button';
 export function PhotoEditorView({
   currentTool,
   photo,
-  clearMarkup,
+  undoLastShape,
   previewShape,
   goBack,
   deleteActivePhoto,
@@ -65,7 +65,7 @@ export function PhotoEditorView({
           <DrawingToolsView
             onToolSelect={tool => setCurrentTool(tool)}
             currentTool={currentTool}
-            clearMarkup={clearMarkup}
+            undoLastShape={undoLastShape}
           />
           <IconButton icon="trash" onPress={deleteActivePhoto} color={'critical'} />
         </View>

@@ -16,7 +16,7 @@ export interface PhotoEditorProps {
   handleTouchMove: (event: TouchEvent) => void;
   handleTouchEnd: (event: TouchEvent) => void;
 
-  clearMarkup: () => void;
+  undoLastShape: () => void;
   deleteActivePhoto: () => void;
 
   goBack: () => void;

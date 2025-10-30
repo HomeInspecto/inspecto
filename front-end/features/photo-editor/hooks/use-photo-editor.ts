@@ -13,7 +13,7 @@ import type { GestureResponderEvent } from 'react-native';
 type PhotoEditorPropsOptionalPhoto = Omit<PhotoEditorProps, 'photo'> & { photo: Photo | null };
 
 export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
-  const [currentTool, setCurrentTool] = useState<Tool>('pen');
+  const [currentTool, setCurrentTool] = useState<Tool>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [previewShape, setPreviewShape] = useState<string>('');
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
@@ -48,6 +48,12 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
 
   function addShape(shape: Shape) {
     photo.shapes = [...(photo.shapes || []), shape];
+    updatePhoto(photo.id, photo);
+  }
+
+  function undoLastShape() {
+    if (!photo) return;
+    photo.shapes = photo.shapes?.slice(0, -1) || [];
     updatePhoto(photo.id, photo);
   }
 
@@ -200,15 +206,10 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
     setStartPoint(null);
   };
 
-  // Clear all drawings from the photo
-  const clearMarkup = () => {
-    setShapes([]);
-  };
-
   return {
     currentTool,
     photo,
-    clearMarkup,
+    undoLastShape,
     previewShape,
     goBack,
     deleteActivePhoto,
