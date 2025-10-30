@@ -3,26 +3,25 @@ import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
+const sanitize = (v?: string) =>
+  (v ?? '')
+    .replace(/^['"]|['"]$/g, '')   // strip surrounding quotes
+    .replace(/^Bearer\s+/i, '')    // strip accidental 'Bearer '
+    .trim();
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = sanitize(process.env.SUPABASE_URL);
+const anon = sanitize(process.env.SUPABASE_ANON_KEY);
+const service = sanitize(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+// quick guard
+if (service && service.split('.').length !== 3) {
+  throw new Error('SUPABASE_SERVICE_ROLE_KEY is not a valid JWT (3 parts expected)');
 }
 
-// Create Supabase client for client-side operations (uses anon key)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// Create Supabase client for server-side operations (uses service role key)
-export const supabaseAdmin = supabaseServiceRoleKey 
-  ? createClient(supabaseUrl, supabaseServiceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
+export const supabase = createClient(supabaseUrl, anon);
+export const supabaseAdmin = service
+  ? createClient(supabaseUrl, service, {
+      auth: { autoRefreshToken: false, persistSession: false },
     })
   : null;
 

@@ -19,6 +19,7 @@ import inspectorsRoutes from './routes/inspectors';
 import observationsRoutes from './routes/observations';
 import supabaseRoutes from './routes/supabase';
 import transcribeRoutes from './routes/transcribe';
+import observationMediaRoutes from './routes/observationMedia';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -50,6 +51,7 @@ app.use('/api/properties', propertiesRoutes); // ✅ Property-related routes
 app.use('/api/inspections', inspectionsRoutes); // ✅ Inspection-related routes
 app.use('/api/inspectors', inspectorsRoutes); // ✅ Inspector-related routes
 app.use('/api/observations', observationsRoutes); // ✅ Observation-related routes
+app.use('/api/observations/media', observationMediaRoutes); // ✅ Observation media upload/list
 app.use('/supabase', supabaseRoutes); // ✅ Supabase test routes
 
 //routes
