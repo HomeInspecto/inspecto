@@ -37,7 +37,7 @@ export default function DrawingToolsView({
       <IconButton
         icon="arrow.uturn.left"
         onPress={() => undoLastShape()}
-        color={currentTool === 'circle' ? 'primary' : 'secondary'}
+        color={'secondary'}
       />
     </View>
   );
