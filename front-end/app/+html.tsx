@@ -14,19 +14,23 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
         {/* Material Icons Font - Required for @expo/vector-icons on web */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Icons"
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"
         />
-        <link
-          rel="preconnect"
-          href="https://fonts.googleapis.com"
-        />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
+        {/* Inline CSS to ensure font is available immediately */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            @font-face {
+              font-family: 'Material Icons';
+              font-style: normal;
+              font-weight: 400;
+              src: url(https://fonts.gstatic.com/s/materialicons/v142/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+            }
+          `
+        }} />
 
         <meta name="description" content="Inspection App" />
         <meta name="keywords" content="expo, react native, inspection" />
