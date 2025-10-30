@@ -77,7 +77,7 @@ export function FilmStripView({
                 style={{
                   userSelect: 'none',
                   pointerEvents: 'none',
-                  paddingHorizontal: animatedMargin as any,
+                  marginHorizontal: animatedMargin as any,
                 }}
               >
                 <AnimatedImage

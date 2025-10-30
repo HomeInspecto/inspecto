@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { Animated, PanResponder, PixelRatio, type PanResponderGestureState } from 'react-native';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
@@ -8,13 +8,14 @@ export function useFilmStrip() {
     useShallow(s => ({
       photos: s.photos,
       setActivePhoto: s.setActivePhoto,
-      activePhotoIndex: s.activePhotoIndex, // <-- assuming your store exposes this index
+      activePhotoIndex: s.activePhotoIndex,
     }))
   );
 
-  const STEP = 53 + 6; // photo width + spacing
+  const STEP = 53 + 6;
   const translateX = useRef(new Animated.Value(0)).current;
-  const isDragging = useRef(new Animated.Value(0)).current; // 0 = idle, 1 = dragging
+  const isDragging = useRef(new Animated.Value(0)).current; // 0 idle, 1 dragging
+  const draggingRef = useRef(false);
   const offsetX = useRef(0);
 
   const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
@@ -40,6 +41,7 @@ export function useFilmStrip() {
     setTranslateX(idx);
     setActivePhoto(idx);
 
+    draggingRef.current = false;
     Animated.timing(isDragging, {
       toValue: 0,
       duration: 180,
@@ -55,6 +57,7 @@ export function useFilmStrip() {
           translateX.setOffset(offsetX.current);
           translateX.setValue(0);
 
+          draggingRef.current = true;
           Animated.timing(isDragging, {
             toValue: 1,
             duration: 120,
@@ -77,9 +80,17 @@ export function useFilmStrip() {
     [translateX, photos.length, setActivePhoto]
   );
 
+  useEffect(() => {
+    if (!photos.length) return;
+    if (draggingRef.current) return;
+
+    const idx = clamp(activePhotoIndex ?? 0, 0, Math.max(0, photos.length - 1));
+    setTranslateX(idx);
+  }, [activePhotoIndex, photos.length]);
+
   return {
     photos,
-    activeIndex: activePhotoIndex ?? 0, // fallback if store isn’t set yet
+    activeIndex: activePhotoIndex ?? 0,
     panHandlers: panResponder.panHandlers,
     translateX,
     isDragging,
