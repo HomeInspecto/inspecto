@@ -40,9 +40,12 @@ export interface PhotoWithMarkup extends Photo {
   shapes?: Shape[];
 }
 
-interface ActiveObservationState {
+export interface Observation {
   photos: PhotoWithMarkup[];
   fieldNote: string;
+}
+
+interface ActiveObservationState extends Observation {
   activePhotoIndex: number;
 
   setActivePhoto: (i: number) => void;

@@ -30,9 +30,9 @@ export default function CameraScreenView(props: CameraScreenProps) {
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.pageBackground }}>
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: 'black' }]}>
-        <Animated.View style={[StyleSheet.absoluteFill, { opacity }]}>
-          <CameraView style={StyleSheet.absoluteFill} ref={cameraRef} facing="back" flash={flash} />
+      <View style={{ flex: 1, backgroundColor: 'black' }}>
+        <Animated.View style={{ flex: 1, opacity }}>
+          <CameraView style={{ flex: 1 }} ref={cameraRef} facing="back" flash={flash} />
         </Animated.View>
       </View>
 
@@ -60,7 +60,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
         <View
           style={{
             paddingHorizontal: 16,
-            paddingBottom: 50,
+            paddingBottom: 120,
             flexDirection: 'row',
             alignItems: 'flex-end',
             justifyContent: 'space-between',

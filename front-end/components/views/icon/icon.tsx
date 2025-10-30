@@ -47,6 +47,8 @@ const MAPPING: IconMapping = {
   checkmark: 'check',
   'arrow.uturn.left': 'undo',
   'arrow.up.right': 'arrow-outward',
+
+  'doc.text.fill': 'assignment',
 } as const;
 
 export type IconName = keyof typeof MAPPING;

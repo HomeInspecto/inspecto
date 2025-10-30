@@ -18,7 +18,7 @@ export type BottomSheetRef = {
   close: () => void;
 };
 
-const DEFAULT_SNAPS = ['25%', '50%', '90%'];
+const DEFAULT_SNAPS = ['10%', '50%', '90%'];
 
 const Sheet = forwardRef<BottomSheetRef, BottomSheetProps>(
   ({ children, snapPoints, initialIndex = 1, enablePanDownToClose = true, onChange }, ref) => {
