@@ -77,7 +77,7 @@ body {
     /* space inside body */
     padding: 0 1em;
     /* each line is similar length */
-    text-align: justify;
+    text-align: start;
     /* browser focuses on readability */
     text-rendering: optimizeLegibility;
     /* line length of 60 characters
