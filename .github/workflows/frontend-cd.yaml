@@ -28,7 +28,16 @@ jobs:
         run: npm ci
 
       - name: Build Expo web export
-        run: npx expo export -p web
+        run: npx expo export -p web --output-dir dist
+        env:
+          EXPO_NO_DOTENV: 1
+      
+      - name: Verify dist output
+        run: |
+          echo "Checking dist directory contents..."
+          ls -la dist/ || echo "dist directory not found"
+          find dist -name "*.woff*" -o -name "*.ttf" | head -5 || echo "No font files found"
+          find dist -name "*.js" | head -3 || echo "No JS files found"
 
       - name: Install Vercel CLI
         run: npm i -g vercel
