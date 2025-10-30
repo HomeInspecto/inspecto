@@ -22,6 +22,7 @@ export default function EditObservation() {
         justifyContent: 'flex-end',
         backgroundColor: COLORS.pageBackground,
         position: 'relative',
+        gap: 16,
       }}
     >
       <View style={{ aspectRatio: '3 / 4' }}>
@@ -30,11 +31,10 @@ export default function EditObservation() {
 
       <View
         style={{
-          padding: 16,
+          paddingHorizontal: 16,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-start',
-          backgroundColor: '#2e2e2f',
         }}
       >
         <FilmStrip />

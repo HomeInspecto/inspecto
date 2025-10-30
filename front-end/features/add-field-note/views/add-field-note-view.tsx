@@ -72,7 +72,8 @@ export const AddFieldNoteView = ({
             <View
               style={{
                 gap: 16,
-                padding: 16,
+                paddingHorizontal: 16,
+                paddingBottom: 16,
                 flexDirection: 'column',
                 justifyContent: 'flex-end',
                 position: 'relative',
