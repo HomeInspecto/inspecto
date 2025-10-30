@@ -12,6 +12,7 @@ import {
 import TextInput from '@/components/views/text-input/text-input';
 import { useRef, useEffect } from 'react';
 import { COLORS } from '@/constants/colors';
+import IconButton from '@/components/views/icon-button/icon-button';
 
 export interface AddFieldNoteProps {
   note: string;
@@ -73,7 +74,13 @@ export const AddFieldNoteView = (props: AddFieldNoteProps) => {
             multiline
             onFocus={onFocus}
             onBlur={onBlur}
-            rightIcon="navigate"
+            rightSlot={
+              note && (
+                <View style={{ position: 'absolute', bottom: 8, right: 8 }}>
+                  <IconButton icon="checkmark" size="xs" onPress={onNextPress}></IconButton>
+                </View>
+              )
+            }
             onRightIconPress={note ? onNextPress : undefined}
           />
         </View>

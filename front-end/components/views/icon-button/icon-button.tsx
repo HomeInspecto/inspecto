@@ -3,16 +3,17 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { Icon, type IconName } from '@/components/views/icon/icon';
 
-type IconButtonSize = 'sm' | 'md' | 'lg';
+type IconButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
 const SIZE_MAP: Record<IconButtonSize, number> = {
+  xs: 32,
   sm: 40,
   md: 50,
   lg: 70,
 };
 
 type IconButtonProps = {
-  onPress: () => void;
+  onPress?: () => void;
   size?: IconButtonSize; // enforce "sm", "md", "lg"
   color?: 'primary' | 'secondary' | 'critical'; // primary = light, secondary = dark
   icon: IconName;

@@ -7,13 +7,14 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
-import { useState, type RefAttributes } from 'react';
+import { useState, type ReactNode } from 'react';
 
 interface Props {
   value: string;
   placeholder?: string;
   leftIcon?: keyof typeof Ionicons.glyphMap;
   rightIcon?: keyof typeof Ionicons.glyphMap;
+  rightSlot?: ReactNode;
 
   onChangeText?: (text: string) => void;
   onRightIconPress?: () => void;
@@ -28,6 +29,7 @@ export default function TextInput({
   placeholder,
   leftIcon,
   rightIcon,
+  rightSlot,
   onChangeText,
   onRightIconPress,
   multiline,
@@ -48,6 +50,7 @@ export default function TextInput({
         borderRadius: multiline ? 20 : 50,
         paddingVertical: multiline ? 16 : 0,
         maxHeight: '100%',
+        position: 'relative',
       }}
     >
       {leftIcon && <Ionicons name={leftIcon} size={18} color={COLORS.label.onDark.primary} />}
@@ -79,14 +82,15 @@ export default function TextInput({
         ]}
       />
 
-      {rightIcon && onRightIconPress && (
+      {rightSlot ? (
+        <>{rightSlot}</>
+      ) : rightIcon && onRightIconPress ? (
         <Pressable onPress={onRightIconPress} hitSlop={10}>
           <Ionicons name={rightIcon} size={18} color={COLORS.label.onDark.primary} />
         </Pressable>
-      )}
-      {rightIcon && !onRightIconPress && (
+      ) : rightIcon ? (
         <Ionicons name={rightIcon} size={18} color={COLORS.label.onDark.primary} />
-      )}
+      ) : null}
     </View>
   );
 }
