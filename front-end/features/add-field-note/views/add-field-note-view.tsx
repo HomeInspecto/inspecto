@@ -53,7 +53,7 @@ export const AddFieldNoteView = (props: AddFieldNoteProps) => {
         ]}
       />
 
-      {focused && <Pressable style={[StyleSheet.absoluteFill, { zIndex: 1 }]} onPress={dismiss} />}
+      {focused && <Pressable style={StyleSheet.absoluteFill} onPress={dismiss} />}
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
