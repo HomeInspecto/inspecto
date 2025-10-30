@@ -54,7 +54,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
             paddingHorizontal: 16,
           }}
         >
-          <IconButton icon="TODO-get-back-icon" onPress={goBack} />
+          <IconButton icon="chevron.left" onPress={goBack} />
         </View>
 
         <View
@@ -67,7 +67,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
           }}
         >
           <View style={{ flex: 1 }}>
-            <IconButton size="sm" icon="TODO-add-flash-icon" onPress={toggleFlash} />
+            <IconButton size="sm" icon="bolt" onPress={toggleFlash} />
           </View>
 
           <View style={{ flex: 1, alignItems: 'center' }}>

@@ -37,16 +37,11 @@ export default function Home() {
           </Text>
         </View>
 
-        <TextInput
-          value={''}
-          placeholder="Enter your email"
-          leftIcon="mail-outline"
-          rightIcon="close"
-        />
+        <TextInput value={''} placeholder="Search" leftIcon="search" />
       </View>
       <InspectionsList />
       <View style={{ width: '100%', justifyContent: 'center', flexDirection: 'row' }}>
-        <IconButton icon="TODO-add-plus-button" onPress={handleGotoCreateInspection} />
+        <IconButton icon="plus" size="lg" onPress={handleGotoCreateInspection} />
       </View>
 
       {__DEV__ && (

@@ -35,7 +35,7 @@ export function CreateInspectionView({
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>
-          <IconButton onPress={goBack} size="sm" color="secondary" icon="back" />
+          <IconButton onPress={goBack} size="sm" color="secondary" icon="chevron.left" />
         </View>
         <Text variant="title2" weight="emphasized" style={{ textAlign: 'center' }}>
           New inspection
@@ -58,7 +58,7 @@ export function CreateInspectionView({
         />
       </View>
 
-      <Button text="Create inspection" onPress={onCreate} icon="TODO-get-plus-icon"></Button>
+      <Button text="Create inspection" onPress={onCreate} icon="plus"></Button>
     </View>
   );
 }

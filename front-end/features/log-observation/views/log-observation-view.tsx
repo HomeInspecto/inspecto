@@ -112,7 +112,7 @@ export const LogObservationView = ({
         </View>
       </View>
 
-      <Button icon="TODO-get-plus-icon" text="Log observation" onPress={onLog}></Button>
+      <Button icon="plus" text="Log observation" onPress={onLog}></Button>
     </View>
   );
 };

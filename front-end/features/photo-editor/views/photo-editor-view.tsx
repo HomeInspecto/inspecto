@@ -53,13 +53,15 @@ export function PhotoEditorView({
           onTouchEnd={handleTouchEnd}
         />
 
-        <View style={{ paddingLeft: 20 }}>
-          <IconButton icon="TODO-get-back-icon" onPress={goBack} color={'critical'} />
+        <View style={{ marginLeft: 20, marginTop: 16 }}>
+          <IconButton icon="chevron.left" onPress={goBack} color={'critical'} />
         </View>
 
         <View
           style={{
             gap: 8,
+            marginRight: 20,
+            marginTop: 16,
           }}
         >
           <DrawingToolsView

@@ -42,6 +42,11 @@ const MAPPING: IconMapping = {
   circle: 'radio-button-unchecked',
   eraser: 'web-asset',
   paintpalette: 'palette',
+
+  plus: 'add',
+  bolt: 'flash-on',
+  checkmark: 'check',
+  'arrow.uturn.left.circle': 'undo',
 } as const;
 
 export type IconName = keyof typeof MAPPING;
