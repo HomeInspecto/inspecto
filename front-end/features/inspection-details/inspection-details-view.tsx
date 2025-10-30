@@ -8,10 +8,11 @@ import Button from '@/components/views/button/button';
 export interface InspectionDetailsViewProps {
   inspection?: ActiveInspection;
   onCreateReport: () => void;
-  onAddObservation: (/* implement later */) => void;
 }
 
 export function InspectionDetailsView({ inspection, onCreateReport }: InspectionDetailsViewProps) {
+  if(!inspection) return
+
   return (
     <View style={{ flex: 1, gap: 16 }}>
       <Text variant="title3" weight="emphasized">
@@ -39,9 +40,19 @@ export function InspectionDetailsView({ inspection, onCreateReport }: Inspection
       </Text>
 
       <View>
-        <Text variant="body" color="on-dark-secondary">
-          observations list (placeholder)
-        </Text>
+        {!inspection.observations?.length && <Text>
+          No observations logged.
+        </Text>}
+        {inspection.observations.map((observation => (
+          <>
+            {
+              observation.fieldNote &&
+              <Text>
+                {observation.fieldNote}
+              </Text>
+            }
+          </>
+        )))}
       </View>
     </View>
   );

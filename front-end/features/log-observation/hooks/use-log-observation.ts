@@ -3,6 +3,7 @@ import type { LogObservationProps } from '../views/log-observation-view';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useShallow } from 'zustand/react/shallow';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
+import { useActiveInspectionStore } from '@/features/inspection-details/state';
 
 type Section = 'Roof and Gutter' | 'Backyard' | 'Hot Water System';
 type Severity = 'Critical' | 'Medium' | 'Low';
@@ -19,7 +20,13 @@ export function useLogObersation(): LogObservationProps {
   const [severity, setSeverity] = useState<Severity>('Low');
 
   const clearObservation = useActiveObservationStore(useShallow(s => s.clearObservation));
-
+  
+  const activeObservation = useActiveObservationStore(useShallow(s => ({
+    photos: s.photos,
+    fieldNote: s.fieldNote
+  })))
+  const addObservation = useActiveInspectionStore(useShallow(state => (state.addObservation)));
+  
   const onLog = useCallback(() => {
     // TODO: replace with your actual submit/dispatch
     // e.g., send to backend / add to store
@@ -31,6 +38,8 @@ export function useLogObersation(): LogObservationProps {
       section,
       severity,
     });
+
+    addObservation(structuredClone(activeObservation))
 
     router.push(`/active-inspection/${id}`);
     clearObservation();

@@ -1,28 +1,27 @@
 import { Linking } from 'react-native';
 import { useActiveInspectionStore, type ActiveInspection } from './state';
+import { Observation, useActiveObservationStore } from '../edit-observation/state';
+import { useShallow } from 'zustand/react/shallow';
+import type { InspectionDetailsViewProps } from './inspection-details-view';
 
-export interface InspectionDetailsProps {
-  inspection?: ActiveInspection;
-  onCreateReport: () => void;
-  onAddObservation: (/* placeholder - implement later */) => void;
-}
+export function useInspectionDetails(): InspectionDetailsViewProps {
+  const { activeInspection } = useActiveInspectionStore(useShallow(state => (
+    {
+      activeInspection: state.activeInspection
+    })
+  ));
 
-export function useInspectionDetails(): InspectionDetailsProps {
-  const inspection = useActiveInspectionStore(state => state.activeInspection);
 
   const onCreateReport = () => {
-    if (!inspection) return;
-    const url = `https://inspection-report-topaz.vercel.app/view/${inspection.id}`;
+    if (!activeInspection) return;
+    const url = `https://inspection-report-topaz.vercel.app/view/${activeInspection.id}`;
     Linking.openURL(url);
   };
 
-  const onAddObservation = () => {
-    // no-op placeholder; implementation to be added later
-  };
+
 
   return {
-    inspection,
-    onCreateReport,
-    onAddObservation,
+    inspection: activeInspection,
+    onCreateReport
   };
 }
