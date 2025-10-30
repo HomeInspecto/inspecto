@@ -40,9 +40,20 @@ export interface PhotoWithMarkup extends Photo {
   shapes?: Shape[];
 }
 
+export type Severity = 'critical' | 'medium' | 'low'| null;
+
 export interface Observation {
   photos: PhotoWithMarkup[];
   fieldNote: string;
+
+  name?: string;
+  description?: string;
+
+  implications?: string;
+  recommendation?: string;
+
+  severity?: Severity;
+  section?: string;
 }
 
 interface ActiveObservationState extends Observation {
@@ -57,14 +68,28 @@ interface ActiveObservationState extends Observation {
   clearFieldNote: () => void;
 
   clearObservation: () => void;
+  setObservation: (observation: Partial<Observation>) => void;
 }
 
 export const useActiveObservationStore = create<ActiveObservationState>(set => ({
   photos: [],
   fieldNote: '',
+  name: undefined,
+  description: undefined,
+  implications: undefined,
+  recommendation: undefined,
+  severity: undefined,
+  section: undefined,
+
+  setObservation: (observation) =>
+    set(state => ({
+      ...observation,
+    })),
+
   activePhotoIndex: 0,
 
-  setActivePhoto: i => set(state => ({ activePhotoIndex: Math.min(Math.max(0,i), state.photos.length-1) })),
+  setActivePhoto: i =>
+    set(state => ({ activePhotoIndex: Math.min(Math.max(0, i), state.photos.length - 1) })),
 
   addPhoto: photo => set(state => ({ photos: [...state.photos, photo] })),
   updatePhoto: (id, newPhoto) =>
@@ -82,6 +107,7 @@ export const useActiveObservationStore = create<ActiveObservationState>(set => (
 
   setFieldNote: note => set({ fieldNote: note }),
   clearFieldNote: () => set({ fieldNote: '' }),
+
   clearObservation: () =>
     set({
       photos: [],

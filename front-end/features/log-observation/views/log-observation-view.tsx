@@ -2,6 +2,7 @@ import { View, Platform } from 'react-native';
 import Text from '@/components/views/text/text';
 import TextInput from '@/components/views/text-input/text-input';
 import Button from '@/components/views/button/button';
+import type { Severity } from '@/features/edit-observation/state';
 
 export interface LogObservationProps {
   onLog: () => void;
@@ -10,8 +11,9 @@ export interface LogObservationProps {
   implication: string;
   recommendation: string;
 
-  section: 'Roof and Gutter' | 'Backyard' | 'Hot Water System';
-  severity: 'Critical' | 'Medium' | 'Low';
+  section: string;
+  severity: Severity;
+
   setName: (value: string) => void;
   setDescription: (value: string) => void;
   setImplication: (value: string) => void;
