@@ -66,7 +66,7 @@ export function Icon({
   color?: string | OpaqueColorValue;
   weight?: SymbolWeight;
 }) {
-  if (Platform.OS === 'ios') return <SymbolView size={size} name={name} />;
+  if (Platform.OS === 'ios') return <SymbolView size={size} name={name} tintColor={color} />;
 
   const iconName = MAPPING[name];
   if (!iconName) {
