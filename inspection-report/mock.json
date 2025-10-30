@@ -1,669 +1,125 @@
 {
-  "organizations": [
-    {
-      "id": "11111111-1111-4111-8111-111111111111",
-      "name": "Acme Inspections Ltd.",
-      "logo_url": "https://example.com/logo.png",
-      "website": "https://acme-inspections.example.com",
-      "phone": "+1-555-0100",
-      "address_line1": "123 Harbor Street",
-      "address_line2": "Suite 200",
-      "city": "Victoria",
-      "postal_code": "V8W 1A1",
-      "country": "Canada",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    }
-  ],
-  "user_profiles": [
-    {
-      "user_id": "22222222-2222-4222-8222-222222222222",
-      "full_name": "Test User",
-      "email": "test_user@example.com",
-      "phone": "+1-555-0101",
-      "avatar_url": "https://example.com/avatars/test_user.png",
-      "timezone": "America/Vancouver",
-      "default_org_id": "11111111-1111-4111-8111-111111111111",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    }
-  ],
-  "inspectors": [
-    {
-      "id": "33333333-3333-4333-8333-333333333333",
-      "organization_id": "11111111-1111-4111-8111-111111111111",
-      "user_id": "22222222-2222-4222-8222-222222222222",
-      "full_name": "Jordan Lee",
-      "email": "jordan.lee@example.com",
-      "phone": "+1-555-0102",
-      "license_number": "BC-INS-2048",
-      "certifications": [
-        "CCI",
-        "RHI"
-      ],
-      "signature_image_url": "https://example.com/signatures/jordan.png",
-      "timezone": "America/Vancouver",
-      "bio": "Certified home inspector with 8+ years of field experience.",
-      "active": true,
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    }
-  ],
-  "properties": [
-    {
-      "id": "44444444-4444-4444-8444-444444444444",
-      "organization_id": "11111111-1111-4111-8111-111111111111",
-      "address_line1": "456 Beacon Avenue",
-      "address_line2": "Unit 3B",
-      "unit": "3B",
-      "city": "Victoria",
-      "region": "BC",
-      "postal_code": "V8V 2N6",
-      "country": "Canada",
-      "year_built": 1996,
-      "dwelling_type": "Townhouse",
-      "sqft": 1450,
-      "bedrooms": 3,
-      "bathrooms": 2,
-      "garage": true,
-      "notes": "Corner unit with southern exposure.",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    }
-  ],
-  "inspections": [
-    {
-      "id": "55555555-5555-4555-8555-555555555555",
-      "inspector_id": "33333333-3333-4333-8333-333333333333",
-      "property_id": "44444444-4444-4444-8444-444444444444",
-      "organization_id": "11111111-1111-4111-8111-111111111111",
-      "status": "scheduled",
-      "created_at": "2025-10-26T12:00:00Z",
-      "scheduled_for": "2025-11-02T17:00:00Z",
-      "started_at": null,
-      "completed_at": null,
-      "updated_at": "2025-10-26T12:00:00Z",
-      "summary": "Pre-purchase inspection scheduled."
-    }
-  ],
-  "inspection_sections": [
-    {
-      "id": "66666666-6666-4666-8666-666666666661",
-      "inspection_id": "55555555-5555-4555-8555-555555555555",
-      "section_name": "Exterior",
-      "notes": "General condition fair; some maintenance needed.",
-      "priority_rating": 2
+  "organization": {
+    "name": "Pacific Coast Inspections",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjfTpar9w8KjDerpd2NRSiEJLm8A_3SuaDgw&s",
+    "website": "https://pacificinspections.ca",
+    "contact": {
+      "phone": "+1-250-555-0174",
+      "address": "1020 View Street, Victoria, BC V8V 3Z5"
     },
-    {
-      "id": "66666666-6666-4666-8666-666666666662",
-      "inspection_id": "55555555-5555-4555-8555-555555555555",
-      "section_name": "Roof",
-      "notes": "Composite shingles approx. 12 years old.",
-      "priority_rating": 3
+    "inspector": {
+      "name": "Josh Beaman",
+      "email": "josh@pacificinspections.ca",
+      "phone": "+1-250-555-0102"
     },
-    {
-      "id": "66666666-6666-4666-8666-666666666663",
-      "inspection_id": "55555555-5555-4555-8555-555555555555",
-      "section_name": "Electrical",
-      "notes": "100A service; breakers labeled.",
-      "priority_rating": 2
-    },
-    {
-      "id": "66666666-6666-4666-8666-666666666664",
-      "inspection_id": "55555555-5555-4555-8555-555555555555",
-      "section_name": "Plumbing",
-      "notes": "Copper supply; ABS drains.",
-      "priority_rating": 2
-    }
-  ],
-  "observations": [
-    {
-      "id": "77777777-7777-4777-8777-777777777701",
-      "section_id": "66666666-6666-4666-8666-666666666661",
-      "obs_name": "Peeling paint on fascia",
-      "description": "Localized peeling observed on south-facing fascia boards.",
-      "severity": "minor",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777702",
-      "section_id": "66666666-6666-4666-8666-666666666661",
-      "obs_name": "Cracked walkway",
-      "description": "Hairline crack by the front step.",
-      "severity": "minor",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777703",
-      "section_id": "66666666-6666-4666-8666-666666666661",
-      "obs_name": "Vegetation contact",
-      "description": "Shrubs touching siding on east wall.",
-      "severity": "minor",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777704",
-      "section_id": "66666666-6666-4666-8666-666666666661",
-      "obs_name": "Downspout extension missing",
-      "description": "One downspout discharges too close to foundation.",
-      "severity": "moderate",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777705",
-      "section_id": "66666666-6666-4666-8666-666666666662",
-      "obs_name": "Lifted shingles",
-      "description": "A few lifted tabs near ridge.",
-      "severity": "moderate",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777706",
-      "section_id": "66666666-6666-4666-8666-666666666662",
-      "obs_name": "Debris in gutters",
-      "description": "Leaf accumulation at rear eaves.",
-      "severity": "minor",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777707",
-      "section_id": "66666666-6666-4666-8666-666666666662",
-      "obs_name": "Chimney cap rust",
-      "description": "Surface rust present at cap; monitor.",
-      "severity": "minor",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777708",
-      "section_id": "66666666-6666-4666-8666-666666666662",
-      "obs_name": "Flashings need sealant",
-      "description": "Minor gaps around vent flashings.",
-      "severity": "moderate",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777709",
-      "section_id": "66666666-6666-4666-8666-666666666663",
-      "obs_name": "Open junction box",
-      "description": "Missing cover in crawlspace.",
-      "severity": "moderate",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777710",
-      "section_id": "66666666-6666-4666-8666-666666666663",
-      "obs_name": "GFCI not present",
-      "description": "No GFCI protection near kitchen sink.",
-      "severity": "moderate",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777711",
-      "section_id": "66666666-6666-4666-8666-666666666663",
-      "obs_name": "Overloaded outlet",
-      "description": "Multiple adapters on living room outlet.",
-      "severity": "minor",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777712",
-      "section_id": "66666666-6666-4666-8666-666666666663",
-      "obs_name": "Loose switch plate",
-      "description": "Primary bedroom switch plate loose.",
-      "severity": "minor",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777713",
-      "section_id": "66666666-6666-4666-8666-666666666664",
-      "obs_name": "Slow drain",
-      "description": "Primary bathroom sink draining slowly.",
-      "severity": "minor",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777714",
-      "section_id": "66666666-6666-4666-8666-666666666664",
-      "obs_name": "Water stain under sink",
-      "description": "Old stain; no active leak detected.",
-      "severity": "minor",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777715",
-      "section_id": "66666666-6666-4666-8666-666666666664",
-      "obs_name": "Toilet wax ring suspect",
-      "description": "Minor movement noted at base.",
-      "severity": "moderate",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    },
-    {
-      "id": "77777777-7777-4777-8777-777777777716",
-      "section_id": "66666666-6666-4666-8666-666666666664",
-      "obs_name": "Laundry hoses aged",
-      "description": "Recommend braided stainless replacements.",
-      "severity": "minor",
-      "status": "open",
-      "created_at": "2025-10-26T12:00:00Z",
-      "updated_at": "2025-10-26T12:00:00Z"
-    }
-  ],
-  "observation_media": [
-    {
-      "media_id": "88888888-8888-4888-8888-888888888801",
-      "observation_id": "77777777-7777-4777-8777-777777777701",
-      "type": "image",
-      "storage_key": "obs/7701/img1.jpg",
-      "caption": "South fascia close-up",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888802",
-      "observation_id": "77777777-7777-4777-8777-777777777701",
-      "type": "image",
-      "storage_key": "obs/7701/img2.jpg",
-      "caption": "Wide view",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888803",
-      "observation_id": "77777777-7777-4777-8777-777777777702",
-      "type": "image",
-      "storage_key": "obs/7702/img1.jpg",
-      "caption": "Crack at step",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888804",
-      "observation_id": "77777777-7777-4777-8777-777777777702",
-      "type": "image",
-      "storage_key": "obs/7702/img2.jpg",
-      "caption": "Context",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888805",
-      "observation_id": "77777777-7777-4777-8777-777777777703",
-      "type": "image",
-      "storage_key": "obs/7703/img1.jpg",
-      "caption": "Shrubs vs siding",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888806",
-      "observation_id": "77777777-7777-4777-8777-777777777703",
-      "type": "image",
-      "storage_key": "obs/7703/img2.jpg",
-      "caption": "East wall",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888807",
-      "observation_id": "77777777-7777-4777-8777-777777777704",
-      "type": "image",
-      "storage_key": "obs/7704/img1.jpg",
-      "caption": "Downspout exit",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888808",
-      "observation_id": "77777777-7777-4777-8777-777777777704",
-      "type": "image",
-      "storage_key": "obs/7704/img2.jpg",
-      "caption": "Foundation grade",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888809",
-      "observation_id": "77777777-7777-4777-8777-777777777705",
-      "type": "image",
-      "storage_key": "obs/7705/img1.jpg",
-      "caption": "Lifted tabs",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888810",
-      "observation_id": "77777777-7777-4777-8777-777777777705",
-      "type": "image",
-      "storage_key": "obs/7705/img2.jpg",
-      "caption": "Ridge detail",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888811",
-      "observation_id": "77777777-7777-4777-8777-777777777706",
-      "type": "image",
-      "storage_key": "obs/7706/img1.jpg",
-      "caption": "Gutter debris",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888812",
-      "observation_id": "77777777-7777-4777-8777-777777777706",
-      "type": "image",
-      "storage_key": "obs/7706/img2.jpg",
-      "caption": "Rear eaves",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888813",
-      "observation_id": "77777777-7777-4777-8777-777777777707",
-      "type": "image",
-      "storage_key": "obs/7707/img1.jpg",
-      "caption": "Chimney cap",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888814",
-      "observation_id": "77777777-7777-4777-8777-777777777707",
-      "type": "image",
-      "storage_key": "obs/7707/img2.jpg",
-      "caption": "Surface rust",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888815",
-      "observation_id": "77777777-7777-4777-8777-777777777708",
-      "type": "image",
-      "storage_key": "obs/7708/img1.jpg",
-      "caption": "Vent flashing",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888816",
-      "observation_id": "77777777-7777-4777-8777-777777777708",
-      "type": "image",
-      "storage_key": "obs/7708/img2.jpg",
-      "caption": "Sealant gaps",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888817",
-      "observation_id": "77777777-7777-4777-8777-777777777709",
-      "type": "image",
-      "storage_key": "obs/7709/img1.jpg",
-      "caption": "Open J-box",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888818",
-      "observation_id": "77777777-7777-4777-8777-777777777709",
-      "type": "image",
-      "storage_key": "obs/7709/img2.jpg",
-      "caption": "Crawlspace area",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888819",
-      "observation_id": "77777777-7777-4777-8777-777777777710",
-      "type": "image",
-      "storage_key": "obs/7710/img1.jpg",
-      "caption": "No GFCI",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888820",
-      "observation_id": "77777777-7777-4777-8777-777777777710",
-      "type": "image",
-      "storage_key": "obs/7710/img2.jpg",
-      "caption": "Kitchen outlet",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888821",
-      "observation_id": "77777777-7777-4777-8777-777777777711",
-      "type": "image",
-      "storage_key": "obs/7711/img1.jpg",
-      "caption": "Overloaded outlet",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888822",
-      "observation_id": "77777777-7777-4777-8777-777777777711",
-      "type": "image",
-      "storage_key": "obs/7711/img2.jpg",
-      "caption": "Adapters",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888823",
-      "observation_id": "77777777-7777-4777-8777-777777777712",
-      "type": "image",
-      "storage_key": "obs/7712/img1.jpg",
-      "caption": "Loose plate",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888824",
-      "observation_id": "77777777-7777-4777-8777-777777777712",
-      "type": "image",
-      "storage_key": "obs/7712/img2.jpg",
-      "caption": "Bedroom switch",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888825",
-      "observation_id": "77777777-7777-4777-8777-777777777713",
-      "type": "image",
-      "storage_key": "obs/7713/img1.jpg",
-      "caption": "Slow drain",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888826",
-      "observation_id": "77777777-7777-4777-8777-777777777713",
-      "type": "image",
-      "storage_key": "obs/7713/img2.jpg",
-      "caption": "Trap detail",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888827",
-      "observation_id": "77777777-7777-4777-8777-777777777714",
-      "type": "image",
-      "storage_key": "obs/7714/img1.jpg",
-      "caption": "Water stain",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888828",
-      "observation_id": "77777777-7777-4777-8777-777777777714",
-      "type": "image",
-      "storage_key": "obs/7714/img2.jpg",
-      "caption": "Cabinet base",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888829",
-      "observation_id": "77777777-7777-4777-8777-777777777715",
-      "type": "image",
-      "storage_key": "obs/7715/img1.jpg",
-      "caption": "Toilet base",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888830",
-      "observation_id": "77777777-7777-4777-8777-777777777715",
-      "type": "image",
-      "storage_key": "obs/7715/img2.jpg",
-      "caption": "Movement noted",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888831",
-      "observation_id": "77777777-7777-4777-8777-777777777716",
-      "type": "image",
-      "storage_key": "obs/7716/img1.jpg",
-      "caption": "Aged hoses",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": true,
-      "sort_order": 0
-    },
-    {
-      "media_id": "88888888-8888-4888-8888-888888888832",
-      "observation_id": "77777777-7777-4777-8777-777777777716",
-      "type": "image",
-      "storage_key": "obs/7716/img2.jpg",
-      "caption": "Recommend upgrade",
-      "transcription": null,
-      "annotated_flag": false,
-      "created_at": "2025-10-26T12:00:00Z",
-      "is_primary": false,
-      "sort_order": 1
-    }
-  ],
-  "reports": [],
-  "organization_users": []
+    "properties": [
+      {
+        "address": "456 Beacon Avenue, Unit 3B, Victoria, BC",
+        "year_built": 1998,
+        "type": "Condo",
+        "sqft": 1150,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "garage": false,
+        "notes": "Corner unit with southern exposure and partial ocean view."
+      }
+    ]
+  },
+  "inspection": {
+    "summary": "General pre-purchase inspection for a 2-bedroom condo unit. Overall in good condition with minor maintenance issues.",
+    "created_at": "2025-10-29T14:30:00Z",
+    "sections": [
+      {
+        "name": "Roof",
+        "note": "Roof is part of the strata responsibility; visually inspected from ground level and upper balcony.",
+        "observations": [
+          {
+            "name": "Moss growth along north edge",
+            "severity": "minor",
+            "description": "Some moss accumulation visible on shaded sections. Recommend routine cleaning.",
+            "media": [
+              {
+                "caption": "Moss visible from balcony",
+                "url": "https://alibhutto.com/wp-content/uploads/2024/07/pic-1.jpg?w=256&h=256&crop=1"
+              }
+            ]
+          },
+          {
+            "name": "Flashing sealant wear",
+            "severity": "moderate",
+            "description": "Sealant at flashing joints appears cracked; could lead to moisture intrusion over time.",
+            "media": [
+              {
+                "caption": "Close-up of cracked sealant",
+                "url": "https://wurthlac.com/_next/image?url=https%3A%2F%2Fxcart.wurthlac.com%2Fimages%2FD%2FWR5983146300-1.png&w=256&q=75"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Electrical",
+        "note": "Panel located in entry hallway; 100A service with labeled breakers.",
+        "observations": [
+          {
+            "name": "Missing GFCI protection",
+            "severity": "moderate",
+            "description": "No GFCI outlets in kitchen or bathrooms. Recommend upgrading for safety.",
+            "media": [
+              {
+                "caption": "Standard outlet near kitchen sink",
+                "url": "https://media.distributordatasolutions.com/476/csv_leviton/small/ee76f860eca4dd68677becec54840fb537db3782-small.png"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Plumbing",
+        "note": "Copper supply lines and ABS drains observed throughout.",
+        "observations": [
+          {
+            "name": "Slow bathroom drain",
+            "severity": "minor",
+            "description": "Primary bathroom sink drains slowly, likely due to minor buildup.",
+            "media": [
+              {
+                "caption": "Sink with standing water after test",
+                "url": "https://abchomedoitbest.com/web/image/product.template/33245/image_256/%5BRHTKS11159%20-%20RH953002%20RHUDBKS11159%5D%20Royal%20Homes%20Undermount%20Double%20Bowl%20Kitchen%20Sink%2032%20x%2019%20x%2010%20In.?unique=f5f61b5"
+              }
+            ]
+          },
+          {
+            "name": "Leaking shutoff valve",
+            "severity": "major",
+            "description": "Active leak observed at cold-water shutoff under kitchen sink.",
+            "media": [
+              {
+                "caption": "Water droplets on valve connection",
+                "url": "https://styles.redditmedia.com/t5_29obra/styles/communityIcon_eaz7goq4akt51.png"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Interior",
+        "note": "All rooms inspected; general wear consistent with age.",
+        "observations": [
+          {
+            "name": "Cracked drywall at window corner",
+            "severity": "minor",
+            "description": "Hairline crack noted at living room window corner, likely due to minor settling.",
+            "media": [
+              {
+                "caption": "Crack near window trim",
+                "url": "https://public.blenderkit.com/thumbnails/assets/d54e45d7a85449769f453a2db33f8d9e/files/thumbnail_35859760-62c6-4f16-8c39-e3f7f80ff6b8.png.256x256_q85.png.webp?webp_generated=1695322651"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
+
