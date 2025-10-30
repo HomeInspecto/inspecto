@@ -1,7 +1,7 @@
 name: Frontend CI/CD (Vercel Preview on PR)
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
     paths:
       - 'front-end/**'
