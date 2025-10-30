@@ -74,6 +74,7 @@ export const AddFieldNoteView = ({
                 display: focused ? 'flex' : 'none',
                 width: '100%',
                 height: '100%',
+                pointerEvents: 'auto',
               },
             ]}
           ></Animated.View>
