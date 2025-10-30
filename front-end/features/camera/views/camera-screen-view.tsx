@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { CameraView } from 'expo-camera';
 import type { CameraScreenProps } from '../camera-screen';
 import IconButton from '@/components/views/icon-button/icon-button';
+import Button from '@/components/views/button/button';
 
 export default function CameraScreenView(props: CameraScreenProps) {
   const { goBack, gotoEditPhotos, photos, setCamera, flash, toggleFlash, takePhoto } = props;
@@ -49,25 +50,11 @@ export default function CameraScreenView(props: CameraScreenProps) {
 
           <View style={{ flex: 1 }}>
             {photos.length > 0 && (
-              <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 20,
-                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                  borderRadius: 20,
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  minWidth: 80,
-                }}
+              <Button
+                color="secondary"
+                text={`Edit photo${photos.length === 1 ? '' : 's'} (${photos.length})`}
                 onPress={gotoEditPhotos}
-              >
-                <Text style={{ color: 'white', fontSize: 12, fontWeight: '500' }}>
-                  Edit photo{photos.length === 1 && 's'} ({photos.length})
-                </Text>
-              </TouchableOpacity>
+              />
             )}
           </View>
         </View>

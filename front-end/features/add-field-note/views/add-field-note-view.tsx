@@ -47,70 +47,59 @@ export const AddFieldNoteView = ({
   }, [focused]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[
-        StyleSheet.absoluteFill,
-        {
-          pointerEvents: 'box-none',
-          justifyContent: 'flex-end',
-        },
-      ]}
-    >
-      <TouchableWithoutFeedback
-        style={{ pointerEvents: 'auto', flex: 1 }}
-        disabled={!focused}
-        onPress={() => {
-          Keyboard.dismiss();
-          onBlur?.();
-        }}
+    <>
+      {/* background blur */}
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            opacity: fadeAnim,
+            display: focused ? 'flex' : 'none',
+          },
+        ]}
+      ></Animated.View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={[
+          {
+            justifyContent: 'flex-end',
+          },
+        ]}
       >
-        <>
-          {/* background blur */}
-          <Animated.View
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                backgroundColor: 'rgba(0,0,0,0.8)',
-                opacity: fadeAnim,
-                display: focused ? 'flex' : 'none',
-                width: '100%',
-                height: '100%',
-                pointerEvents: 'auto',
-              },
-            ]}
-          ></Animated.View>
-          <View
-            style={{
-              gap: 16,
-              padding: 16,
-              flexDirection: 'column',
-              justifyContent: 'flex-end',
-              position: 'relative',
-              pointerEvents: 'auto',
-            }}
-          >
-            <Animated.View style={{ opacity: fadeAnim, display: focused ? 'flex' : 'none' }}>
-              <Text variant="title3" weight="emphasized" style={{ textAlign: 'center' }}>
-                What did you observe?
-              </Text>
-            </Animated.View>
-            <TextInput
-              value={note}
-              onChangeText={onChangeText}
-              placeholder="Write a field note"
-              multiline
-              onFocus={onFocus}
-              onBlur={onBlur}
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <>
+            <View
               style={{
-                opacity: 1,
+                gap: 16,
+                padding: 16,
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                position: 'relative',
               }}
-              rightIcon={'navigate'}
-              onRightIconPress={note ? onNextPress : undefined}
-            />
-          </View>
-        </>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+            >
+              <Animated.View style={{ opacity: fadeAnim, display: focused ? 'flex' : 'none' }}>
+                <Text variant="title3" weight="emphasized" style={{ textAlign: 'center' }}>
+                  What did you observe?
+                </Text>
+              </Animated.View>
+              <TextInput
+                value={note}
+                onChangeText={onChangeText}
+                placeholder="Write a field note"
+                multiline
+                onFocus={onFocus}
+                onBlur={onBlur}
+                style={{
+                  opacity: 1,
+                }}
+                rightIcon={'navigate'}
+                onRightIconPress={note ? onNextPress : undefined}
+              />
+            </View>
+          </>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </>
   );
 };

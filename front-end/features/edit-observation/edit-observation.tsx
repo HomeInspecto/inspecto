@@ -35,7 +35,6 @@ export default function EditObservation() {
           flexDirection: 'column',
           justifyContent: 'flex-start',
           backgroundColor: '#2e2e2f',
-          paddingBottom: 108, // hard coded value on text input height. not sure what the better way to do this is
         }}
       >
         <FilmStrip />
