@@ -11,6 +11,7 @@ import {
 
 import TextInput from '@/components/views/text-input/text-input';
 import { useRef, useEffect } from 'react';
+import { COLORS } from '@/constants/colors';
 
 export interface AddFieldNoteProps {
   note: string;
@@ -46,7 +47,10 @@ export const AddFieldNoteView = (props: AddFieldNoteProps) => {
     <>
       <Animated.View
         pointerEvents={focused ? 'auto' : 'none'}
-        style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.8)', opacity: fadeAnim }]}
+        style={[
+          StyleSheet.absoluteFill,
+          { backgroundColor: COLORS.pageBackground, opacity: fadeAnim },
+        ]}
       />
 
       {focused && <Pressable style={[StyleSheet.absoluteFill, { zIndex: 1 }]} onPress={dismiss} />}
