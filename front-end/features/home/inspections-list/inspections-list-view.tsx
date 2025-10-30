@@ -1,6 +1,5 @@
 import { View, FlatList, Pressable } from 'react-native';
 import Text from '@/components/views/text/text';
-import Button from '@/components/views/button/button';
 import type { Inspection } from '../state';
 import { COLORS } from '@/constants/colors';
 

@@ -19,8 +19,15 @@ const dummyInspection: Inspection = {
   createdAt: 1761792433130,
 };
 
+const dummyInspection2: Inspection = {
+  id: 'lmquckr4ql2',
+  client: 'Kelly Brown',
+  address: '3172 Cedar Hill Rd',
+  createdAt: 1761792433130,
+};
+
 export const useInspectionsStore = create<InspectionStore>(set => ({
-  inspections: [dummyInspection, dummyInspection],
+  inspections: [dummyInspection, dummyInspection2],
   createInspection: (inspection: Inspection) =>
     set(state => ({
       inspections: [...state.inspections, inspection],
