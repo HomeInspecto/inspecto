@@ -43,16 +43,13 @@ export function InspectionDetailsView({ inspection, onCreateReport }: Inspection
         {!inspection.observations?.length && <Text>
           No observations logged.
         </Text>}
-        {inspection.observations.map((observation => (
-          <>
-            {
-              observation.fieldNote &&
-              <Text>
-                {observation.fieldNote}
-              </Text>
-            }
-          </>
-        )))}
+        {inspection.observations.map((observation, idx) => (
+          observation.fieldNote ? (
+            <Text key={`obs-${idx}`}>
+              {observation.fieldNote}
+            </Text>
+          ) : null
+        ))}
       </View>
     </View>
   );
