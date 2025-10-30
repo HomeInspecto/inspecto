@@ -1,20 +1,24 @@
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef } from 'react';
 import { Animated, PanResponder, PixelRatio, type PanResponderGestureState } from 'react-native';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
 
 export function useFilmStrip() {
-  const { photos, setActivePhoto } = useActiveObservationStore(
-    useShallow(s => ({ photos: s.photos, setActivePhoto: s.setActivePhoto }))
+  const { photos, setActivePhoto, activePhotoIndex } = useActiveObservationStore(
+    useShallow(s => ({
+      photos: s.photos,
+      setActivePhoto: s.setActivePhoto,
+      activePhotoIndex: s.activePhotoIndex, // <-- assuming your store exposes this index
+    }))
   );
 
   const STEP = 53 + 6; // photo width + spacing
   const translateX = useRef(new Animated.Value(0)).current;
+  const isDragging = useRef(new Animated.Value(0)).current; // 0 = idle, 1 = dragging
   const offsetX = useRef(0);
 
   const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
-  // TODO make setTranslateX a zustand store so that delete photo can call it to fix the film strip position
   const setTranslateX = (idx: number) => {
     const snapX = -idx * STEP;
 
@@ -35,6 +39,12 @@ export function useFilmStrip() {
 
     setTranslateX(idx);
     setActivePhoto(idx);
+
+    Animated.timing(isDragging, {
+      toValue: 0,
+      duration: 180,
+      useNativeDriver: true,
+    }).start();
   }
 
   const panResponder = useMemo(
@@ -44,6 +54,12 @@ export function useFilmStrip() {
         onPanResponderGrant: () => {
           translateX.setOffset(offsetX.current);
           translateX.setValue(0);
+
+          Animated.timing(isDragging, {
+            toValue: 1,
+            duration: 120,
+            useNativeDriver: true,
+          }).start();
         },
 
         onPanResponderMove: (_e, g) => {
@@ -63,7 +79,9 @@ export function useFilmStrip() {
 
   return {
     photos,
+    activeIndex: activePhotoIndex ?? 0, // fallback if store isn’t set yet
     panHandlers: panResponder.panHandlers,
     translateX,
+    isDragging,
   };
 }
