@@ -9,6 +9,8 @@ import { useShallow } from 'zustand/shallow';
 export function useCameraScreen(): CameraScreenProps {
   const { id } = useLocalSearchParams<{ id: string }>();
 
+  const clearObservation = useActiveObservationStore(useShallow(s => s.clearObservation));
+
   const cameraRef = useRef<CameraView>(null);
   const [flash, setFlash] = useState<FlashMode>('off');
 
@@ -49,6 +51,7 @@ export function useCameraScreen(): CameraScreenProps {
   };
 
   const goBack = () => {
+    clearObservation();
     router.push('/');
   };
   const gotoEditPhotos = () => {

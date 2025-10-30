@@ -2,10 +2,13 @@ import { useCallback, useState } from 'react';
 import type { CreateInspectionViewProps } from './create-inspection-view';
 import { router } from 'expo-router';
 import { useInspectionsStore } from '../state';
+import { useShallow } from 'zustand/react/shallow';
+import { useActiveObservationStore } from '@/features/edit-observation/state';
 
 export function useCreateInspection(): CreateInspectionViewProps {
   const [client, setClient] = useState<string>('');
   const [address, setAddress] = useState<string>('');
+  const clearObservation = useActiveObservationStore(useShallow(s => s.clearObservation));
 
   const onClientChange = useCallback((value: string) => {
     setClient(value);
@@ -25,6 +28,8 @@ export function useCreateInspection(): CreateInspectionViewProps {
       address,
       createdAt: Date.now(),
     });
+
+    clearObservation();
 
     router.push(`/active-inspection/${id}`);
   }, [client, address]);
