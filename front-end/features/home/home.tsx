@@ -45,12 +45,9 @@ export default function Home() {
       </View>
 
       {__DEV__ && (
-        <View>
-          <Text variant="title1" weight="emphasized">
-            Dev buttons
-          </Text>
-          <Button text="storybook" onPress={() => router.push('/storybook')} />
-        </View>
+        <Pressable onPress={() => router.push('/storybook')}>
+          <Text variant="body">storybook (dev)</Text>
+        </Pressable>
       )}
     </View>
   );
