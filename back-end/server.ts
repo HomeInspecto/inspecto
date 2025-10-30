@@ -20,6 +20,7 @@ import observationsRoutes from './routes/observations';
 import supabaseRoutes from './routes/supabase';
 import transcribeRoutes from './routes/transcribe';
 import observationMediaRoutes from './routes/observationMedia';
+import generateReportRoutes from './routes/report';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -56,6 +57,7 @@ app.use('/supabase', supabaseRoutes); // ✅ Supabase test routes
 
 //routes
 app.use('/api/transcriptions', transcribeRoutes);
+app.use('/api/report', generateReportRoutes);
 
 
 // Start server
