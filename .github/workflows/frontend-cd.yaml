@@ -1,0 +1,41 @@
+name: Frontend CD (Vercel Production)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'front-end/**'
+      - '.github/workflows/frontend-cd.yaml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front-end
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: front-end/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Expo web export
+        run: npx expo export -p web
+
+      - name: Install Vercel CLI
+        run: npm i -g vercel
+
+      - name: Vercel pull (production)
+        run: vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy dist/ to Vercel (production)
+        run: vercel deploy dist --yes --prod=true --token ${{ secrets.VERCEL_TOKEN }}
+
