@@ -86,6 +86,77 @@ Currently, the API doesn't implement authentication. In production, you should a
 
 **Example**: `GET /api/observations?severity=critical&status=open`
 
+#### Create Observation (with media upload)
+- **POST** `/api/observations/createObservation`
+- **Description**: Creates a new observation and optionally uploads files in the same request
+- **Body (multipart/form-data)**:
+  - Text fields:
+    - `section_id` (string, required)
+    - `obs_name` (string, required)
+    - `description` (string, optional)
+    - `severity` (enum: minor|moderate|critical, optional)
+    - `status` (enum: open|resolved|defer, optional)
+  - File fields:
+    - `files` (File, repeatable)
+- **Response**:
+  ```json
+  {
+    "observation": { /* created observation */ },
+    "uploads": {
+      "performed": true,
+      "count": 2,
+      "items": [
+        { "storage_key": "<public-url>", "type": "photo", "public_url": "<public-url>" }
+      ]
+    }
+  }
+  ```
+
+### Observation Media
+
+#### Upload Media for Observation
+- **POST** `/api/observations/media/:observation_id`
+- **Body (multipart/form-data)**:
+  - `file` (File, required)
+- **Response**:
+  ```json
+  {
+    "observation_media": { /* inserted row */ },
+    "storage_key": "<public-url>",
+    "public_url": "<public-url>"
+  }
+  ```
+
+#### List Media for Observation
+- **GET** `/api/observations/media/:observation_id`
+- **Response**: `{ media: ObservationMedia[] }`
+
+### Transcription
+
+#### Transcribe Audio
+- **POST** `/api/transcriptions/transcribe`
+- **Body (multipart/form-data)**:
+  - `file` (audio file, required)
+- **Response**:
+  ```json
+  { "transcription": "..." }
+  ```
+
+#### Polish Transcription
+- **POST** `/api/transcriptions/polish`
+- **Body**: `{ text: string }`
+
+#### Repolish Transcription
+- **POST** `/api/transcriptions/repolish`
+- **Body**: `{ text: string }`
+
+### Report
+
+#### Generate Report by Property
+- **GET** `/api/report/generate/:property_id`
+- **Description**: Builds a report from DB data (organization, latest inspection, sections, observations, media)
+- **Response**: See `mock_data/report_generated.json` for example shape
+
 ## Data Types
 
 ### Organization
