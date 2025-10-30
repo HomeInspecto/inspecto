@@ -38,11 +38,31 @@ jobs:
         env:
           EXPO_NO_DOTENV: 1
       
+      - name: Copy vector-icons fonts to dist
+        run: |
+          # Copy font files that @expo/vector-icons expects
+          FONTS_SRC="node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts"
+          if [ -d "$FONTS_SRC" ]; then
+            echo "Copying font files..."
+            # Copy to multiple locations for compatibility
+            mkdir -p dist/_expo/static/fonts dist/fonts 2>/dev/null || true
+            cp "$FONTS_SRC"/*.ttf dist/_expo/static/fonts/ 2>/dev/null || true
+            cp "$FONTS_SRC"/*.ttf dist/fonts/ 2>/dev/null || true
+            # Also copy to root for webpack-style requests
+            cp "$FONTS_SRC"/MaterialIcons.ttf dist/ 2>/dev/null || true
+            cp "$FONTS_SRC"/Ionicons.ttf dist/ 2>/dev/null || true
+            echo "Font files copied successfully"
+            ls -la dist/*.ttf 2>/dev/null || echo "Checking root level fonts..."
+          else
+            echo "Warning: Font source directory not found: $FONTS_SRC"
+          fi
+      
       - name: Verify dist output
         run: |
           echo "Checking dist directory contents..."
-          ls -la dist/ || echo "dist directory not found"
-          find dist -name "*.woff*" -o -name "*.ttf" | head -5 || echo "No font files found"
+          ls -la dist/ | head -20 || echo "dist directory not found"
+          echo "Searching for font files..."
+          find dist -name "*.woff*" -o -name "*.ttf" 2>/dev/null | head -10 || echo "No font files found"
           find dist -name "*.js" | head -3 || echo "No JS files found"
 
       - name: Install Vercel CLI
@@ -79,11 +99,31 @@ jobs:
         env:
           EXPO_NO_DOTENV: 1
       
+      - name: Copy vector-icons fonts to dist
+        run: |
+          # Copy font files that @expo/vector-icons expects
+          FONTS_SRC="node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts"
+          if [ -d "$FONTS_SRC" ]; then
+            echo "Copying font files..."
+            # Copy to multiple locations for compatibility
+            mkdir -p dist/_expo/static/fonts dist/fonts 2>/dev/null || true
+            cp "$FONTS_SRC"/*.ttf dist/_expo/static/fonts/ 2>/dev/null || true
+            cp "$FONTS_SRC"/*.ttf dist/fonts/ 2>/dev/null || true
+            # Also copy to root for webpack-style requests
+            cp "$FONTS_SRC"/MaterialIcons.ttf dist/ 2>/dev/null || true
+            cp "$FONTS_SRC"/Ionicons.ttf dist/ 2>/dev/null || true
+            echo "Font files copied successfully"
+            ls -la dist/*.ttf 2>/dev/null || echo "Checking root level fonts..."
+          else
+            echo "Warning: Font source directory not found: $FONTS_SRC"
+          fi
+      
       - name: Verify dist output
         run: |
           echo "Checking dist directory contents..."
-          ls -la dist/ || echo "dist directory not found"
-          find dist -name "*.woff*" -o -name "*.ttf" | head -5 || echo "No font files found"
+          ls -la dist/ | head -20 || echo "dist directory not found"
+          echo "Searching for font files..."
+          find dist -name "*.woff*" -o -name "*.ttf" 2>/dev/null | head -10 || echo "No font files found"
           find dist -name "*.js" | head -3 || echo "No JS files found"
 
       - name: Install Vercel CLI

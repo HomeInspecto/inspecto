@@ -40,6 +40,9 @@
       "favicon": "./assets/images/favicon.png",
       "bundler": "metro"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "plugins": [
       "expo-router",
       [
