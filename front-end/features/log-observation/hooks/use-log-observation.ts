@@ -21,8 +21,6 @@ export function useLogObersation(): LogObservationProps {
     recommendation,
     section,
     severity,
-    photos,
-    fieldNote,
   ] = useActiveObservationStore(
     useShallow(s => [
       s.setObservation,
@@ -33,8 +31,6 @@ export function useLogObersation(): LogObservationProps {
       s.recommendation ?? '',
       s.section ?? '',
       s.severity ?? null,
-      s.photos,
-      s.fieldNote,
     ])
   );
 
@@ -48,17 +44,18 @@ export function useLogObersation(): LogObservationProps {
   const addObservation = useActiveInspectionStore(useShallow(state => state.addObservation));
 
   const onLog = useCallback(() => {
+    const obsrState = useActiveObservationStore.getState();
+
     const observation: Observation = {
-      name,
-      description,
-      implications,
-      recommendation,
-      section,
-      severity,
-      photos,
-      fieldNote,
+      name: obsrState.name,
+      description: obsrState.description,
+      implications: obsrState.implications,
+      recommendation: obsrState.recommendation,
+      section: obsrState.section,
+      severity: obsrState.severity,
+      photos: obsrState.photos,
+      fieldNote: obsrState.fieldNote,
     };
-    console.log('Logging observation', observation);
 
     // TODO SEND TO BACKEND HERE
     addObservation(structuredClone(observation));
