@@ -120,6 +120,58 @@ export default function SvgOverlayView({
                 strokeLinejoin="round"
               />
             )}
+            {currentTool === 'arrow' &&
+              (() => {
+                try {
+                  const shape = JSON.parse(previewShape);
+                  const strokeColor = shape.strokeColor;
+                  const strokeWidth = shape.strokeWidth;
+
+                  const angle = Math.atan2(shape.y2! - shape.y1!, shape.x2! - shape.x1!);
+                  const arrowLength = 15;
+                  const arrowAngle = Math.PI / 6; // 30 degrees
+
+                  const arrowX1 = shape.x2! - arrowLength * Math.cos(angle - arrowAngle);
+                  const arrowY1 = shape.y2! - arrowLength * Math.sin(angle - arrowAngle);
+                  const arrowX2 = shape.x2! - arrowLength * Math.cos(angle + arrowAngle);
+                  const arrowY2 = shape.y2! - arrowLength * Math.sin(angle + arrowAngle);
+
+                  return (
+                    <G key={shape.id}>
+                      <Line
+                        x1={shape.x1}
+                        y1={shape.y1}
+                        x2={shape.x2}
+                        y2={shape.y2}
+                        stroke={strokeColor}
+                        strokeWidth={strokeWidth}
+                        strokeLinecap="round"
+                      />
+                      <Line
+                        x1={shape.x2}
+                        y1={shape.y2}
+                        x2={arrowX1}
+                        y2={arrowY1}
+                        stroke={strokeColor}
+                        strokeWidth={strokeWidth}
+                        strokeLinecap="round"
+                      />
+                      <Line
+                        x1={shape.x2}
+                        y1={shape.y2}
+                        x2={arrowX2}
+                        y2={arrowY2}
+                        stroke={strokeColor}
+                        strokeWidth={strokeWidth}
+                        strokeLinecap="round"
+                      />
+                    </G>
+                  );
+                } catch (e) {
+                  // Fallback to path rendering if JSON parsing fails
+                }
+                return null;
+              })()}
             {currentTool === 'circle' &&
               (() => {
                 try {

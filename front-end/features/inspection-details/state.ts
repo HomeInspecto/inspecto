@@ -18,9 +18,9 @@ export interface ActiveInspectionStore {
 
 const dummyInspection = {
   id: 'lmquckr4ql',
-  client: 'Michael Johnson',
-  address: '2444 Royal Oak dr',
-  createdAt: 1761792433130,
+  client: 'Peggy & Claudia',
+  address: 'Startup Studio, Harry Hickman Building (HHB)',
+  createdAt: 1761879095780,
   observations: [],
 };
 
