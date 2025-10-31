@@ -40,7 +40,7 @@ export interface PhotoWithMarkup extends Photo {
   shapes?: Shape[];
 }
 
-export type Severity = 'critical' | 'medium' | 'low'| null;
+export type Severity = 'critical' | 'medium' | 'low' | null;
 
 export interface Observation {
   photos: PhotoWithMarkup[];
@@ -81,7 +81,7 @@ export const useActiveObservationStore = create<ActiveObservationState>(set => (
   severity: undefined,
   section: undefined,
 
-  setObservation: (observation) =>
+  setObservation: observation =>
     set(state => ({
       ...observation,
     })),

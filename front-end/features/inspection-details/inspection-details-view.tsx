@@ -11,7 +11,7 @@ export interface InspectionDetailsViewProps {
 }
 
 export function InspectionDetailsView({ inspection, onCreateReport }: InspectionDetailsViewProps) {
-  if(!inspection) return
+  if (!inspection) return;
 
   return (
     <View style={{ flex: 1, gap: 16 }}>
@@ -40,16 +40,10 @@ export function InspectionDetailsView({ inspection, onCreateReport }: Inspection
       </Text>
 
       <View>
-        {!inspection.observations?.length && <Text>
-          No observations logged.
-        </Text>}
-        {inspection.observations.map((observation, idx) => (
-          observation.fieldNote ? (
-            <Text key={`obs-${idx}`}>
-              {observation.fieldNote}
-            </Text>
-          ) : null
-        ))}
+        {!inspection.observations?.length && <Text>No observations logged.</Text>}
+        {inspection.observations.map((observation, idx) =>
+          observation.fieldNote ? <Text key={`obs-${idx}`}>{observation.fieldNote}</Text> : null
+        )}
       </View>
     </View>
   );

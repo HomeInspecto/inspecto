@@ -34,11 +34,7 @@ export default function DrawingToolsView({
         color={currentTool === 'circle' ? 'primary' : 'secondary'}
       />
 
-      <IconButton
-        icon="arrow.uturn.left"
-        onPress={() => undoLastShape()}
-        color={'secondary'}
-      />
+      <IconButton icon="arrow.uturn.left" onPress={() => undoLastShape()} color={'secondary'} />
     </View>
   );
 }

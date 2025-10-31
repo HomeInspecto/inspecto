@@ -17,7 +17,7 @@ export default function Screen() {
         navigatedRef.current = true;
         router.replace(`/active-inspection/${id}`); // go to camera
       }
-    }, [photos])
+    }, [photos, id])
   );
 
   if (!photos || photos.length === 0) return null;

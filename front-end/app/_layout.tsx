@@ -2,7 +2,6 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import 'react-native-gesture-handler';
 
 const isDevelopment = __DEV__ || process.env.NODE_ENV === 'development';
 
