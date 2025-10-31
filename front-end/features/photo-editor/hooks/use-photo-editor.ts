@@ -18,17 +18,16 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
   const [previewShape, setPreviewShape] = useState<string>('');
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
 
-  const { photos, activePhotoIndex, updatePhoto, removePhotoById ,
-    setActivePhoto
-  } = useActiveObservationStore(
-    useShallow(state => ({
-      photos: state.photos,
-      activePhotoIndex: state.activePhotoIndex,
-      updatePhoto: state.updatePhoto,
-      removePhotoById: state.removePhotoById,
-      setActivePhoto:state.setActivePhoto
-    }))
-  );
+  const { photos, activePhotoIndex, updatePhoto, removePhotoById, setActivePhoto } =
+    useActiveObservationStore(
+      useShallow(state => ({
+        photos: state.photos,
+        activePhotoIndex: state.activePhotoIndex,
+        updatePhoto: state.updatePhoto,
+        removePhotoById: state.removePhotoById,
+        setActivePhoto: state.setActivePhoto,
+      }))
+    );
 
   const photo = photos[activePhotoIndex];
 
@@ -157,19 +156,17 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
   };
 
   const handleTouchEnd = (event: any) => {
-
-    if (!currentTool&&startPoint) {
-      
+    if (!currentTool && startPoint) {
       const { x, y } = getRelativePoint(event);
 
-      const dx = x-startPoint.x
-      if (dx < 0 && Math.abs(dx)>100) {
-        setActivePhoto(activePhotoIndex+1);
+      const dx = x - startPoint.x;
+      if (dx < 0 && Math.abs(dx) > 100) {
+        setActivePhoto(activePhotoIndex + 1);
       }
-      if (dx > 0 && Math.abs(dx)>100){
-        setActivePhoto(activePhotoIndex-1);
+      if (dx > 0 && Math.abs(dx) > 100) {
+        setActivePhoto(activePhotoIndex - 1);
       }
-      return
+      return;
     }
 
     if (!isDrawing || !startPoint) return;
@@ -222,6 +219,7 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
 
     setPreviewShape('');
     setStartPoint(null);
+    setCurrentTool(null);
   };
 
   return {

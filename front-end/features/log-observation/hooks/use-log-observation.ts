@@ -61,7 +61,6 @@ export function useLogObersation(): LogObservationProps {
     console.log('Logging observation', observation);
 
     // TODO SEND TO BACKEND HERE
-
     addObservation(structuredClone(observation));
 
     router.push(`/active-inspection/${id}`);
