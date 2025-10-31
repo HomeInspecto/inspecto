@@ -20,23 +20,35 @@ import observationsRoutes from './routes/observations';
 import supabaseRoutes from './routes/supabase';
 import transcribeRoutes from './routes/transcribe';
 import observationMediaRoutes from './routes/observationMedia';
+import generateReportRoutes from './routes/report';
 
 const app = express();
 const port = process.env.PORT || 4000;
 
 // Load environment variables
-dotenv.config();
+//dotenv.config();
 
 // Middleware
 app.use(express.json());
 app.use(
   cors({
-    origin: '*',
+    origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow same-origin Swagger + curl
+    const allowedOrigins = [
+      'http://localhost:3000', // local frontend
+      'https://dist-rose-ten.vercel.app', // deployed frontend
+      'https://inspecto-production.up.railway.app', // your Railway backend domain
+    ];
+    return allowedOrigins.includes(origin)
+      ? callback(null, true)
+      : callback(new Error('Not allowed by CORS'));
+  },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
+app.options('*', cors());
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
@@ -56,6 +68,9 @@ app.use('/supabase', supabaseRoutes); // ✅ Supabase test routes
 
 //routes
 app.use('/api/transcriptions', transcribeRoutes);
+app.use('/api/report', generateReportRoutes);
+
+
 
 
 // Start server

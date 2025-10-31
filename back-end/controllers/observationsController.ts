@@ -3,6 +3,45 @@ import DatabaseService from '../database';
 import { supabase, supabaseAdmin } from '../supabase';
 import crypto from 'crypto';
 
+/**
+ * @swagger
+ * /api/observations:
+ *   get:
+ *     summary: Get all observations
+ *     description: Retrieves a list of observations, optionally filtered by section_id, severity, or status
+ *     tags:
+ *       - Observations
+ *     parameters:
+ *       - in: query
+ *         name: section_id
+ *         schema:
+ *           type: string
+ *         description: Filter observations by section ID
+ *       - in: query
+ *         name: severity
+ *         schema:
+ *           type: string
+ *         description: Filter observations by severity
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: Filter observations by status
+ *     responses:
+ *       '200':
+ *         description: List of observations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 observations:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       '500':
+ *         description: Database query failed
+ */
 export const getAllObservations = async (req: Request, res: Response) => {
   try {
     const { section_id, severity, status } = req.query;
@@ -28,6 +67,77 @@ export const getAllObservations = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/observations/createObservation:
+ *   post:
+ *     summary: Create a new observation with optional media files
+ *     description: Creates a new observation and optionally uploads media files to Supabase Storage
+ *     tags:
+ *       - Observations
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - section_id
+ *               - obs_name
+ *             properties:
+ *               section_id:
+ *                 type: string
+ *               obs_name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               severity:
+ *                 type: string
+ *                 enum: [minor, moderate, major, critical]
+ *               status:
+ *                 type: string
+ *               implication:
+ *                 type: string
+ *               files:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Optional media files (photos, videos, or audio)
+ *     responses:
+ *       '201':
+ *         description: Observation created successfully with upload results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 observation:
+ *                   type: object
+ *                 uploads:
+ *                   type: object
+ *                   properties:
+ *                     performed:
+ *                       type: boolean
+ *                     count:
+ *                       type: integer
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           storage_key:
+ *                             type: string
+ *                           type:
+ *                             type: string
+ *                             enum: [photo, video, audio]
+ *                           public_url:
+ *                             type: string
+ *       '400':
+ *         description: Missing required fields
+ *       '500':
+ *         description: Database insert or upload failed
+ */
 export const createObservation = async (req: Request, res: Response) => {
   try {
     const { section_id, obs_name, description, severity, status, implication } = req.body as {

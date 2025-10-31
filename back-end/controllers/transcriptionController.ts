@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 
 /**
  * @swagger
- * /api/transcriptions:
+ * /api/transcriptions/transcribe:
  *   post:
  *     summary: Transcribe an audio file 
  *     description: Accepts an audio file, transcribes it via Whisper

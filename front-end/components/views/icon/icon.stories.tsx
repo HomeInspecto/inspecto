@@ -21,44 +21,46 @@ const meta: Meta<typeof Icon> = {
 export default meta;
 type Story = StoryObj<typeof Icon>;
 
+const AllIconsComponent = () => {
+  const [copied, setCopied] = useState<string | null>(null);
+  const timerRef = useRef<number | null>(null);
+
+  const handleCopy = async (name: string) => {
+    await Clipboard.setStringAsync(name);
+    setCopied(name);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    // clear after 1.2s
+    timerRef.current = setTimeout(() => {
+      setCopied(null);
+    }, 1200) as unknown as number;
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      {ICONS.map(name => (
+        <Pressable key={name} onPress={() => handleCopy(name)} style={styles.item}>
+          <View>
+            <Icon name={name} size={28} />
+            {copied === name && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>Copied</Text>
+              </View>
+            )}
+          </View>
+
+          <Text numberOfLines={1} style={styles.label}>
+            {name}
+          </Text>
+        </Pressable>
+      ))}
+    </ScrollView>
+  );
+};
+
 export const AllIcons: Story = {
-  render: () => {
-    const [copied, setCopied] = useState<string | null>(null);
-    const timerRef = useRef<number | null>(null);
-
-    const handleCopy = async (name: string) => {
-      await Clipboard.setStringAsync(name);
-      setCopied(name);
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-      // clear after 1.2s
-      timerRef.current = setTimeout(() => {
-        setCopied(null);
-      }, 1200) as unknown as number;
-    };
-
-    return (
-      <ScrollView contentContainerStyle={styles.container}>
-        {ICONS.map(name => (
-          <Pressable key={name} onPress={() => handleCopy(name)} style={styles.item}>
-            <View>
-              <Icon name={name} size={28} />
-              {copied === name && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>Copied</Text>
-                </View>
-              )}
-            </View>
-
-            <Text numberOfLines={1} style={styles.label}>
-              {name}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-    );
-  },
+  render: () => <AllIconsComponent />,
 };
 
 const styles = StyleSheet.create({

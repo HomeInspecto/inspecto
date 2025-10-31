@@ -5,12 +5,11 @@ import { useShallow } from 'zustand/react/shallow';
 import type { InspectionDetailsViewProps } from './inspection-details-view';
 
 export function useInspectionDetails(): InspectionDetailsViewProps {
-  const { activeInspection } = useActiveInspectionStore(useShallow(state => (
-    {
-      activeInspection: state.activeInspection
-    })
-  ));
-
+  const { activeInspection } = useActiveInspectionStore(
+    useShallow(state => ({
+      activeInspection: state.activeInspection,
+    }))
+  );
 
   const onCreateReport = () => {
     if (!activeInspection) return;
@@ -18,10 +17,8 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     Linking.openURL(url);
   };
 
-
-
   return {
     inspection: activeInspection,
-    onCreateReport
+    onCreateReport,
   };
 }
