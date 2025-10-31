@@ -7,7 +7,7 @@ const cohere = new CohereClientV2({
 
 /**
  * @swagger
- * /api/polish:
+ * /api/transcriptions/polish:
  *   post:
  *     summary: Polish a transcription into structured observation
  *     description: Takes raw transcription text and converts it into a structured observation format
@@ -64,7 +64,7 @@ export const polishTranscription = async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /api/repolish:
+ * /api/transcriptions/repolish:
  *   post:
  *     summary: Re-polish with additional instructions
  *     description: Takes existing observation and applies modifications based on user instruction
