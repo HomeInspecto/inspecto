@@ -2,11 +2,13 @@ import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useState, useRef, useCallback } from 'react';
 import type { AddFieldNoteProps } from '../views/add-field-note-view';
 import { Keyboard, Alert } from 'react-native';
+// inspection store not required here; navigation will use goToLogObservation passed in
 import { Audio } from 'expo-av';
 
 
 const API_BASE = 'https://inspecto-production.up.railway.app';
 const TRANSCRIBE_PATH = '/api/transcriptions/transcribe';  
+const POLISH_PATH = '/api/transcriptions/polish';
 
 export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps {
   const note = useActiveObservationStore(s => s.fieldNote);
@@ -19,6 +21,18 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
   const isRecordingRef = useRef(false);
   const recordingRef = useRef<Audio.Recording | null>(null);
   const [perm, requestPerm] = Audio.usePermissions();
+
+  const [showPolishDialog, setShowPolishDialog] = useState(false);
+  const [isPolishing, setIsPolishing] = useState(false);
+  const [polished, setPolished] = useState<{
+  name: string;
+  description: string;
+  implications: string;
+  recommendation: string;
+  severity: string;
+} | null>(null);
+
+  
 
 
   const startRecording = useCallback(async () => {
@@ -143,6 +157,55 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
     setFieldNote(text);
   }
 
+
+  const polishNote = useCallback(async () => {
+    try {
+      setIsPolishing(true);
+      // send the current note text to your polish endpoint
+      const res = await fetch(`${API_BASE}${POLISH_PATH}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcription: note }), // backend expects `transcription`
+      });
+
+      // Try to parse JSON, but if we get HTML (e.g. 404 page) capture text for debugging
+      let json: any;
+      try {
+        json = await res.json();
+      } catch (err) {
+        const text = await res.text().catch(() => '<no body>');
+        throw new Error(`JSON parse error: unexpected character in response:\n${text}`);
+      }
+      if (!res.ok) {
+        throw new Error(json?.error || `Polish failed (${res.status})`);
+      }
+
+      // expected shape per your message
+      const o = json?.observation;
+      if (!o) throw new Error('No observation returned');
+
+      // Create a formatted version of the polished text
+      const formattedText = `${o.name}\n\nDescription: ${o.description}\n\nImplications: ${o.implications}\n\nRecommendation: ${o.recommendation}\n\nSeverity: ${o.severity}`;
+    
+      // Update the note text with the formatted polished version
+      setFieldNote(formattedText);
+      setShowPolishDialog(false); // close the popup
+    } catch (e: any) {
+      Alert.alert('Polish error', e?.message ?? 'Failed to polish text');
+    } finally {
+      setIsPolishing(false);
+    }
+  }, [note, setFieldNote]);
+
+  function onOpenPolishDialog() {
+    setShowPolishDialog(true);
+  }
+
+  function onClosePolishDialog() {
+    setShowPolishDialog(false);
+  }
+
+
   return {
     note,
     focused,
@@ -154,5 +217,11 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
     onMicStart,
     onMicStop,
     onNextPress,
+    showPolishDialog,
+    onOpenPolishDialog,
+    onClosePolishDialog,
+    isPolishing,
+    polished,
+    onConfirmPolish: polishNote,
   };
 }
