@@ -40,7 +40,7 @@ export interface PhotoWithMarkup extends Photo {
   shapes?: Shape[];
 }
 
-export type Severity = 'critical' | 'medium' | 'low'| null;
+export type Severity = 'critical' | 'medium' | 'low' | null;
 
 export interface Observation {
   photos: PhotoWithMarkup[];
@@ -74,14 +74,18 @@ interface ActiveObservationState extends Observation {
 export const useActiveObservationStore = create<ActiveObservationState>(set => ({
   photos: [],
   fieldNote: '',
-  name: undefined,
-  description: undefined,
-  implications: undefined,
-  recommendation: undefined,
-  severity: undefined,
-  section: undefined,
 
-  setObservation: (observation) =>
+  // hard coded values for demo
+  name: 'Broken Window Handle, Unable to Open',
+  description:
+    'The handle on the living room window is broken at the hinge joint, preventing the latch mechanism from releasing. The window cannot be opened from the inside. Metal fatigue and corrosion appear to have contributed to the failure.',
+  implications:
+    'Inability to open the window compromises ventilation and egress in an emergency. It may also lead to higher humidity and condensation buildup, potentially promoting mold growth.',
+  recommendation:
+    'Replace the handle assembly with a compatible part or install a new locking mechanism. Ensure proper alignment and function after replacement to restore normal operation.',
+  severity: 'medium',
+
+  setObservation: observation =>
     set(state => ({
       ...observation,
     })),
