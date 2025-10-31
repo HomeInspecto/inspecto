@@ -81,7 +81,8 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
         json?.data?.transcript;
 
       if (typeof text === 'string') {
-        setFieldNote(text.trim()); //gets the transcription only not full json style
+        const newNote = note && note.trim().length ? `${note.trim()}\n${text.trim()}` : text.trim();
+        setFieldNote(newNote);
       } else {
         Alert.alert('Unexpected response format');
         console.log('Full response:', json);
@@ -92,7 +93,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
     } finally {
       setIsUploading(false);
     }
-  }, [setFieldNote]);
+  }, [setFieldNote, note]);
 
   const stopRecording = useCallback(async () => {
     const rec = recordingRef.current;

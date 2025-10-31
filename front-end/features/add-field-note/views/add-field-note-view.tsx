@@ -83,7 +83,7 @@ export const AddFieldNoteView = (props: AddFieldNoteProps) => {
             </Text>
           </Animated.View>
 
-
+        </View>
 
       <View style={{ position: 'relative' }}>
         <TextInput
@@ -94,36 +94,35 @@ export const AddFieldNoteView = (props: AddFieldNoteProps) => {
           onFocus={onFocus}
           onBlur={onBlur}
           rightSlot={
-            note && (
-              <View style={{ position: 'absolute', bottom: 8, right: 8 }}>
-                <IconButton icon="checkmark" size="xs" onPress={onNextPress} />
-              </View>
-            )
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {/* Mic / Stop button */}
+              {!isRecording ? (
+                <IconButton
+                  icon="mic"
+                  size="xs"
+                  disabled={!!isUploading}
+                  onPress={onMicStart}
+                />
+              ) : (
+                <IconButton
+                  icon="stop"
+                  size="xs"
+                  disabled={!!isUploading}
+                  onPress={onMicStop}
+                />
+              )}
+
+              {/* Checkmark shows only if there is text */}
+              {note ? (
+                <IconButton
+                  icon="checkmark"
+                  size="xs"
+                  onPress={onNextPress}
+                />
+              ) : null}
+            </View>
           }
-          onRightIconPress={note ? onNextPress : undefined}
         />
-
-      <View style={{ position: 'absolute', right: 8, bottom: 8 }}>
-        {isUploading ? (
-          <ActivityIndicator size="small" />
-        ) : !isRecording ? (
-          <IconButton
-            icon="mic"
-            size="xs"
-            disabled={!!isUploading}
-            onPress={onMicStart}
-          />
-        ) : (
-          <IconButton
-            icon="stop"
-            size="xs"
-            disabled={!!isUploading}
-            onPress={onMicStop}
-          />
-        )}
-          </View>
-
-        </View>
       </View>
       </KeyboardAvoidingView>
     </>
