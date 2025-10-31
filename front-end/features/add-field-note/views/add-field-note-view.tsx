@@ -103,7 +103,7 @@ export const AddFieldNoteView = (props: AddFieldNoteProps) => {
           onRightIconPress={note ? onNextPress : undefined}
         />
 
-      <View style={{ position: 'absolute', left: 8, bottom: 8 }}>
+      <View style={{ position: 'absolute', right: 8, bottom: 8 }}>
         {isUploading ? (
           <ActivityIndicator size="small" />
         ) : !isRecording ? (
