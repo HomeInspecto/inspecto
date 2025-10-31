@@ -26,7 +26,7 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 // Load environment variables
-dotenv.config();
+//dotenv.config();
 
 // Middleware
 app.use(express.json());
@@ -58,6 +58,8 @@ app.use('/supabase', supabaseRoutes); // ✅ Supabase test routes
 //routes
 app.use('/api/transcriptions', transcribeRoutes);
 app.use('/api/report', generateReportRoutes);
+
+
 
 
 // Start server
