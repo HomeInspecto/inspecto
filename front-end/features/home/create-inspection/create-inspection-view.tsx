@@ -31,6 +31,7 @@ export function CreateInspectionView({
         gap: 16,
         padding: 16,
         backgroundColor: COLORS.pageBackground,
+        paddingTop: 80,
       }}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
