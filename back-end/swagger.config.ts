@@ -9,10 +9,12 @@ const swaggerOptions = {
       description: 'API for generating automated home inspection reports from audio and images.',
     },
     servers: [
-      {
-        url: 'http://localhost:4000',
-        description: 'Development Server',
-      },
+
+      //hosted version
+      { url: '/', description: 'Same origin' },
+
+      //local host if needed
+      { url: 'http://localhost:4000', description: 'Development Server' },
     ],
     components: {
       securitySchemes: {

@@ -32,12 +32,23 @@ const port = process.env.PORT || 4000;
 app.use(express.json());
 app.use(
   cors({
-    origin: '*',
+    origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow same-origin Swagger + curl
+    const allowedOrigins = [
+      'http://localhost:3000', // local frontend
+      'https://dist-rose-ten.vercel.app', // deployed frontend
+      'https://inspecto-production.up.railway.app', // your Railway backend domain
+    ];
+    return allowedOrigins.includes(origin)
+      ? callback(null, true)
+      : callback(new Error('Not allowed by CORS'));
+  },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
+app.options('*', cors());
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
