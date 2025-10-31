@@ -48,3 +48,31 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## Deploy to Vercel (Web)
+
+1. Ensure a web export works locally:
+
+   ```bash
+   npm install
+   npx expo export -p web
+   ```
+
+   This creates a `dist/` directory with the web build.
+
+2. Vercel settings (Project Root: `front-end`):
+   - Framework: Other
+   - Install Command: `npm ci`
+   - Build Command: `npx expo export -p web`
+   - Output Directory: `dist`
+   - Root Directory: `front-end`
+
+3. Environment variables (as needed):
+   - `EXPO_PUBLIC_API_BASE_URL` = `http://localhost:4000` (or your backend URL)
+
+4. Files:
+   - `vercel.json` is included to serve the exported site from `dist/`.
+
+5. Deploy:
+   - Using Vercel dashboard (Import Git repo) or
+   - CLI: `npm i -g vercel && vercel && vercel --prod`
