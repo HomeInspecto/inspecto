@@ -7,6 +7,7 @@ import {
   Pressable,
   StyleSheet,
   View,
+  ActivityIndicator,
 } from 'react-native';
 
 import TextInput from '@/components/views/text-input/text-input';
@@ -25,10 +26,25 @@ export interface AddFieldNoteProps {
   onFocus?: () => void;
   onBlur?: () => void;
   onChangeText?: (text: string) => void;
+
+  isRecording?: boolean;
+  isUploading?: boolean;
 }
 
 export const AddFieldNoteView = (props: AddFieldNoteProps) => {
-  const { note, onNextPress, focused, onFocus, onBlur, onChangeText } = props;
+  const {
+  note,
+  onNextPress,
+  focused,
+  onFocus,
+  onBlur,
+  onChangeText,
+  onMicStart,
+  onMicStop,
+  isRecording,
+  isUploading,
+} = props;
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -67,23 +83,48 @@ export const AddFieldNoteView = (props: AddFieldNoteProps) => {
             </Text>
           </Animated.View>
 
-          <TextInput
-            value={note}
-            onChangeText={onChangeText}
-            placeholder="Write a field note"
-            multiline
-            onFocus={onFocus}
-            onBlur={onBlur}
-            rightSlot={
-              note && (
-                <View style={{ position: 'absolute', bottom: 8, right: 8 }}>
-                  <IconButton icon="checkmark" size="xs" onPress={onNextPress}></IconButton>
-                </View>
-              )
-            }
-            onRightIconPress={note ? onNextPress : undefined}
+
+
+      <View style={{ position: 'relative' }}>
+        <TextInput
+          value={note}
+          onChangeText={onChangeText}
+          placeholder="Write a field note"
+          multiline
+          onFocus={onFocus}
+          onBlur={onBlur}
+          rightSlot={
+            note && (
+              <View style={{ position: 'absolute', bottom: 8, right: 8 }}>
+                <IconButton icon="checkmark" size="xs" onPress={onNextPress} />
+              </View>
+            )
+          }
+          onRightIconPress={note ? onNextPress : undefined}
+        />
+
+      <View style={{ position: 'absolute', left: 8, bottom: 8 }}>
+        {isUploading ? (
+          <ActivityIndicator size="small" />
+        ) : !isRecording ? (
+          <IconButton
+            icon="mic"
+            size="xs"
+            disabled={!!isUploading}
+            onPress={onMicStart}
           />
+        ) : (
+          <IconButton
+            icon="stop"
+            size="xs"
+            disabled={!!isUploading}
+            onPress={onMicStop}
+          />
+        )}
+          </View>
+
         </View>
+      </View>
       </KeyboardAvoidingView>
     </>
   );
