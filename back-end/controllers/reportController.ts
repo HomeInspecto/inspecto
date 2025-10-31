@@ -1,6 +1,91 @@
 import { Request, Response } from 'express';
 import DatabaseService from '../database';
 
+/**
+ * @swagger
+ * /api/report/generate/{property_id}:
+ *   get:
+ *     summary: Generate inspection report for a property
+ *     description: Generates a comprehensive inspection report including property details, organization info, inspection data, sections, observations, and media
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: path
+ *         name: property_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the property
+ *     responses:
+ *       '200':
+ *         description: Report generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 organization:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     logo:
+ *                       type: string
+ *                     website:
+ *                       type: string
+ *                     contact:
+ *                       type: object
+ *                       properties:
+ *                         phone:
+ *                           type: string
+ *                         address:
+ *                           type: string
+ *                     properties:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                 inspection:
+ *                   type: object
+ *                   properties:
+ *                     summary:
+ *                       type: string
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     sections:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                           note:
+ *                             type: string
+ *                           observations:
+ *                             type: array
+ *                             items:
+ *                               type: object
+ *                               properties:
+ *                                 name:
+ *                                   type: string
+ *                                 severity:
+ *                                   type: string
+ *                                 description:
+ *                                   type: string
+ *                                 media:
+ *                                   type: array
+ *                                   items:
+ *                                     type: object
+ *                                     properties:
+ *                                       caption:
+ *                                         type: string
+ *                                       url:
+ *                                         type: string
+ *       '404':
+ *         description: Property not found
+ *       '500':
+ *         description: Error generating report
+ */
 export const generateReport = async (req: Request, res: Response) => {
   try {
     const { property_id } = req.params as { property_id: string };
