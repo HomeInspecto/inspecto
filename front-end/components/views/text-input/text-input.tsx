@@ -63,8 +63,9 @@ export default function TextInput({
         multiline={multiline}
         returnKeyType={multiline ? 'default' : 'done'}
         onContentSizeChange={e => {
-          if (Platform.OS === 'web') {
-            setHeight(Math.max(MIN, e.nativeEvent.contentSize.height));
+          if (multiline && e.nativeEvent?.contentSize?.height) {
+            const contentHeight = e.nativeEvent.contentSize.height;
+            setHeight(Math.max(MIN, contentHeight));
           }
         }}
         autoComplete="off"
