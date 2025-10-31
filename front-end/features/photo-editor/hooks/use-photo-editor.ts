@@ -152,6 +152,20 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
       };
 
       setPreviewShape(JSON.stringify(updatedOval));
+    } else if (currentTool === 'arrow') {
+      console.log('running');
+      const arrow: Shape = {
+        id: Date.now().toString(),
+        strokeColor: 'red',
+        strokeWidth: 2,
+        type: 'arrow',
+        x1: startPoint.x,
+        y1: startPoint.y,
+        x2: x,
+        y2: y,
+      };
+
+      setPreviewShape(JSON.stringify(arrow));
     }
   };
 
