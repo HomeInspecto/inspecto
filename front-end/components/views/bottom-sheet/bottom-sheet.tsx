@@ -21,7 +21,7 @@ export type BottomSheetRef = {
 const DEFAULT_SNAPS = ['10%', '50%', '90%'];
 
 const Sheet = forwardRef<BottomSheetRef, BottomSheetProps>(
-  ({ children, snapPoints, initialIndex = 1, enablePanDownToClose = true, onChange }, ref) => {
+  function Sheet({ children, snapPoints, initialIndex = 1, enablePanDownToClose = true, onChange }, ref) {
     const sheetRef = useRef<BottomSheet>(null);
     const snaps = useMemo(() => snapPoints ?? DEFAULT_SNAPS, [snapPoints]);
 

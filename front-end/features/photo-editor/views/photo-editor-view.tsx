@@ -65,7 +65,9 @@ export function PhotoEditorView({
           }}
         >
           <DrawingToolsView
-            onToolSelect={tool => currentTool !== tool? setCurrentTool(tool): setCurrentTool(null)}
+            onToolSelect={tool =>
+              currentTool !== tool ? setCurrentTool(tool) : setCurrentTool(null)
+            }
             currentTool={currentTool}
             undoLastShape={undoLastShape}
           />
