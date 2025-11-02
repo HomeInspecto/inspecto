@@ -25,6 +25,10 @@ Inspecto was designed primarily for mobile devices. Until it is available on mob
 - [Web Demo](https://early-mvp-demo-html.vercel.app/)
 - [Product Page](https://dandy-elements-644634.framer.app/)
 
+## Current Issues in Progress
+
+Visit our [Kanban Board](https://github.com/orgs/HomeInspecto/projects/1) to follow which features are currently in development.
+
 ## Quick Start
 
 ### Prerequisites
