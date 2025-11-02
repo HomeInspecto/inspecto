@@ -50,8 +50,8 @@ export default function CameraScreenView(props: CameraScreenProps) {
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            paddingTop: 70,
             paddingHorizontal: 16,
+            paddingTop: 80,
           }}
         >
           <IconButton icon="chevron.left" onPress={goBack} />

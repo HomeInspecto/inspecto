@@ -16,6 +16,7 @@ const normalizedStories = [
       '../components',
       true,
       /^\.(?:(?:^|[\\/]|(?:(?:(?!(?:^|[\\/])\.).)*?)[\\/])(?!\.)(?=.)[^\\/]*?\.stories\.(?:ts|tsx|js|jsx)?)$/
+      /^\.(?:(?:^|[\\/]|(?:(?:(?!(?:^|[\\/])\.).)*?)[\\/])(?!\.)(?=.)[^\\/]*?\.stories\.(?:ts|tsx|js|jsx)?)$/
     ),
   },
   {
@@ -28,6 +29,7 @@ const normalizedStories = [
     req: require.context(
       '../features',
       true,
+      /^\.[\\/](?:(?!\.)(?=.)[^\\/]*?[\\/]views[\\/](?!\.)(?=.)[^\\/]*?\.stories\.(?:ts|tsx|js|jsx)?)$/
       /^\.[\\/](?:(?!\.)(?=.)[^\\/]*?[\\/]views[\\/](?!\.)(?=.)[^\\/]*?\.stories\.(?:ts|tsx|js|jsx)?)$/
     ),
   },

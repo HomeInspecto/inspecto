@@ -56,7 +56,6 @@ export const LogObservationView = ({
           onChangeText={setDescription}
           placeholder="Describe the issue or observation"
           multiline
-          numberOfLines={3}
         />
       </View>
 
@@ -67,7 +66,6 @@ export const LogObservationView = ({
           onChangeText={setImplication}
           placeholder="What are the potential impacts?"
           multiline
-          numberOfLines={3}
         />
       </View>
 
@@ -78,7 +76,6 @@ export const LogObservationView = ({
           onChangeText={setRecommendation}
           placeholder="Recommended action or next steps"
           multiline
-          numberOfLines={3}
         />
       </View>
 
