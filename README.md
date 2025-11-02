@@ -1,8 +1,31 @@
 # Inspecto
 
-A full-stack application with Expo React Native frontend and Node.js/Express backend, containerized with Docker and configured for development with hot reloading.
+Inspecto is an intelligent inspection reporting tool designed for **independent home inspectors**. The platform streamlines the end-to-end inspection workflow—from template creation to final report generation—by combining AI-assisted document analysis, intuitive mobile data capture, and automated report assembly.
 
-## 🚀 Quick Start
+Inspecto provides a unified experience across web and mobile devices. Future integrations include secure authentication, cloud-based data storage, and customizable inspection templates for different client needs.
+
+**Core Features (current and planned):**
+
+* **Cross-platform mobile app** for on-site inspection data entry
+* **AI-powered template extraction** from uploaded reports
+* **Guided template generator** for consistent report formatting
+* **Camera and photo annotation tools** for adding visuals to reports
+* **Auto-generated professional reports** ready for client delivery
+* **Scalable backend architecture** with database persistence and API endpoints
+* **Secure client and inspector data handling**
+
+Inspecto empowers inspectors to spend **more time inspecting and less time writing**, by automating repetitive admin tasks and ensuring report quality and consistency.
+
+---
+
+## Web Demo
+
+Inspecto was designed primarily for mobile devices. Until it is available on mobile app stores we are demoing an early [web-based version](https://early-mvp-demo-html.vercel.app/), so that users can get a feel for the UI and provide feeddback. 
+
+- [Web Demo](https://early-mvp-demo-html.vercel.app/)
+- [Product Page](https://dandy-elements-644634.framer.app/)
+
+## Quick Start
 
 ### Prerequisites
 
@@ -50,7 +73,7 @@ A full-stack application with Expo React Native frontend and Node.js/Express bac
    - Backend Health Check: http://localhost:4000/health
    - To check API endpoints: http://localhost:4000/api
 
-### 📱 Testing Camera & Gallery Features
+### Testing Camera & Gallery Features
 
 **On iOS (Expo Go):**
 
@@ -74,38 +97,14 @@ A full-stack application with Expo React Native frontend and Node.js/Express bac
 
 ### Development Features
 
-- ✅ **Hot Reloading**: Both frontend and backend automatically reload on file changes
-- ✅ **File Watching**: Real-time file synchronization between host and containers
-- ✅ **TypeScript Support**: Full TypeScript support for both frontend and backend
-- ✅ **Cross-Platform**: React Native app works on iOS, Android, and Web
-- ✅ **Expo Router**: File-based routing with Expo Router
-- ✅ **Custom Components**: Reusable UI components with styled buttons
-- ✅ **Express API**: RESTful API with Cohere AI integration ready
-- ✅ **Camera & Gallery**: Take photos, view gallery, pinch-to-zoom, new photo tracking
-
-### Project Structure
-
-```
-inspecto/
-├── front-end/          # Expo React Native application
-│   ├── app/            # Expo Router pages and layouts
-│   │   ├── (tabs)/     # Tab-based navigation
-│   │   └── _layout.tsx # Root layout
-│   ├── components/     # Reusable UI components
-│   │   ├── button.tsx  # Custom button component
-│   │   └── ui/         # UI component library
-│   ├── assets/         # Images and static assets
-│   ├── constants/      # App constants and themes
-│   ├── hooks/          # Custom React hooks
-│   ├── package.json    # Frontend dependencies
-│   └── Dockerfile      # Frontend container config
-├── back-end/           # Node.js Express API
-│   ├── server.ts       # Express server
-│   ├── package.json    # Backend dependencies
-│   └── Dockerfile      # Backend container config
-├── docker-compose.yml  # Multi-container orchestration
-└── .github/workflows/  # CI/CD pipelines
-```
+- **Hot Reloading**: Both frontend and backend automatically reload on file changes
+- **File Watching**: Real-time file synchronization between host and containers
+- **TypeScript Support**: Full TypeScript support for both frontend and backend
+- **Cross-Platform**: React Native app works on iOS, Android, and Web
+- **Expo Router**: File-based routing with Expo Router
+- **Custom Components**: Reusable UI components with styled buttons
+- **Express API**: RESTful API with Cohere AI integration ready
+- **Camera & Gallery**: Take photos, view gallery, pinch-to-zoom, new photo tracking
 
 ### Available Commands
 
