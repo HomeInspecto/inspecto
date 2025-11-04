@@ -5,9 +5,8 @@ import { Keyboard, Alert } from 'react-native';
 // inspection store not required here; navigation will use goToLogObservation passed in
 import { Audio } from 'expo-av';
 
-
 const API_BASE = 'https://inspecto-production.up.railway.app';
-const TRANSCRIBE_PATH = '/api/transcriptions/transcribe';  
+const TRANSCRIBE_PATH = '/api/transcriptions/transcribe';
 const POLISH_PATH = '/api/transcriptions/polish';
 
 export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps {
@@ -25,15 +24,12 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
   const [showPolishDialog, setShowPolishDialog] = useState(false);
   const [isPolishing, setIsPolishing] = useState(false);
   const [polished, setPolished] = useState<{
-  name: string;
-  description: string;
-  implications: string;
-  recommendation: string;
-  severity: string;
-} | null>(null);
-
-  
-
+    name: string;
+    description: string;
+    implications: string;
+    recommendation: string;
+    severity: string;
+  } | null>(null);
 
   const startRecording = useCallback(async () => {
     try {
@@ -64,50 +60,53 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
     }
   }, [perm, requestPerm]);
 
-  const uploadAndTranscribe = useCallback(async (uri: string) => {
-    try {
-      setIsUploading(true);
-      const form = new FormData();
-      form.append('file', {
-        uri,
-        name: 'recording.m4a',
-        type: 'audio/m4a',
-      } as any);
+  const uploadAndTranscribe = useCallback(
+    async (uri: string) => {
+      try {
+        setIsUploading(true);
+        const form = new FormData();
+        form.append('file', {
+          uri,
+          name: 'recording.m4a',
+          type: 'audio/m4a',
+        } as any);
 
-      const res = await fetch(`${API_BASE}${TRANSCRIBE_PATH}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'multipart/form-data' },
-        body: form,
-      });
+        const res = await fetch(`${API_BASE}${TRANSCRIBE_PATH}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'multipart/form-data' },
+          body: form,
+        });
 
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(json?.error || `Transcription failed (${res.status})`);
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(json?.error || `Transcription failed (${res.status})`);
+        }
+
+        // Try common response shapes, fall back to stringify
+        const text =
+          json?.transcription ??
+          json?.text ??
+          json?.transcript ??
+          json?.data?.transcription ??
+          json?.data?.text ??
+          json?.data?.transcript;
+
+        if (typeof text === 'string') {
+          const newNote =
+            note && note.trim().length ? `${note.trim()}\n${text.trim()}` : text.trim();
+          setFieldNote(newNote);
+        } else {
+          Alert.alert('Unexpected response format');
+          console.log('Full response:', json);
+        }
+      } catch (err: any) {
+        Alert.alert('Upload error', err?.message ?? 'Failed to upload audio');
+      } finally {
+        setIsUploading(false);
       }
-
-      // Try common response shapes, fall back to stringify
-      const text =
-        json?.transcription ??
-        json?.text ??
-        json?.transcript ??
-        json?.data?.transcription ??
-        json?.data?.text ??
-        json?.data?.transcript;
-
-      if (typeof text === 'string') {
-        const newNote = note && note.trim().length ? `${note.trim()}\n${text.trim()}` : text.trim();
-        setFieldNote(newNote);
-      } else {
-        Alert.alert('Unexpected response format');
-        console.log('Full response:', json);
-      }
-
-    } catch (err: any) {
-      Alert.alert('Upload error', err?.message ?? 'Failed to upload audio');
-    } finally {
-      setIsUploading(false);
-    }
-  }, [setFieldNote, note]);
+    },
+    [setFieldNote, note]
+  );
 
   const stopRecording = useCallback(async () => {
     const rec = recordingRef.current;
@@ -157,7 +156,6 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
     setFieldNote(text);
   }
 
-
   const polishNote = useCallback(async () => {
     try {
       setIsPolishing(true);
@@ -186,7 +184,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
 
       // Create a formatted version of the polished text
       const formattedText = `${o.name}\n\nDescription: ${o.description}\n\nImplications: ${o.implications}\n\nRecommendation: ${o.recommendation}\n\nSeverity: ${o.severity}`;
-    
+
       // Update the note text with the formatted polished version
       setFieldNote(formattedText);
       setShowPolishDialog(false); // close the popup
@@ -204,7 +202,6 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
   function onClosePolishDialog() {
     setShowPolishDialog(false);
   }
-
 
   return {
     note,
