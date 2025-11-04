@@ -38,6 +38,7 @@ app.use(
       'http://localhost:3000', // local frontend
       'https://dist-rose-ten.vercel.app', // deployed frontend
       'https://inspecto-production.up.railway.app', // your Railway backend domain
+      'https://my-branch-production.up.railway.app' //this is link for deployed backend for Shaban's branch
     ];
     return allowedOrigins.includes(origin)
       ? callback(null, true)
