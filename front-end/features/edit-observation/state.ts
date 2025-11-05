@@ -74,19 +74,15 @@ interface ActiveObservationState extends Observation {
 export const useActiveObservationStore = create<ActiveObservationState>(set => ({
   photos: [],
   fieldNote: '',
-
-  // hard coded values for demo
-  name: 'Broken Window Handle, Unable to Open',
-  description:
-    'The handle on the living room window is broken at the hinge joint, preventing the latch mechanism from releasing. The window cannot be opened from the inside. Metal fatigue and corrosion appear to have contributed to the failure.',
-  implications:
-    'Inability to open the window compromises ventilation and egress in an emergency. It may also lead to higher humidity and condensation buildup, potentially promoting mold growth.',
-  recommendation:
-    'Replace the handle assembly with a compatible part or install a new locking mechanism. Ensure proper alignment and function after replacement to restore normal operation.',
-  severity: 'medium',
+  name: '',
+  description: '',
+  implications: '',
+  recommendation: '',
+  severity: null,
 
   setObservation: observation =>
     set(state => ({
+      ...state,
       ...observation,
     })),
 
@@ -117,5 +113,11 @@ export const useActiveObservationStore = create<ActiveObservationState>(set => (
       photos: [],
       fieldNote: '',
       activePhotoIndex: 0,
+      name: '',
+      description: '',
+      implications: '',
+      recommendation: '',
+      severity: null,
+      section: '',
     }),
 }));
