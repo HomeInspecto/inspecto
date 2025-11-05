@@ -78,7 +78,7 @@ export const transcribeAudio = async (req: Request, res: Response) => {
     try {
       // Send binary file data directly to Hugging Face API
       const hfResp = await axios.post(
-        `https://api-inference.huggingface.co/models/${hfModel}`,
+        `https://router.huggingface.co/hf-inference/models/${hfModel}`,
         req.file.buffer, // Raw binary buffer
         {
           headers: {
