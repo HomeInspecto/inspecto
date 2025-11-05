@@ -21,15 +21,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
   const recordingRef = useRef<Audio.Recording | null>(null);
   const [perm, requestPerm] = Audio.usePermissions();
 
-  const [showPolishDialog, setShowPolishDialog] = useState(false);
   const [isPolishing, setIsPolishing] = useState(false);
-  const [polished, setPolished] = useState<{
-    name: string;
-    description: string;
-    implications: string;
-    recommendation: string;
-    severity: string;
-  } | null>(null);
 
   const startRecording = useCallback(async () => {
     try {
@@ -156,52 +148,56 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
     setFieldNote(text);
   }
 
-  const polishNote = useCallback(async () => {
+  // Function has been replaced by onNextWithPolish
+
+  // Simplified function to polish and go to log observation
+  const onNextWithPolish = useCallback(async () => {
+    if (!note?.trim()) return;
+    
     try {
       setIsPolishing(true);
-      // send the current note text to your polish endpoint
       const res = await fetch(`${API_BASE}${POLISH_PATH}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcription: note }), // backend expects `transcription`
+        body: JSON.stringify({ transcription: note }),
       });
 
-      // Try to parse JSON, but if we get HTML (e.g. 404 page) capture text for debugging
-      let json: any;
-      try {
-        json = await res.json();
-      } catch (err) {
-        const text = await res.text().catch(() => '<no body>');
-        throw new Error(`JSON parse error: unexpected character in response:\n${text}`);
-      }
+      const json = await res.json();
       if (!res.ok) {
         throw new Error(json?.error || `Polish failed (${res.status})`);
       }
 
-      // expected shape per your message
       const o = json?.observation;
       if (!o) throw new Error('No observation returned');
 
-      // Create a formatted version of the polished text
-      const formattedText = `${o.name}\n\nDescription: ${o.description}\n\nImplications: ${o.implications}\n\nRecommendation: ${o.recommendation}\n\nSeverity: ${o.severity}`;
+      // Update all observation fields first
+      // Update all observation fields in one go
+      const setObservation = useActiveObservationStore.getState().setObservation;
+      const severity = o.severity?.toLowerCase() || null;
+      
+      // Make sure we have a valid severity; if not provided leave it null so UI is unselected
+      const validatedSeverity = (severity === 'critical' || severity === 'medium' || severity === 'low')
+        ? (severity as 'critical' | 'medium' | 'low')
+        : null;
 
-      // Update the note text with the formatted polished version
-      setFieldNote(formattedText);
-      setShowPolishDialog(false); // close the popup
+      // Update the store with all fields including severity
+      setObservation({
+        name: o.name || '',
+        description: o.description || '',
+        implications: o.implications || '',
+        recommendation: o.recommendation || '',
+        severity: validatedSeverity,
+        section: o.section || 'General' // Default to General if no section provided
+      });
+
+      // Then go to log observation page
+      goToLogObservation();
     } catch (e: any) {
       Alert.alert('Polish error', e?.message ?? 'Failed to polish text');
     } finally {
       setIsPolishing(false);
     }
-  }, [note, setFieldNote]);
-
-  function onOpenPolishDialog() {
-    setShowPolishDialog(true);
-  }
-
-  function onClosePolishDialog() {
-    setShowPolishDialog(false);
-  }
+  }, [note, setFieldNote, goToLogObservation]);
 
   return {
     note,
@@ -213,12 +209,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
     onChangeText,
     onMicStart,
     onMicStop,
-    onNextPress,
-    showPolishDialog,
-    onOpenPolishDialog,
-    onClosePolishDialog,
+    onNextPress: onNextWithPolish, // Use the new function that polishes and navigates
     isPolishing,
-    polished,
-    onConfirmPolish: polishNote,
   };
 }

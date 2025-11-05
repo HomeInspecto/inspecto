@@ -155,7 +155,7 @@ async function polishWithAI(
   description: string;
   implications: string;
   recommendation: string;
-  severity: 'critical' | 'medium' | 'low';
+  severity: 'critical' | 'medium' | 'low' | null;
 }> {
   let prompt = `You are a home inspection report expert. Convert the following observation into a structured format.
 
@@ -225,13 +225,14 @@ Return ONLY the JSON object, nothing else.`;
     throw new Error('AI returned invalid JSON format');
   }
 
-  // Validate
-  if (!parsed.description || !parsed.implications || !parsed.recommendation || !parsed.severity) {
+  // Validate required textual fields (severity is optional)
+  if (!parsed.description || !parsed.implications || !parsed.recommendation) {
     throw new Error('AI response missing required fields');
   }
 
+  // Normalize severity: accept only known values, otherwise set to null
   if (!['critical', 'medium', 'low'].includes(parsed.severity)) {
-    parsed.severity = 'medium';
+    parsed.severity = null;
   }
 
   return parsed;
