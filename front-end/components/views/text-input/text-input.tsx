@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { useState, type ReactNode } from 'react';
 
+
 interface Props {
   value: string;
   placeholder?: string;
@@ -51,6 +52,15 @@ export default function TextInput({
         paddingVertical: multiline ? 16 : 0,
         maxHeight: '100%',
         position: 'relative',
+
+
+        //backgroundColor: 'rgba(255,255,255,0.08)', // frosted-glass fill
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.15)',      // soft border
+        shadowColor: '#ffffff',
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: 2 },
       }}
     >
       {leftIcon && <Ionicons name={leftIcon} size={18} color={COLORS.label.onDark.primary} />}

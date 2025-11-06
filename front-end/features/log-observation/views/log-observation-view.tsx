@@ -1,4 +1,4 @@
-import { View, Platform } from 'react-native';
+import { View, Platform, StyleSheet } from 'react-native';
 import Text from '@/components/views/text/text';
 import TextInput from '@/components/views/text-input/text-input';
 import Button from '@/components/views/button/button';
@@ -23,6 +23,8 @@ export interface LogObservationProps {
   setSection: (value: LogObservationProps['section']) => void;
   setSeverity: (value: LogObservationProps['severity']) => void;
 }
+
+
 
 export const LogObservationView = ({
   onLog,
