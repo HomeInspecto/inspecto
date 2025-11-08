@@ -91,8 +91,6 @@ export const polishTranscription = async (req: Request, res: Response) => {
  *                     type: string
  *                   recommendation:
  *                     type: string
- *                   severity:
- *                     type: string
  *               instruction:
  *                 type: string
  *                 description: Modification instruction
@@ -155,7 +153,6 @@ async function polishWithAI(
   description: string;
   implications: string;
   recommendation: string;
-  severity: 'critical' | 'medium' | 'low';
 }> {
   let prompt = `You are a home inspection report expert. Convert the following observation into a structured format.
 
@@ -168,7 +165,6 @@ Original transcription: "${transcription}"`;
 Description: ${currentObservation.description}
 Implications: ${currentObservation.implications}
 Recommendation: ${currentObservation.recommendation}
-Severity: ${currentObservation.severity}
 
 Instruction: ${instruction}
 
@@ -185,17 +181,12 @@ Please apply this instruction while keeping the observation professional and acc
   "description": "What was observed (1-2 sentences)",
   "implications": "Why this matters and potential consequences (1-2 sentences)",
   "recommendation": "What should be done about it (1-2 sentences)",
-  "severity": "critical, medium, or low"
 }
 
 Guidelines:
 - Description: Observable facts only
 - Implications: Explain the risks or consequences
 - Recommendation: Specific action items
-- Severity: 
-  * critical = immediate safety hazard or major damage risk
-  * medium = should be addressed soon, moderate risk
-  * low = minor issue, cosmetic, or maintenance item
 
 Return ONLY the JSON object, nothing else.`;
 
@@ -226,13 +217,10 @@ Return ONLY the JSON object, nothing else.`;
   }
 
   // Validate
-  if (!parsed.description || !parsed.implications || !parsed.recommendation || !parsed.severity) {
+  if (!parsed.description || !parsed.implications || !parsed.recommendation) {
     throw new Error('AI response missing required fields');
   }
 
-  if (!['critical', 'medium', 'low'].includes(parsed.severity)) {
-    parsed.severity = 'medium';
-  }
 
   return parsed;
 }
