@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Linking } from 'react-native';
 import { useActiveInspectionStore, type ActiveInspection } from './state';
-import { Observation, useActiveObservationStore } from '../edit-observation/state';
+import type { Observation } from '../edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
 import type { InspectionDetailsViewProps } from './inspection-details-view';
 
@@ -11,6 +11,25 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
       activeInspection: state.activeInspection,
     }))
   );
+
+  const sections = useMemo(() => {
+    if (!activeInspection?.observations?.length) return [];
+
+    const grouped = new Map<string, Observation[]>();
+
+    for (const observation of activeInspection.observations) {
+      const key = observation.section || 'Uncategorized';
+      if (!grouped.has(key)) {
+        grouped.set(key, []);
+      }
+      grouped.get(key)!.push(observation);
+    }
+
+    return Array.from(grouped.entries()).map(([section, observations]) => ({
+      section,
+      observations,
+    }));
+  }, [activeInspection?.observations]);
 
   const onCreateReport = () => {
     if (!activeInspection) return;
@@ -27,6 +46,7 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     inspection: activeInspection,
     onCreateReport,
     onSearchChange,
-    searchTerm
+    searchTerm,
+    sections,
   };
 }
