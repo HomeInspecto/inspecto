@@ -4,6 +4,7 @@ import type { Observation } from '@/features/edit-observation/state';
 import IconButton from '@/components/views/icon-button/icon-button';
 import { COLORS } from '@/constants/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Icon } from '@/components/views/icon/icon';
 
 export interface ObservationDetailsViewProps {
   inspectionId: string;
@@ -50,7 +51,7 @@ export function ObservationDetailsView({
         style={{
           paddingHorizontal: 16,
           paddingTop: 8,
-          paddingBottom: 8,
+          paddingBottom: 40,
           flexDirection: 'row',
           alignItems: 'center',
           gap: 12,
@@ -58,7 +59,7 @@ export function ObservationDetailsView({
       >
         <IconButton icon="chevron.left" size="sm" onPress={onGoBack} />
         <Text variant="headline" weight="emphasized">
-          Observation details
+          inspection details
         </Text>
       </View>
 
@@ -73,17 +74,30 @@ export function ObservationDetailsView({
           <Text variant="title1" weight="emphasized">
             {observation.name || observationId}
           </Text>
-          <Text variant="body" color="on-dark-secondary">
-            Inspection: {inspectionId || 'Unknown'}
-          </Text>
         </View>
 
         {observation.severity ? (
-          <View style={{ gap: 4 }}>
-            <Text variant="headline" weight="emphasized">
-              Severity
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Icon
+              name={
+                observation.severity === 'critical'
+                  ? 'exclamationmark.triangle.fill'
+                  : observation.severity === 'medium'
+                    ? 'exclamationmark.circle.fill'
+                    : 'checkmark.circle.fill'
+              }
+              size={18}
+              color={
+                observation.severity === 'critical'
+                  ? COLORS.severity.critical
+                  : observation.severity === 'medium'
+                    ? COLORS.severity.medium
+                    : COLORS.severity.low
+              }
+            />
+            <Text variant="body" weight="emphasized">
+              {observation.severity}
             </Text>
-            <Text variant="body">{observation.severity}</Text>
           </View>
         ) : null}
 

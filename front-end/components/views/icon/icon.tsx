@@ -26,7 +26,6 @@ const MAPPING: IconMapping = {
   'camera.fill': 'camera-alt',
   'photo.on.rectangle': 'photo-library',
   'xmark.square': 'close',
-  'person.fill': 'person',
 
   // Action icons
   trash: 'delete',
@@ -50,6 +49,11 @@ const MAPPING: IconMapping = {
   'arrow.up.right': 'arrow-outward',
 
   'doc.text.fill': 'assignment',
+
+  // style icons
+  'person.fill': 'person',
+  'exclamationmark.triangle.fill': 'priority-high',
+  'exclamationmark.circle.fill': 'error-outline',
 } as const;
 
 export type IconName = keyof typeof MAPPING;

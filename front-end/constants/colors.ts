@@ -25,6 +25,12 @@ export const COLORS = {
 
   pageBackground: '#424245',
 
+  severity: {
+    critical: '#FF453A',
+    medium: '#FFD60A',
+    low: '#32D74B',
+  },
+
   system: {
     white: '#FFFFFF',
     black: '#000000',
