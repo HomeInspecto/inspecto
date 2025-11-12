@@ -26,6 +26,7 @@ const MAPPING: IconMapping = {
   'camera.fill': 'camera-alt',
   'photo.on.rectangle': 'photo-library',
   'xmark.square': 'close',
+  'person.fill': 'person',
 
   // Action icons
   trash: 'delete',
