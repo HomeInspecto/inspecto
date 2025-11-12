@@ -37,7 +37,11 @@ export const getAllInspectors = async (req: Request, res: Response) => {
     
     if (active !== undefined) filters.active = active === 'true';
     
+<<<<<<< HEAD
     const { data, error } = await DatabaseService.fetchDataAdmin('inspector', '*', Object.keys(filters).length ? filters : undefined);
+=======
+    const { data, error } = await DatabaseService.fetchDataAdmin('inspectors', '*', Object.keys(filters).length ? filters : undefined);
+>>>>>>> 2db3dea (Fix DB RLD issue)
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
@@ -101,8 +105,13 @@ export const getAllInspectors = async (req: Request, res: Response) => {
  */
 export const createInspector = async (req: Request, res: Response) => {
   try {
+<<<<<<< HEAD
     const { full_name, email, phone, license_number, certifications, signature_image_url, timezone, bio, active } = req.body;
     const { data, error } = await DatabaseService.insertDataAdmin('inspector', { full_name, email, phone, license_number, certifications, signature_image_url, timezone, bio, active });
+=======
+    const { organization_id, user_id, full_name, email, phone, license_number, certifications, signature_image_url, timezone, bio, active } = req.body;
+    const { data, error } = await DatabaseService.insertDataAdmin('inspectors', { organization_id, user_id, full_name, email, phone, license_number, certifications, signature_image_url, timezone, bio, active });
+>>>>>>> 2db3dea (Fix DB RLD issue)
   if (error) {
     return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
   }

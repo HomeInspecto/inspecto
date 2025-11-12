@@ -219,12 +219,26 @@ export const getObservationsByInspectionId = async (req: Request, res: Response)
  */
 export const getObservationsByInspectionAndSection = async (req: Request, res: Response) => {
   try {
+<<<<<<< HEAD
     const { inspection_id, section_id } = req.query;
 
     if (!inspection_id || !section_id) {
       return res.status(400).json({ 
         error: 'Both inspection_id and section_id are required as query parameters' 
       });
+=======
+    const { section_id, severity, status } = req.query;
+    const filters: Record<string, any> = {};
+    
+    if (section_id) filters.section_id = section_id as string;
+    if (severity) filters.severity = severity as string;
+    if (status) filters.status = status as string;
+    
+    const { data, error } = await DatabaseService.fetchDataAdmin('observations', '*', Object.keys(filters).length ? filters : undefined);
+    
+    if (error) {
+      return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
+>>>>>>> 2db3dea (Fix DB RLD issue)
     }
 
     // Query observations by both inspection_id and section_id

@@ -26,7 +26,14 @@ import DatabaseService from '../database';
  */
 export const getAllProperties = async (req: Request, res: Response) => {
   try {
+<<<<<<< HEAD
     const { data, error } = await DatabaseService.fetchDataAdmin('properties');
+=======
+    const { organization_id } = req.query;
+    const filters = organization_id ? { organization_id: organization_id as string } : undefined;
+    
+    const { data, error } = await DatabaseService.fetchDataAdmin('properties', '*', filters);
+>>>>>>> 2db3dea (Fix DB RLD issue)
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
@@ -102,8 +109,13 @@ export const getAllProperties = async (req: Request, res: Response) => {
  */
 export const createProperty = async (req: Request, res: Response) => {
   try {
+<<<<<<< HEAD
     const { address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes } = req.body;
     const { data, error } = await DatabaseService.insertDataAdmin('properties', { address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes });
+=======
+    const { organization_id, address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes } = req.body;
+    const { data, error } = await DatabaseService.insertDataAdmin('properties', { organization_id, address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes });
+>>>>>>> 2db3dea (Fix DB RLD issue)
     console.log('data', data);
     console.log('error', error);
     if (error) {
