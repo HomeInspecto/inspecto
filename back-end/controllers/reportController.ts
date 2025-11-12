@@ -89,20 +89,36 @@ import DatabaseService from '../database';
 export const generateReport = async (req: Request, res: Response) => {
   try {
     const { property_id } = req.params as { property_id: string };
-
+    console.log('property_id', property_id);
+    
+    if (!property_id) {
+      return res.status(400).json({ error: 'Property ID is required' });
+    }
+    
     // 1) Property
-    const { data: props, error: propErr } = await DatabaseService.fetchData('properties', '*', { id: property_id });
-    if (propErr) return res.status(500).json({ error: asMsg(propErr) });
+    const { data: props, error: propErr } = await DatabaseService.fetchDataAdmin('properties', '*', { id: property_id });
+    console.log('props', props);
+    console.log('propErr', propErr);
+    if (propErr) {
+      console.error('Error fetching property:', propErr);
+      return res.status(500).json({ error: asMsg(propErr), details: propErr });
+    }
+    
+    console.log('props', props);
     const property = (Array.isArray(props) ? props[0] : props) as any;
-    if (!property) return res.status(404).json({ error: 'Property not found' });
+    console.log('property', property);
+    
+    if (!property) {
+      return res.status(404).json({ error: 'Property not found' });
+    }
 
     // 2) Organization
-    const { data: orgs, error: orgErr } = await DatabaseService.fetchData('organizations', '*', { id: property.organization_id });
+    const { data: orgs, error: orgErr } = await DatabaseService.fetchDataAdmin('organizations', '*', { id: property.organization_id });
     if (orgErr) return res.status(500).json({ error: asMsg(orgErr) });
     const organization = (Array.isArray(orgs) ? orgs[0] : orgs) as any;
 
     // 3) Latest inspection for this property (by created_at desc)
-    const { data: inspections, error: inspErr } = await DatabaseService.fetchData('inspections', '*', { property_id });
+    const { data: inspections, error: inspErr } = await DatabaseService.fetchDataAdmin('inspections', '*', { property_id });
     if (inspErr) return res.status(500).json({ error: asMsg(inspErr) });
     const inspectionsArr = (inspections || []) as any[];
     inspectionsArr.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -111,7 +127,7 @@ export const generateReport = async (req: Request, res: Response) => {
     // 4) Sections for the inspection
     let sections: any[] = [];
     if (inspection?.id) {
-      const { data: secs, error: secErr } = await DatabaseService.fetchData('inspection_sections', '*', { inspection_id: inspection.id });
+      const { data: secs, error: secErr } = await DatabaseService.fetchDataAdmin('inspection_sections', '*', { inspection_id: inspection.id });
       if (secErr) return res.status(500).json({ error: asMsg(secErr) });
       sections = (secs || []) as any[];
     }
@@ -119,13 +135,13 @@ export const generateReport = async (req: Request, res: Response) => {
     // 5) Observations per section + media per observation
     const sectionsWithObservations = [] as any[];
     for (const sec of sections) {
-      const { data: obs, error: obsErr } = await DatabaseService.fetchData('observations', '*', { section_id: sec.id });
+      const { data: obs, error: obsErr } = await DatabaseService.fetchDataAdmin('observations', '*', { section_id: sec.id });
       if (obsErr) return res.status(500).json({ error: asMsg(obsErr) });
       const obsArr = (obs || []) as any[];
 
       const observationsWithMedia = [] as any[];
       for (const ob of obsArr) {
-        const { data: media, error: medErr } = await DatabaseService.fetchData('observation_media', '*', { observation_id: ob.id });
+        const { data: media, error: medErr } = await DatabaseService.fetchDataAdmin('observation_media', '*', { observation_id: ob.id });
         if (medErr) return res.status(500).json({ error: asMsg(medErr) });
         const medArr = (media || []) as any[];
         observationsWithMedia.push({
