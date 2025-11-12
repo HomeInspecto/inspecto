@@ -11,7 +11,7 @@ export default function HomeScreen() {
     <View style={StyleSheet.absoluteFill}>
       <CameraScreen />
 
-      <Sheet ref={sheetRef} initialIndex={0} enablePanDownToClose={false}>
+      <Sheet ref={sheetRef} initialIndex={0} enablePanDownToClose={false} scrollable={false}>
         {/* single child: inspection details container (presentation and handlers inside) */}
         <InspectionDetails />
       </Sheet>

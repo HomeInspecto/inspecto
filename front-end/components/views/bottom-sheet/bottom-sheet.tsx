@@ -1,6 +1,6 @@
 import React, { forwardRef, useMemo, useRef, useImperativeHandle, useCallback } from 'react';
 import { Platform } from 'react-native';
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import { COLORS } from '@/constants/colors';
 
 interface BottomSheetProps {
@@ -9,6 +9,7 @@ interface BottomSheetProps {
   initialIndex?: -1 | 0 | 1 | 2; // -1 to start closed
   enablePanDownToClose?: boolean;
   onChange?: (index: number) => void; // index can be -1 when closed
+  scrollable?: boolean;
 }
 
 export type BottomSheetRef = {
@@ -21,7 +22,7 @@ export type BottomSheetRef = {
 const DEFAULT_SNAPS = ['10%', '50%', '90%'];
 
 const Sheet = forwardRef<BottomSheetRef, BottomSheetProps>(
-  function Sheet({ children, snapPoints, initialIndex = 1, enablePanDownToClose = true, onChange }, ref) {
+  function Sheet({ children, snapPoints, initialIndex = 1, enablePanDownToClose = true, onChange, scrollable = true }, ref) {
     const sheetRef = useRef<BottomSheet>(null);
     const snaps = useMemo(() => snapPoints ?? DEFAULT_SNAPS, [snapPoints]);
 
@@ -54,14 +55,26 @@ const Sheet = forwardRef<BottomSheetRef, BottomSheetProps>(
         }}
         onChange={onChange}
       >
-        <BottomSheetScrollView
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-          }}
-        >
-          {children}
-        </BottomSheetScrollView>
+        {scrollable ? (
+          <BottomSheetScrollView
+            contentContainerStyle={{
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+            }}
+          >
+            {children}
+          </BottomSheetScrollView>
+        ) : (
+          <BottomSheetView
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              flex: 1,
+            }}
+          >
+            {children}
+          </BottomSheetView>
+        )}
       </BottomSheet>
     );
   }
