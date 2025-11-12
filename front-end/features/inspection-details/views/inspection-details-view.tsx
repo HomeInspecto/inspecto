@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SectionList } from 'react-native';
+import { View, SectionList, Pressable } from 'react-native';
 import Text from '@/components/views/text/text';
 import { COLORS } from '@/constants/colors';
 import type { ActiveInspection } from '../state';
@@ -13,6 +13,7 @@ export interface InspectionDetailsViewProps {
   onCreateReport: () => void;
   searchTerm: string;
   onSearchChange: (text: string) => void;
+  onSelectObservation: (observationId: string) => void;
   sections: Array<{
     title: string;
     data: Observation[];
@@ -24,6 +25,7 @@ export function InspectionDetailsView({
   onCreateReport,
   searchTerm,
   onSearchChange,
+  onSelectObservation,
   sections,
 }: InspectionDetailsViewProps) {
   if (!inspection) return;
@@ -66,16 +68,18 @@ export function InspectionDetailsView({
           const label = item.name || `Observation ${index + 1}`;
           return (
             <View style={{ paddingLeft: 12 }}>
-              <View
-                style={{
-                  backgroundColor: COLORS.material.secondary.fill,
-                  borderRadius: 14,
-                  paddingVertical: 12,
-                  paddingHorizontal: 16,
-                }}
-              >
-                <Text variant="body" color="on-dark-primary">{label}</Text>
-              </View>
+              <Pressable onPress={() => onSelectObservation(item.name ?? label)}>
+                <View
+                  style={{
+                    backgroundColor: COLORS.material.secondary.fill,
+                    borderRadius: 14,
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                  }}
+                >
+                  <Text variant="body" color="on-dark-primary">{label}</Text>
+                </View>
+              </Pressable>
             </View>
           );
         }}

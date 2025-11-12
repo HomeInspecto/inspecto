@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Linking } from 'react-native';
+import { router } from 'expo-router';
 import { useActiveInspectionStore, type ActiveInspection } from '../state';
 import type { Observation } from '../../edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
@@ -11,6 +12,15 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
       activeInspection: state.activeInspection,
     }))
   );
+
+  const onSelectObservation = (observationId: string) => {
+    if (!activeInspection?.id) return;
+    router.push(
+      `/active-inspection/${activeInspection.id}/observation-details?observationId=${encodeURIComponent(
+        observationId
+      )}`
+    );
+  };
 
   const sections = useMemo(() => {
     if (!activeInspection?.observations?.length) return [];
@@ -46,6 +56,7 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     inspection: activeInspection,
     onCreateReport,
     onSearchChange,
+    onSelectObservation,
     searchTerm,
     sections,
   };
