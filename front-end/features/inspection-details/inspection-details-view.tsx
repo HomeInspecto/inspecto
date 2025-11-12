@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, SectionList } from 'react-native';
 import Text from '@/components/views/text/text';
 import { COLORS } from '@/constants/colors';
 import type { ActiveInspection } from './state';
@@ -7,7 +7,6 @@ import type { Observation } from '../edit-observation/state';
 import Button from '@/components/views/button/button';
 import TextInput from '@/components/views/text-input/text-input';
 import { Icon } from '@/components/views/icon/icon';
-import IconButton from '@/components/views/icon-button/icon-button';
 
 export interface InspectionDetailsViewProps {
   inspection?: ActiveInspection;
@@ -15,8 +14,8 @@ export interface InspectionDetailsViewProps {
   searchTerm: string;
   onSearchChange: (text: string) => void;
   sections: Array<{
-    section: string;
-    observations: Observation[];
+    title: string;
+    data: Observation[];
   }>;
 }
 
@@ -33,9 +32,7 @@ export function InspectionDetailsView({
     <View style={{ flex: 1, gap: 16 }}>
       <View style={{ backgroundColor: COLORS.pageBackground, padding: 4, borderRadius: 20 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end'  }}>
-          <Text variant="headline" color="on-dark-primary" >
-            {inspection ? inspection.address : 'Address'}
-          </Text>
+          <Text variant="headline" color="on-dark-primary" >{inspection ? inspection.address : 'Address'}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Icon name="person.fill" size={14} color={COLORS.label.onDark.secondary} />
             <Text variant="footnote" color="on-dark-tertiary" style={{ textAlign: 'right'}}>    
@@ -48,9 +45,7 @@ export function InspectionDetailsView({
       <Button text="View report" icon="doc.text.fill" onPress={onCreateReport} />
       <View style={{ height: 1, backgroundColor: COLORS.material.secondary.stroke }} />
 
-      <Text variant="title3" weight="emphasized">
-        Observations
-      </Text>
+      <Text variant="title3" weight="emphasized">Observations</Text>
 
       <TextInput
         value={searchTerm}
@@ -60,27 +55,39 @@ export function InspectionDetailsView({
         onChangeText={onSearchChange}
       />
 
-      <View style={{ gap: 16 }}>
-        {!sections.length && <Text>No observations logged.</Text>}
-        {sections.map(({ section, observations }) => (
-          <View key={section} style={{ gap: 8 }}>
-            <Text variant="title3" weight="emphasized" color="on-dark-secondary">
-              {section}
-            </Text>
-
-            <View style={{ gap: 4, paddingLeft: 12 }}>
-              {observations.map((observation, idx) => {
-                const label = observation.name || `Observation ${idx + 1}`;
-                return (
-                  <Text key={`${section}-${idx}`} variant="body" color="on-dark-primary">
-                    {label}
-                  </Text>
-                );
-              })}
+      <SectionList
+        style={{ flex: 1 }}
+        sections={sections}
+        keyExtractor={(item, index) => `${item.name ?? 'observation'}-${index}`}
+        renderSectionHeader={({ section: { title } }) => (
+          <Text variant="body" weight="emphasized" color="on-dark-secondary">{title}</Text>
+        )}
+        renderItem={({ item, index }) => {
+          const label = item.name || `Observation ${index + 1}`;
+          return (
+            <View style={{ paddingLeft: 12 }}>
+              <View
+                style={{
+                  backgroundColor: COLORS.material.secondary.fill,
+                  borderRadius: 14,
+                  paddingVertical: 12,
+                  paddingHorizontal: 16,
+                }}
+              >
+                <Text variant="body" color="on-dark-primary">{label}</Text>
+              </View>
             </View>
-          </View>
-        ))}
-      </View>
+          );
+        }}
+        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+        SectionSeparatorComponent={() => <View style={{ height: 16 }} />}
+        ListEmptyComponent={
+          <View><Text>No observations logged.</Text></View>
+        }
+        stickySectionHeadersEnabled={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 16, paddingTop: 8 }}
+      />
     </View>
   );
 }

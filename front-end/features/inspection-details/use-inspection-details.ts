@@ -25,9 +25,9 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
       grouped.get(key)!.push(observation);
     }
 
-    return Array.from(grouped.entries()).map(([section, observations]) => ({
-      section,
-      observations,
+    return Array.from(grouped.entries()).map(([title, data]) => ({
+      title,
+      data,
     }));
   }, [activeInspection?.observations]);
 
