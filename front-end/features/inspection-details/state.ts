@@ -54,6 +54,16 @@ const dummyInspection = {
       photos: [],
     },
     {
+      name: 'Putrid Smell in the Closet',
+      description: 'There is a putrid smell in the closet.',
+      implications: 'The smell is coming from the closet.',
+      recommendation: 'Clean the closet.',
+      section: 'Interior',
+      severity: 'medium' as const,
+      fieldNote: 'Smell observed during inspection.',
+      photos: [],
+    },
+    {
       name: 'Insufficient Attic Insulation',
       description: 'Attic insulation depth averages 6 inches, below recommended levels.',
       implications: 'Reduced energy efficiency; higher heating and cooling costs.',
