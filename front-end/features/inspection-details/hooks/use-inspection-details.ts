@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Linking } from 'react-native';
-import { useActiveInspectionStore, type ActiveInspection } from './state';
-import type { Observation } from '../edit-observation/state';
+import { useActiveInspectionStore, type ActiveInspection } from '../state';
+import type { Observation } from '../../edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
-import type { InspectionDetailsViewProps } from './inspection-details-view';
+import type { InspectionDetailsViewProps } from '../views/inspection-details-view';
 
 export function useInspectionDetails(): InspectionDetailsViewProps {
   const { activeInspection } = useActiveInspectionStore(
