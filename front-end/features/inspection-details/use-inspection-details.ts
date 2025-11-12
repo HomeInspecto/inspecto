@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Linking } from 'react-native';
 import { useActiveInspectionStore, type ActiveInspection } from './state';
 import { Observation, useActiveObservationStore } from '../edit-observation/state';
@@ -17,8 +18,15 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     Linking.openURL(url);
   };
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const onSearchChange = (text: string) => {
+    setSearchTerm(text);
+  };
+
   return {
     inspection: activeInspection,
     onCreateReport,
+    onSearchChange,
+    searchTerm
   };
 }
