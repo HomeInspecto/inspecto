@@ -49,7 +49,7 @@ export const getAllInspections = async (req: Request, res: Response) => {
     if (inspector_id) filters.inspector_id = inspector_id as string;
     if (status) filters.status = status as string;
     
-    const { data, error } = await DatabaseService.fetchData('inspections', '*', Object.keys(filters).length ? filters : undefined);
+    const { data, error } = await DatabaseService.fetchDataAdmin('inspections', '*', Object.keys(filters).length ? filters : undefined);
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
@@ -127,7 +127,7 @@ export const createInspection = async (req: Request, res: Response) => {
       scheduled_for: scheduled_for || null
     };
     
-    const { data, error } = await DatabaseService.insertData('inspections', inspectionData);
+    const { data, error } = await DatabaseService.insertDataAdmin('inspections', inspectionData);
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
@@ -185,7 +185,7 @@ export const createInspection = async (req: Request, res: Response) => {
 export const createInspectionSection = async (req: Request, res: Response) => {
   try {
     const { inspection_id, section_name, notes, priority_rating } = req.body;
-    const { data, error } = await DatabaseService.insertData('inspection_sections', { inspection_id, section_name, notes, priority_rating });
+    const { data, error } = await DatabaseService.insertDataAdmin('inspection_sections', { inspection_id, section_name, notes, priority_rating });
     if (error) {
     return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
   }

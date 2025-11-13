@@ -36,6 +36,7 @@ app.use(
     if (!origin) return callback(null, true); // allow same-origin Swagger + curl
     const allowedOrigins = [
       'http://localhost:3000', // local frontend
+      'http://localhost:4000', // local backend
       'https://dist-rose-ten.vercel.app', // deployed frontend
       'https://inspecto-production.up.railway.app', // your Railway backend domain
     ];

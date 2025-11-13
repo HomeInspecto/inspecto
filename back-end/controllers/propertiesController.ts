@@ -35,7 +35,7 @@ export const getAllProperties = async (req: Request, res: Response) => {
     const { organization_id } = req.query;
     const filters = organization_id ? { organization_id: organization_id as string } : undefined;
     
-    const { data, error } = await DatabaseService.fetchData('properties', '*', filters);
+    const { data, error } = await DatabaseService.fetchDataAdmin('properties', '*', filters);
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
@@ -115,8 +115,10 @@ export const getAllProperties = async (req: Request, res: Response) => {
 export const createProperty = async (req: Request, res: Response) => {
   try {
     const { organization_id, address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes } = req.body;
-    const { data, error } = await DatabaseService.insertData('properties', { organization_id, address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes });
-  if (error) {
+    const { data, error } = await DatabaseService.insertDataAdmin('properties', { organization_id, address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes });
+    console.log('data', data);
+    console.log('error', error);
+    if (error) {
     return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
   }
   return res.json({ property: data });

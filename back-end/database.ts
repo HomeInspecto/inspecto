@@ -27,15 +27,62 @@ export class DatabaseService {
       let query = supabase.from(tableName).select(columns);
       
       // Apply filters if provided
-      if (filters) {
+      if (filters && Object.keys(filters).length > 0) {
         Object.entries(filters).forEach(([key, value]) => {
-          query = query.eq(key, value);
+          // Only apply filter if value is not null or undefined
+          if (value !== null && value !== undefined) {
+            query = query.eq(key, value);
+          }
         });
       }
       
       const { data, error } = await query;
+      
+      if (error) {
+        console.error(`Error fetching from ${tableName}:`, error);
+      }
+      
       return { data, error };
     } catch (err) {
+      console.error(`Error in fetchData for table ${tableName}:`, err);
+      return { data: null, error: err };
+    }
+  }
+
+  /**
+   * Generic function to fetch data from any table using admin client (bypasses RLS)
+   */
+  static async fetchDataAdmin<T>(
+    tableName: string, 
+    columns: string = '*',
+    filters?: Record<string, any>
+  ) {
+    if (!supabaseAdmin) {
+      throw new Error('Supabase admin client not configured');
+    }
+    
+    try {
+      let query = supabaseAdmin.from(tableName).select(columns);
+      
+      // Apply filters if provided
+      if (filters && Object.keys(filters).length > 0) {
+        Object.entries(filters).forEach(([key, value]) => {
+          // Only apply filter if value is not null or undefined
+          if (value !== null && value !== undefined) {
+            query = query.eq(key, value);
+          }
+        });
+      }
+      
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error(`Error fetching from ${tableName} (admin):`, error);
+      }
+      
+      return { data, error };
+    } catch (err) {
+      console.error(`Error in fetchDataAdmin for table ${tableName}:`, err);
       return { data: null, error: err };
     }
   }
@@ -49,6 +96,29 @@ export class DatabaseService {
   ) {
     try {
       const { data: result, error } = await supabase
+        .from(tableName)
+        .insert(data)
+        .select();
+      
+      return { data: result, error };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  }
+
+  /**
+   * Generic function to insert data into any table using admin client (bypasses RLS)
+   */
+  static async insertDataAdmin<T>(
+    tableName: string, 
+    data: T
+  ) {
+    if (!supabaseAdmin) {
+      throw new Error('Supabase admin client not configured');
+    }
+    
+    try {
+      const { data: result, error } = await supabaseAdmin
         .from(tableName)
         .insert(data)
         .select();

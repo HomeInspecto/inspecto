@@ -48,7 +48,7 @@ import crypto from 'crypto';
 export const getAllObservationMedia = async (req: Request, res: Response) => {
   try {
     const { observation_id } = req.params;
-    const { data, error } = await DatabaseService.fetchData('observation_media', '*', { observation_id });
+    const { data, error } = await DatabaseService.fetchDataAdmin('observation_media', '*', { observation_id });
     if (error) {
       return res.status(500).json({ error: 'Failed to fetch observation media' });
     }
@@ -164,7 +164,7 @@ export const createObservationMedia = async (req: Request, res: Response) => {
     const publicUrl = publicUrlData?.publicUrl || objectPath;
     console.log('publicUrl', publicUrl);
     // Insert observation_media record with storage_key as URL
-    const { data, error } = await DatabaseService.insertData('observation_media', {
+    const { data, error } = await DatabaseService.insertDataAdmin('observation_media', {
       observation_id,
       type: inferredType,
       storage_key: publicUrl,
