@@ -1,8 +1,9 @@
-import { View, Platform } from 'react-native';
+import { View, Platform, StyleSheet } from 'react-native';
 import Text from '@/components/views/text/text';
 import TextInput from '@/components/views/text-input/text-input';
 import Button from '@/components/views/button/button';
 import type { Severity } from '@/features/edit-observation/state';
+import { RadioGroup } from '@/components/views/radio-group/radio-group';
 
 export interface LogObservationProps {
   onLog: () => void;
@@ -22,6 +23,8 @@ export interface LogObservationProps {
   setSection: (value: LogObservationProps['section']) => void;
   setSeverity: (value: LogObservationProps['severity']) => void;
 }
+
+
 
 export const LogObservationView = ({
   onLog,
@@ -98,17 +101,15 @@ export const LogObservationView = ({
 
       <View style={{ gap: 8 }}>
         <Text variant="headline">Severity</Text>
-        {/* TODO: Replace with RadioGroup */}
-        <View
-          style={{
-            padding: 12,
-            backgroundColor: '#2e2e2f',
-            borderRadius: 8,
-            opacity: 0.7,
-          }}
-        >
-          <Text style={{ color: '#aaa' }}>[Radio options for severity: Critical, Medium, Low]</Text>
-        </View>
+        <RadioGroup
+          value={severity}
+          onChange={setSeverity}
+          options={[
+            { label: 'Critical', value: 'critical' },
+            { label: 'Medium', value: 'medium' },
+            { label: 'Low', value: 'low' }
+          ]}
+        />
       </View>
 
       <Button icon="plus" text="Log observation" onPress={onLog}></Button>
