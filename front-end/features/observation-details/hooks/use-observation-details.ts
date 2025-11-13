@@ -20,7 +20,6 @@ export function useObservationDetails(): ObservationDetailsViewProps {
   }, [activeInspection?.observations, decodedObservationId]);
 
   return {
-    inspectionId: id ?? '',
     observationId: decodedObservationId,
     observation,
     onGoBack: () => router.back(),
