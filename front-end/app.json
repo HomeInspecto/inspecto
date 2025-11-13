@@ -77,7 +77,9 @@
       "router": {},
       "eas": {
         "projectId": "3309b6b7-ac1d-43eb-b76f-0833cb402599"
-      }
+      },
+      "auth0Domain": "",
+      "auth0ClientId": ""
     }
   }
 }

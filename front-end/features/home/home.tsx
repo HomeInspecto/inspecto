@@ -7,10 +7,18 @@ import { router } from 'expo-router';
 import { InspectionsList } from './inspections-list/inspections-list';
 import IconButton from '@/components/views/icon-button/icon-button';
 import Button from '@/components/views/button/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
+  const { user, logout } = useAuth();
+
   function handleGotoCreateInspection() {
     router.push('/create-inspection');
+  }
+
+  async function handleLogout() {
+    await logout();
+    router.replace('/login');
   }
 
   return (
@@ -28,13 +36,27 @@ export default function Home() {
           gap: 16,
         }}
       >
-        <View>
-          <Text variant="footnote" weight="emphasized">
-            Tuesday, OCT 21
-          </Text>
-          <Text variant="title1" weight="emphasized">
-            Lockwood Inc.
-          </Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View>
+            <Text variant="footnote" weight="emphasized">
+              Tuesday, OCT 21
+            </Text>
+            <Text variant="title1" weight="emphasized">
+              Lockwood Inc.
+            </Text>
+          </View>
+          <View style={{ alignItems: 'flex-end', gap: 4 }}>
+            {user && (
+              <Text variant="caption2" style={{ opacity: 0.7 }}>
+                {user.email || user.name}
+              </Text>
+            )}
+            <Pressable onPress={handleLogout}>
+              <Text variant="caption2" style={{ color: COLORS.material.primary.fill }}>
+                Logout
+              </Text>
+            </Pressable>
+          </View>
         </View>
 
         <TextInput value={''} placeholder="Search" leftIcon="search" />
