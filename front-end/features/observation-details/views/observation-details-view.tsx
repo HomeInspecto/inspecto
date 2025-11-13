@@ -10,12 +10,14 @@ export interface ObservationDetailsViewProps {
   observationId: string;
   observation?: Observation;
   onGoBack: () => void;
+  onEdit: () => void;
 }
 
 export function ObservationDetailsView({
   observationId,
   observation,
   onGoBack,
+  onEdit,
 }: ObservationDetailsViewProps) {
   if (!observation) {
     return (
@@ -73,7 +75,7 @@ export function ObservationDetailsView({
               </View>
             ) : null}
           </View>
-          <IconButton icon="pencil" size="sm" onPress={() => {}} />
+          <IconButton icon="pencil" size="sm" onPress={onEdit} />
         </View>
 
         <View style={{ height: 1, backgroundColor: COLORS.material.secondary.stroke }} />
