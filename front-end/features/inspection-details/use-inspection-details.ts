@@ -11,7 +11,7 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     }))
   );
 
-  const onCreateReport = () => {
+  const onCreateReport = () => { 
     if (!activeInspection) return;
 
     const localReal_url = `http://localhost:4321/view/${activeInspection.id}`;
