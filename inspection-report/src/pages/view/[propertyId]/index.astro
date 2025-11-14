@@ -6,6 +6,10 @@ import "../../../styles/style.css";
 
 const API_BASE_URL = "http://localhost:4000";
 
+//http://localhost:4000/api/report/generate/
+
+//a41bf1a8-03f0-4ec3-bc9d-1d1cc71a27ea
+
 const { propertyId } = Astro.params;
 
 const res = await fetch(`${API_BASE_URL}/api/report/generate/${propertyId}`);
