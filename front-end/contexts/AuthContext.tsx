@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [, response, promptAsync] = AuthSession.useAuthRequest(
+  const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {
       clientId: auth0Config.clientId,
       scopes: ['openid', 'profile', 'email', 'offline_access'],
@@ -134,6 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     {
       authorizationEndpoint: auth0Config.authorizationEndpoint,
+      tokenEndpoint: auth0Config.tokenEndpoint,
     }
   );
 
@@ -202,13 +203,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
 
-      // Exchange authorization code for tokens
-      // Auth0 expects application/x-www-form-urlencoded format
+      // Manual token exchange with PKCE code_verifier
+      if (!request || !request.codeVerifier) {
+        throw new Error('Auth request not initialized or missing code_verifier');
+      }
+
+      // Exchange authorization code for tokens with PKCE
       const params = new URLSearchParams({
         grant_type: 'authorization_code',
         client_id: auth0Config.clientId,
         code,
         redirect_uri: auth0Config.redirectUri,
+        code_verifier: request.codeVerifier,
       });
 
       const tokenResponse = await fetch(auth0Config.tokenEndpoint, {
@@ -240,7 +246,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [fetchUserInfo]);
+  }, [fetchUserInfo, request]);
 
   const initializeAuth = useCallback(async () => {
     try {
