@@ -7,10 +7,14 @@ import {
   Pressable,
   StyleSheet,
   View,
+  ScrollView,
+  ActivityIndicator,
+  Modal,
 } from 'react-native';
 
 import TextInput from '@/components/views/text-input/text-input';
 import { useRef, useEffect } from 'react';
+import { BlurView } from 'expo-blur';
 import { COLORS } from '@/constants/colors';
 import IconButton from '@/components/views/icon-button/icon-button';
 
@@ -19,16 +23,34 @@ export interface AddFieldNoteProps {
 
   onMicStart?: () => void;
   onMicStop?: () => void;
-  onNextPress?: () => void;
+  onNextPress?: () => void; // keep if you still use it elsewhere
 
   focused?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
   onChangeText?: (text: string) => void;
+
+  isRecording?: boolean;
+  isUploading?: boolean;
+
+  isPolishing?: boolean;
 }
 
 export const AddFieldNoteView = (props: AddFieldNoteProps) => {
-  const { note, onNextPress, focused, onFocus, onBlur, onChangeText } = props;
+  const {
+    note,
+    onNextPress,
+    focused,
+    onFocus,
+    onBlur,
+    onChangeText,
+    onMicStart,
+    onMicStop,
+    isRecording,
+    isUploading,
+    isPolishing,
+  } = props;
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -67,22 +89,47 @@ export const AddFieldNoteView = (props: AddFieldNoteProps) => {
             </Text>
           </Animated.View>
 
-          <TextInput
-            value={note}
-            onChangeText={onChangeText}
-            placeholder="Write a field note"
-            multiline
-            onFocus={onFocus}
-            onBlur={onBlur}
-            rightSlot={
-              note && (
-                <View style={{ position: 'absolute', bottom: 8, right: 8 }}>
-                  <IconButton icon="checkmark" size="xs" onPress={onNextPress}></IconButton>
+          {/* Input with mic/stop + checkmark in the rightSlot */}
+          <View style={{ position: 'relative' }}>
+            <TextInput
+              value={note}
+              onChangeText={onChangeText}
+              placeholder="Write a field note"
+              multiline
+              onFocus={onFocus}
+              onBlur={onBlur}
+              rightSlot={
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  {/* Mic / Stop */}
+                  {!isRecording ? (
+                    <IconButton
+                      icon="mic"
+                      size="xs"
+                      disabled={!!isUploading}
+                      onPress={onMicStart}
+                    />
+                  ) : (
+                    <IconButton
+                      icon="stop"
+                      size="xs"
+                      disabled={!!isUploading}
+                      onPress={onMicStop}
+                    />
+                  )}
+
+                  {/* Checkmark only when there is text */}
+                  {note ? (
+                    isPolishing ? (
+                      <ActivityIndicator size="small" />
+                    ) : (
+                      <IconButton icon="checkmark" size="xs" onPress={onNextPress} />
+                    )
+                  ) : null}
                 </View>
-              )
-            }
-            onRightIconPress={note ? onNextPress : undefined}
-          />
+              }
+              onRightIconPress={undefined}
+            />
+          </View>
         </View>
       </KeyboardAvoidingView>
     </>
