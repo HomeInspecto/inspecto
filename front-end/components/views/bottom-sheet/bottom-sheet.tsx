@@ -55,12 +55,6 @@ const Sheet = forwardRef<BottomSheetRef, BottomSheetProps>(
       }}
       onChange={onChange}
     >
-      <BottomSheetScrollView
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingVertical: 12,
-        }}
-      >
         {scrollable ? (
           <BottomSheetScrollView
             contentContainerStyle={{
