@@ -8,7 +8,7 @@ import type { CameraScreenProps } from '../camera-screen';
 import { COLORS } from '@/constants/colors';
 
 export default function CameraScreenView(props: CameraScreenProps) {
-  const { goBack, gotoEditPhotos, photos, cameraRef, flash, toggleFlash, takePhoto, zoom, cycleZoom, currentZoomLabel, zoomLevels } = props;
+  const { goBack, gotoEditPhotos, photos, cameraRef, torch, toggleTorch, takePhoto, zoom, cycleZoom, currentZoomLabel, zoomLevels } = props;
 
   const opacity = useRef(new Animated.Value(1)).current;
 
@@ -33,7 +33,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
     <View style={{ flex: 1, backgroundColor: COLORS.pageBackground }}>
       <View style={{ flex: 1, backgroundColor: 'black' }}>
         <Animated.View style={{ flex: 1, opacity }}>
-          <CameraView style={{ flex: 1 }} ref={cameraRef} facing="back" flash={flash} zoom={zoom} />
+          <CameraView style={{ flex: 1 }} ref={cameraRef} facing="back" enableTorch={torch} zoom={zoom} />
         </Animated.View>
       </View>
 
@@ -68,7 +68,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
           }}
         >
           <View style={{ flex: 1 }}>
-            <IconButton size="sm" icon="bolt.fill" onPress={toggleFlash} />
+            <IconButton size="sm" icon="bolt.fill" onPress={toggleTorch} color={torch ? 'secondary' : 'primary'} />
           </View>
 
           <View style={{ flex: 1, alignItems: 'center' }}>

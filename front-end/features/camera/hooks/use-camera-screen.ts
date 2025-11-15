@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import { CameraView, type FlashMode } from 'expo-camera';
+import { CameraView } from 'expo-camera';
 import type { CameraScreenProps } from '../camera-screen';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useRef, useState } from 'react';
@@ -12,7 +12,7 @@ export function useCameraScreen(): CameraScreenProps {
   const clearObservation = useActiveObservationStore(useShallow(s => s.clearObservation));
 
   const cameraRef = useRef<CameraView>(null);
-  const [flash, setFlash] = useState<FlashMode>('off');
+  const [torch, setTorch] = useState(false);
   const [zoom, setZoomState] = useState(0);
 
   const { photos, addPhoto } = useActiveObservationStore(
@@ -92,8 +92,8 @@ export function useCameraScreen(): CameraScreenProps {
     })();
   };
 
-  const toggleFlash = () => {
-    setFlash(prev => (prev === 'off' ? 'on' : 'off'));
+  const toggleTorch = () => {
+    setTorch(prev => !prev);
   };
 
   const goBack = () => {
@@ -112,8 +112,8 @@ export function useCameraScreen(): CameraScreenProps {
     goBack,
     gotoEditPhotos,
 
-    flash,
-    toggleFlash,
+    torch,
+    toggleTorch,
     takePhoto,
 
     zoom,
