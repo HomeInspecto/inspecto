@@ -51,7 +51,7 @@ export const getAllObservations = async (req: Request, res: Response) => {
     if (severity) filters.severity = severity as string;
     if (status) filters.status = status as string;
     
-    const { data, error } = await DatabaseService.fetchData('observations', '*', Object.keys(filters).length ? filters : undefined);
+    const { data, error } = await DatabaseService.fetchDataAdmin('observations', '*', Object.keys(filters).length ? filters : undefined);
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
@@ -153,7 +153,7 @@ export const createObservation = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Missing required fields: section_id, obs_name' });
     }
 
-    const { data, error } = await DatabaseService.insertData('observations', {
+    const { data, error } = await DatabaseService.insertDataAdmin('observations', {
       section_id,
       obs_name,
       description: description ?? null,
@@ -162,6 +162,8 @@ export const createObservation = async (req: Request, res: Response) => {
       implication: implication ?? null
     });
     
+    console.log('data', data);
+    console.log('error', error);
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
@@ -202,7 +204,7 @@ export const createObservation = async (req: Request, res: Response) => {
         const publicUrl = publicUrlData?.publicUrl || null;
 
         console.log('publicUrl', publicUrl);
-        await DatabaseService.insertData('observation_media', {
+        await DatabaseService.insertDataAdmin('observation_media', {
           observation_id: observationId,
           type,
           storage_key: publicUrl ?? objectPath,

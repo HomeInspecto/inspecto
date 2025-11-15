@@ -152,9 +152,9 @@ Currently, the API doesn't implement authentication. In production, you should a
 
 ### Report
 
-#### Generate Report by Property
-- **GET** `/api/report/generate/:property_id`
-- **Description**: Builds a report from DB data (organization, latest inspection, sections, observations, media)
+#### Generate Report by Inspection
+- **GET** `/api/report/generate/:inspection_id`
+- **Description**: Builds a report from DB data (organization, inspection, sections, observations, media)
 - **Response**: See `mock_data/report_generated.json` for example shape
 
 ## Data Types

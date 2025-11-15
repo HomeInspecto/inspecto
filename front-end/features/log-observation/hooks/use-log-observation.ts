@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import type { LogObservationProps } from '../views/log-observation-view';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useShallow } from 'zustand/react/shallow';
+import { Alert } from 'react-native';
 import {
   useActiveObservationStore,
   type Observation,
@@ -45,6 +46,12 @@ export function useLogObersation(): LogObservationProps {
 
   const onLog = useCallback(() => {
     const obsrState = useActiveObservationStore.getState();
+
+      // Check if severity is selected
+      if (!obsrState.severity) {
+        Alert.alert('Required Field', 'Please select a severity level before logging the observation.');
+        return;
+      }
 
     const observation: Observation = {
       name: obsrState.name,

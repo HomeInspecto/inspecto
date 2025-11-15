@@ -4,6 +4,7 @@ import * as organizationsController from '../controllers/organizationsController
 const router = Router();
 
 router.get('/', organizationsController.getAllOrganizations);
+router.post('/', organizationsController.createOrganization);
 
 export default router;
 
