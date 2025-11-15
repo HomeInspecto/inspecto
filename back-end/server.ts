@@ -21,6 +21,7 @@ import supabaseRoutes from './routes/supabase';
 import transcribeRoutes from './routes/transcribe';
 import observationMediaRoutes from './routes/observationMedia';
 import generateReportRoutes from './routes/report';
+import authRoutes from './routes/auth';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -66,6 +67,7 @@ app.use('/api/inspectors', inspectorsRoutes); // ✅ Inspector-related routes
 app.use('/api/observations', observationsRoutes); // ✅ Observation-related routes
 app.use('/api/observations/media', observationMediaRoutes); // ✅ Observation media upload/list
 app.use('/supabase', supabaseRoutes); // ✅ Supabase test routes
+app.use('/api/auth', authRoutes); // ✅ Authentication routes (signup, login, logout)
 
 //routes
 app.use('/api/transcriptions', transcribeRoutes);
@@ -81,6 +83,9 @@ app.listen(port, () => {
   console.log(`🔗 Supabase test endpoint: http://localhost:${port}/supabase/test`);
   console.log(`📚 API documentation: http://localhost:${port}/api`);
   console.log(`\n📋 Available API Endpoints:`);
+  console.log(`   POST /api/auth/signup - Sign up a new user`);
+  console.log(`   POST /api/auth/login - Login user`);
+  console.log(`   POST /api/auth/logout - Logout user`);
   console.log(`   GET  /api/organizations - List all organizations`);
   console.log(`   GET  /api/properties - List properties (filter by organization_id)`);
   console.log(`   GET  /api/inspections - List inspections (filter by organization_id, inspector_id, status)`);
