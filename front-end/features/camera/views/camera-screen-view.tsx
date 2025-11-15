@@ -1,13 +1,14 @@
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, Animated, Pressable } from 'react-native';
 import { CameraView } from 'expo-camera';
 import { useRef } from 'react';
 import IconButton from '@/components/views/icon-button/icon-button';
 import Button from '@/components/views/button/button';
+import Text from '@/components/views/text/text';
 import type { CameraScreenProps } from '../camera-screen';
 import { COLORS } from '@/constants/colors';
 
 export default function CameraScreenView(props: CameraScreenProps) {
-  const { goBack, gotoEditPhotos, photos, cameraRef, flash, toggleFlash, takePhoto } = props;
+  const { goBack, gotoEditPhotos, photos, cameraRef, flash, toggleFlash, takePhoto, zoom, cycleZoom, currentZoomLabel, zoomLevels } = props;
 
   const opacity = useRef(new Animated.Value(1)).current;
 
@@ -32,7 +33,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
     <View style={{ flex: 1, backgroundColor: COLORS.pageBackground }}>
       <View style={{ flex: 1, backgroundColor: 'black' }}>
         <Animated.View style={{ flex: 1, opacity }}>
-          <CameraView style={{ flex: 1 }} ref={cameraRef} facing="back" flash={flash} />
+          <CameraView style={{ flex: 1 }} ref={cameraRef} facing="back" flash={flash} zoom={zoom} />
         </Animated.View>
       </View>
 
@@ -71,6 +72,35 @@ export default function CameraScreenView(props: CameraScreenProps) {
           </View>
 
           <View style={{ flex: 1, alignItems: 'center' }}>
+            <Pressable
+              onPress={cycleZoom}
+              style={{
+                backgroundColor: COLORS.material.secondary.fill,
+                borderRadius: 20,
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                flexDirection: 'row',
+                gap: 12,
+                alignItems: 'center',
+                marginBottom: 16,
+              }}
+            >
+              {zoomLevels.map((level) => {
+                const isActive = currentZoomLabel === level;
+                return (
+                  <Text
+                    key={level}
+                    variant="callout"
+                    weight={isActive ? 'emphasized' : 'regular'}
+                    style={{
+                      color: isActive ? COLORS.label.onDark.primary : COLORS.label.onDark.tertiary,
+                    }}
+                  >
+                    {level}
+                  </Text>
+                );
+              })}
+            </Pressable>
             <IconButton size="lg" icon="camera.fill" onPress={handleTakePhoto} />
           </View>
 

@@ -15,6 +15,12 @@ export interface CameraScreenProps {
 
   goBack: () => void;
   gotoEditPhotos: () => void;
+
+  zoom: number;
+  setZoom: (value: number) => void;
+  cycleZoom: () => void;
+  currentZoomLabel: '.5x' | '1x' | '1.5x' | '2x';
+  zoomLevels: Array<'.5x' | '1x' | '1.5x' | '2x'>;
 }
 
 export default function CameraScreen() {
