@@ -67,7 +67,7 @@ export function useLogObersation(): LogObservationProps {
 
     try {
       await fetch(
-        'https://inspecto-production.up.railway.app/api/observations/createObservation',
+        'https://my-branch-production.up.railway.app//api/observations/createObservation',
         {
           method: 'POST',
           headers: {
