@@ -16,9 +16,8 @@ export function useInspectionsList(): InspectionsListViewProps {
     async function fetchInspections() {
       const API_BASE = 'https://inspecto-production.up.railway.app';
 
-      // const res = await fetch(API_BASE + '/api/inspections/all');
-      // const data = await res.json();
-      const data = { inspections: [dummyInspection] };
+      const res = await fetch(API_BASE + '/api/inspections/all');
+      const data = await res.json();
 
       const inspections: Inspection[] = data.inspections.map((inspection: any) => ({
         id: inspection.id,
