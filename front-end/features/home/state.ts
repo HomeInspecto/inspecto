@@ -10,6 +10,7 @@ export interface Inspection {
 export interface InspectionStore {
   inspections: Inspection[];
   createInspection: (inspection: Inspection) => void;
+  setInspections: (inspections: Inspection[]) => void;
 }
 
 const fridayInspection: Inspection = {
@@ -19,7 +20,7 @@ const fridayInspection: Inspection = {
   createdAt: 1761879095780,
 };
 
-const dummyInspection: Inspection = {
+export const dummyInspection: Inspection = {
   id: 'ablmquck12312r4ql',
   client: 'Michael Johnson',
   address: '2444 Royal Oak dr',
@@ -38,5 +39,9 @@ export const useInspectionsStore = create<InspectionStore>(set => ({
   createInspection: (inspection: Inspection) =>
     set(state => ({
       inspections: [...state.inspections, inspection],
+    })),
+  setInspections: (inspections: Inspection[]) =>
+    set(state => ({
+      inspections,
     })),
 }));

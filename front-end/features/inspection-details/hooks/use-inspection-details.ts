@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Linking } from 'react-native';
 import { router } from 'expo-router';
 import { useActiveInspectionStore, type ActiveInspection } from '../state';
@@ -51,6 +51,15 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
   const onSearchChange = (text: string) => {
     setSearchTerm(text);
   };
+
+  useEffect(() => {
+    async function fetchBackend() {
+      const API_BASE = 'https://inspecto-production.up.railway.app';
+      // todo, call backend and set zustand store with setActiveObservation
+    }
+
+    fetchBackend();
+  }, []);
 
   return {
     inspection: activeInspection,
