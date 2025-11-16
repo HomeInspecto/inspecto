@@ -38,7 +38,7 @@ app.use(
       'http://localhost:4000', // local backend
       'https://dist-rose-ten.vercel.app', // deployed frontend
       'https://inspecto-production.up.railway.app', // your Railway backend domain
-      'https://localhost:8081',
+      'http://localhost:8081',
     ];
     return allowedOrigins.includes(origin)
       ? callback(null, true)
