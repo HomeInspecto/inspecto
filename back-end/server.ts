@@ -39,6 +39,7 @@ app.use(
       'https://dist-rose-ten.vercel.app', // deployed frontend
       'https://inspecto-production.up.railway.app', // your Railway backend domain
       'http://localhost:8081',
+      'https://my-branch-production.up.railway.app',
     ];
     return allowedOrigins.includes(origin)
       ? callback(null, true)
