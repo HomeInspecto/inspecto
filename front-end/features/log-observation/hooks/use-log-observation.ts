@@ -75,12 +75,12 @@ export function useLogObersation(): LogObservationProps {
           },
           body: JSON.stringify({
             section_id: '7d5df3d8-556d-445c-b199-a296baa1eb15',          // for now, using whatever is in `section`
-            obs_name: obsrState.name,
-            description: obsrState.description,
-            severity: obsrState.severity,
+            obs_name: 'fenceObs',
+            description: 'fenceDesc',
+            severity: 'low',
             status: 'open',
-            recommendation: obsrState.recommendation,
-            implication: obsrState.implications,
+            recommendation: 'fenceReco',
+            implication: 'fenceImpli',
             files: [],                              // images can be wired later
           }),
         }
