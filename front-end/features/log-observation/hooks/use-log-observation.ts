@@ -74,7 +74,7 @@ export function useLogObersation(): LogObservationProps {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            section_id: obsrState.section,          // for now, using whatever is in `section`
+            section_id: '7d5df3d8-556d-445c-b199-a296baa1eb15',          // for now, using whatever is in `section`
             obs_name: obsrState.name,
             description: obsrState.description,
             severity: obsrState.severity,
