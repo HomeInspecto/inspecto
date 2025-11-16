@@ -77,7 +77,7 @@ export function useLogObersation(): LogObservationProps {
             section_id: '7d5df3d8-556d-445c-b199-a296baa1eb15',          // for now, using whatever is in `section`
             obs_name: 'fenceObs',
             description: 'fenceDesc',
-            severity: 'low',
+            severity: 'critical',
             status: 'open',
             recommendation: 'fenceReco',
             implication: 'fenceImpli',
