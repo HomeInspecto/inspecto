@@ -37,31 +37,16 @@ export function useCameraScreen(): CameraScreenProps {
   };
 
   // Zoom level logic
-  const zoomLevels: Array<'.5x' | '1x' | '1.5x' | '2x'> = ['.5x', '1x', '1.5x', '2x'];
+  const zoomLevels: Array<'1x' | '2x' | '3x'> = ['1x', '2x', '3x'];
 
-  const getZoomLevel = (zoomValue: number): '.5x' | '1x' | '1.5x' | '2x' => {
-    if (zoomValue == 0) return '.5x';
-    if (zoomValue == 0.15) return '1x';
-    if (zoomValue == 0.25) return '1.5x';
-    return '2x';
+  const getZoomLevel = (zoomValue: number): '1x' | '2x' | '3x' => {
+    if (zoomValue == 0) return '1x';
+    if (zoomValue == 0.15) return '2x';
+    return '3x';
   };
 
-  const getZoomValue = (level: '.5x' | '1x' | '1.5x' | '2x'): number => {
-    switch (level) { case '.5x': return 0; case '1x': return 0.15; case '1.5x': return 0.25; case '2x': return 0.4; }
-  };
-
-  const cycleZoom = () => {
-    const currentLevel = getZoomLevel(zoom);
-    let nextLevel: '.5x' | '1x' | '1.5x' | '2x';
-    
-    switch (currentLevel) {
-      case '.5x': nextLevel = '1x'; break;
-      case '1x': nextLevel = '1.5x'; break;
-      case '1.5x': nextLevel = '2x'; break;
-      case '2x': nextLevel = '.5x'; break;
-    }
-    
-    setZoom(getZoomValue(nextLevel));
+  const getZoomValue = (level: '1x' | '2x' | '3x'): number => {
+    switch (level) { case '1x': return 0; case '2x': return 0.15; case '3x': return 0.25; }
   };
 
   const currentZoomLabel = getZoomLevel(zoom);
@@ -118,8 +103,8 @@ export function useCameraScreen(): CameraScreenProps {
 
     zoom,
     setZoom,
-    cycleZoom,
     currentZoomLabel,
     zoomLevels,
+    getZoomValue,
   };
 }

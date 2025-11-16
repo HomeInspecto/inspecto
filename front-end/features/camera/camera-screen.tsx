@@ -18,9 +18,9 @@ export interface CameraScreenProps {
 
   zoom: number;
   setZoom: (value: number) => void;
-  cycleZoom: () => void;
-  currentZoomLabel: '.5x' | '1x' | '1.5x' | '2x';
-  zoomLevels: Array<'.5x' | '1x' | '1.5x' | '2x'>;
+  currentZoomLabel: '1x' | '2x' | '3x';
+  zoomLevels: Array<'1x' | '2x' | '3x'>;
+  getZoomValue: (level: '1x' | '2x' | '3x') => number;
 }
 
 export default function CameraScreen() {

@@ -8,7 +8,7 @@ import type { CameraScreenProps } from '../camera-screen';
 import { COLORS } from '@/constants/colors';
 
 export default function CameraScreenView(props: CameraScreenProps) {
-  const { goBack, gotoEditPhotos, photos, cameraRef, torch, toggleTorch, takePhoto, zoom, cycleZoom, currentZoomLabel, zoomLevels } = props;
+  const { goBack, gotoEditPhotos, photos, cameraRef, torch, toggleTorch, takePhoto, zoom, setZoom, currentZoomLabel, zoomLevels, getZoomValue } = props;
 
   const opacity = useRef(new Animated.Value(1)).current;
 
@@ -75,8 +75,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
           </View>
 
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Pressable
-              onPress={cycleZoom}
+            <View
               style={{
                 backgroundColor: COLORS.material.secondary.fill,
                 borderRadius: 20,
@@ -91,19 +90,23 @@ export default function CameraScreenView(props: CameraScreenProps) {
               {zoomLevels.map((level) => {
                 const isActive = currentZoomLabel === level;
                 return (
-                  <Text
+                  <Pressable
                     key={level}
-                    variant="callout"
-                    weight={isActive ? 'emphasized' : 'regular'}
-                    style={{
-                      color: isActive ? COLORS.label.onDark.primary : COLORS.label.onDark.tertiary,
-                    }}
+                    onPress={() => setZoom(getZoomValue(level))}
                   >
-                    {level}
-                  </Text>
+                    <Text
+                      variant="callout"
+                      weight={isActive ? 'emphasized' : 'regular'}
+                      style={{
+                        color: isActive ? COLORS.label.onDark.primary : COLORS.label.onDark.tertiary,
+                      }}
+                    >
+                      {level}
+                    </Text>
+                  </Pressable>
                 );
               })}
-            </Pressable>
+            </View>
             <IconButton size="lg" icon="camera.fill" onPress={handleTakePhoto} />
           </View>
 
