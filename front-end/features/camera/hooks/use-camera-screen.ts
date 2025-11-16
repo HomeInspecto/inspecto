@@ -1,8 +1,8 @@
-import { Alert } from 'react-native';
+import { Alert, Animated } from 'react-native';
 import { CameraView } from 'expo-camera';
 import type { CameraScreenProps } from '../camera-screen';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useShallow } from 'zustand/shallow';
 
@@ -14,6 +14,8 @@ export function useCameraScreen(): CameraScreenProps {
   const cameraRef = useRef<CameraView>(null);
   const [torch, setTorch] = useState(false);
   const [zoom, setZoomState] = useState(0);
+  const animatedZoom = useRef(new Animated.Value(zoom)).current;
+  const [displayZoom, setDisplayZoom] = useState(Math.max(0.01, zoom));
 
   const { photos, addPhoto } = useActiveObservationStore(
     useShallow(state => ({
@@ -22,7 +24,6 @@ export function useCameraScreen(): CameraScreenProps {
     }))
   );
 
-  // Example: Add a new photo
   function handleAddPhoto(newUri: string) {
     const newPhoto = {
       id: `photo_${Date.now()}`,
@@ -36,7 +37,20 @@ export function useCameraScreen(): CameraScreenProps {
     setZoomState(Math.max(0, Math.min(1, value)));
   };
 
-  // Zoom level logic
+  useEffect(() => {
+    const listenerId = animatedZoom.addListener(({ value }) => {
+      setDisplayZoom(Math.max(0.01, value));
+    });
+    return () => {
+      animatedZoom.removeListener(listenerId);
+    };
+  }, []);
+
+  // zoom animation
+  useEffect(() => {
+    Animated.spring(animatedZoom, { toValue: zoom, useNativeDriver: false, tension: 50, friction: 7, }).start();
+  }, [zoom]);
+
   const zoomLevels: Array<'1x' | '2x' | '3x'> = ['1x', '2x', '3x'];
 
   const getZoomLevel = (zoomValue: number): '1x' | '2x' | '3x' => {
@@ -91,18 +105,14 @@ export function useCameraScreen(): CameraScreenProps {
 
   return {
     photos,
-
     cameraRef,
-
     goBack,
     gotoEditPhotos,
-
     torch,
     toggleTorch,
     takePhoto,
-
-    zoom,
     setZoom,
+    displayZoom,
     currentZoomLabel,
     zoomLevels,
     getZoomValue,

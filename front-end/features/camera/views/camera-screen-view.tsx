@@ -8,24 +8,15 @@ import type { CameraScreenProps } from '../camera-screen';
 import { COLORS } from '@/constants/colors';
 
 export default function CameraScreenView(props: CameraScreenProps) {
-  const { goBack, gotoEditPhotos, photos, cameraRef, torch, toggleTorch, takePhoto, zoom, setZoom, currentZoomLabel, zoomLevels, getZoomValue } = props;
+  const { goBack, gotoEditPhotos, photos, cameraRef, torch, toggleTorch, takePhoto, displayZoom, setZoom, currentZoomLabel, zoomLevels, getZoomValue } = props;
 
   const opacity = useRef(new Animated.Value(1)).current;
 
   const handleTakePhoto = async () => {
     Animated.sequence([
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 80,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
+      Animated.timing(opacity, { toValue: 0, duration: 80, useNativeDriver: true, }),
+      Animated.timing(opacity, { toValue: 1, duration: 150, useNativeDriver: true, }),
     ]).start();
-
     takePhoto();
   };
 
@@ -33,7 +24,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
     <View style={{ flex: 1, backgroundColor: COLORS.pageBackground }}>
       <View style={{ flex: 1, backgroundColor: 'black' }}>
         <Animated.View style={{ flex: 1, opacity }}>
-          <CameraView style={{ flex: 1 }} ref={cameraRef} facing="back" enableTorch={torch} zoom={zoom} />
+          <CameraView style={{ flex: 1 }} ref={cameraRef} facing="back" enableTorch={torch} zoom={displayZoom} />
         </Animated.View>
       </View>
 
@@ -62,13 +53,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
         </View>
 
         <View
-          style={{
-            paddingHorizontal: 16,
-            paddingBottom: 120,
-            flexDirection: 'row',
-            alignItems: 'flex-end',
-            justifyContent: 'space-between',
-          }}
+          style={{ paddingHorizontal: 16, paddingBottom: 120, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', }}
         >
           <View style={{ flex: 1 }}>
             <IconButton size="sm" icon="bolt.fill" onPress={toggleTorch} color={torch ? 'secondary' : 'primary'} />

@@ -16,8 +16,8 @@ export interface CameraScreenProps {
   goBack: () => void;
   gotoEditPhotos: () => void;
 
-  zoom: number;
   setZoom: (value: number) => void;
+  displayZoom: number;
   currentZoomLabel: '1x' | '2x' | '3x';
   zoomLevels: Array<'1x' | '2x' | '3x'>;
   getZoomValue: (level: '1x' | '2x' | '3x') => number;
