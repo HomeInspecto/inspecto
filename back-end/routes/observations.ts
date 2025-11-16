@@ -8,7 +8,8 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 },
 });
 
-router.get('/', observationsController.getAllObservations);
+router.get('/all', observationsController.getAllObservations);
+router.get('/observation/:observation_id', observationsController.getObservationById);
 // Accepts multipart/form-data with optional files[]; uploads handled in controller
 router.post('/createObservation', upload.array('files'), observationsController.createObservation);
 

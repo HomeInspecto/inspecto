@@ -6,15 +6,9 @@ import DatabaseService from '../database';
  * /api/properties:
  *   get:
  *     summary: Get all properties
- *     description: Retrieves a list of properties, optionally filtered by organization_id
+ *     description: Retrieves a list of properties
  *     tags:
  *       - Properties
- *     parameters:
- *       - in: query
- *         name: organization_id
- *         schema:
- *           type: string
- *         description: Filter properties by organization ID
  *     responses:
  *       '200':
  *         description: List of properties
@@ -32,10 +26,7 @@ import DatabaseService from '../database';
  */
 export const getAllProperties = async (req: Request, res: Response) => {
   try {
-    const { organization_id } = req.query;
-    const filters = organization_id ? { organization_id: organization_id as string } : undefined;
-    
-    const { data, error } = await DatabaseService.fetchDataAdmin('properties', '*', filters);
+    const { data, error } = await DatabaseService.fetchDataAdmin('properties');
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
@@ -66,11 +57,8 @@ export const getAllProperties = async (req: Request, res: Response) => {
  *           schema:
  *             type: object
  *             required:
- *               - organization_id
  *               - address_line1
  *             properties:
- *               organization_id:
- *                 type: string
  *               address_line1:
  *                 type: string
  *               address_line2:
@@ -114,8 +102,8 @@ export const getAllProperties = async (req: Request, res: Response) => {
  */
 export const createProperty = async (req: Request, res: Response) => {
   try {
-    const { organization_id, address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes } = req.body;
-    const { data, error } = await DatabaseService.insertDataAdmin('properties', { organization_id, address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes });
+    const { address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes } = req.body;
+    const { data, error } = await DatabaseService.insertDataAdmin('properties', { address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes });
     console.log('data', data);
     console.log('error', error);
     if (error) {
