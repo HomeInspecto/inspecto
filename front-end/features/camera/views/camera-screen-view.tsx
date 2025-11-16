@@ -1,13 +1,14 @@
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, Animated, Pressable } from 'react-native';
 import { CameraView } from 'expo-camera';
 import { useRef } from 'react';
 import IconButton from '@/components/views/icon-button/icon-button';
 import Button from '@/components/views/button/button';
+import Text from '@/components/views/text/text';
 import type { CameraScreenProps } from '../camera-screen';
 import { COLORS } from '@/constants/colors';
 
 export default function CameraScreenView(props: CameraScreenProps) {
-  const { goBack, gotoEditPhotos, photos, cameraRef, flash, toggleFlash, takePhoto } = props;
+  const { goBack, gotoEditPhotos, photos, cameraRef, torch, toggleTorch, takePhoto, zoom, cycleZoom, currentZoomLabel, zoomLevels } = props;
 
   const opacity = useRef(new Animated.Value(1)).current;
 
@@ -32,27 +33,30 @@ export default function CameraScreenView(props: CameraScreenProps) {
     <View style={{ flex: 1, backgroundColor: COLORS.pageBackground }}>
       <View style={{ flex: 1, backgroundColor: 'black' }}>
         <Animated.View style={{ flex: 1, opacity }}>
-          <CameraView style={{ flex: 1 }} ref={cameraRef} facing="back" flash={flash} />
+          <CameraView style={{ flex: 1 }} ref={cameraRef} facing="back" enableTorch={torch} zoom={zoom} />
         </Animated.View>
       </View>
 
       <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          justifyContent: 'space-between',
-        }}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'space-between', }}
       >
+        <View pointerEvents="none" style={StyleSheet.absoluteFillObject}>
+          <View
+            style={{ position: 'absolute', top: 0, bottom: 0, left: '33.33%', width: 1, backgroundColor: COLORS.label.onDark.primary, opacity: 0.1, }}
+          />
+          <View
+            style={{ position: 'absolute', top: 0, bottom: 0, left: '66.66%', width: 1, backgroundColor: COLORS.label.onDark.primary, opacity: 0.1, }}
+          />
+          <View
+            style={{ position: 'absolute', left: 0, right: 0, top: '33.33%', height: 1, backgroundColor: COLORS.label.onDark.primary, opacity: 0.1, }}
+          />
+          <View
+            style={{ position: 'absolute', left: 0, right: 0, top: '66.66%', height: 1, backgroundColor: COLORS.label.onDark.primary, opacity: 0.1, }}
+          />
+        </View>
+
         <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 16,
-            paddingTop: 80,
-          }}
+          style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 80, }}
         >
           <IconButton icon="chevron.left" onPress={goBack} />
         </View>
@@ -67,16 +71,45 @@ export default function CameraScreenView(props: CameraScreenProps) {
           }}
         >
           <View style={{ flex: 1 }}>
-            <IconButton size="sm" icon="bolt.fill" onPress={toggleFlash} />
+            <IconButton size="sm" icon="bolt.fill" onPress={toggleTorch} color={torch ? 'secondary' : 'primary'} />
           </View>
 
           <View style={{ flex: 1, alignItems: 'center' }}>
+            <Pressable
+              onPress={cycleZoom}
+              style={{
+                backgroundColor: COLORS.material.secondary.fill,
+                borderRadius: 20,
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                flexDirection: 'row',
+                gap: 12,
+                alignItems: 'center',
+                marginBottom: 16,
+              }}
+            >
+              {zoomLevels.map((level) => {
+                const isActive = currentZoomLabel === level;
+                return (
+                  <Text
+                    key={level}
+                    variant="callout"
+                    weight={isActive ? 'emphasized' : 'regular'}
+                    style={{
+                      color: isActive ? COLORS.label.onDark.primary : COLORS.label.onDark.tertiary,
+                    }}
+                  >
+                    {level}
+                  </Text>
+                );
+              })}
+            </Pressable>
             <IconButton size="lg" icon="camera.fill" onPress={handleTakePhoto} />
           </View>
 
           <View style={{ flex: 1 }}>
-            {photos.length > 0 && (
-              <Button color="secondary" text={`Edit (${photos.length})`} onPress={gotoEditPhotos} />
+            {photos.length > 0 && ( 
+              <Button color="secondary" text={`Edit (${photos.length})`} onPress={gotoEditPhotos} /> 
             )}
           </View>
         </View>

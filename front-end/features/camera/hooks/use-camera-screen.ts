@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import { CameraView, type FlashMode } from 'expo-camera';
+import { CameraView } from 'expo-camera';
 import type { CameraScreenProps } from '../camera-screen';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useRef, useState } from 'react';
@@ -12,7 +12,8 @@ export function useCameraScreen(): CameraScreenProps {
   const clearObservation = useActiveObservationStore(useShallow(s => s.clearObservation));
 
   const cameraRef = useRef<CameraView>(null);
-  const [flash, setFlash] = useState<FlashMode>('off');
+  const [torch, setTorch] = useState(false);
+  const [zoom, setZoomState] = useState(0);
 
   const { photos, addPhoto } = useActiveObservationStore(
     useShallow(state => ({
@@ -30,6 +31,40 @@ export function useCameraScreen(): CameraScreenProps {
     };
     addPhoto(newPhoto);
   }
+
+  const setZoom = (value: number) => {
+    setZoomState(Math.max(0, Math.min(1, value)));
+  };
+
+  // Zoom level logic
+  const zoomLevels: Array<'.5x' | '1x' | '1.5x' | '2x'> = ['.5x', '1x', '1.5x', '2x'];
+
+  const getZoomLevel = (zoomValue: number): '.5x' | '1x' | '1.5x' | '2x' => {
+    if (zoomValue == 0) return '.5x';
+    if (zoomValue == 0.15) return '1x';
+    if (zoomValue == 0.25) return '1.5x';
+    return '2x';
+  };
+
+  const getZoomValue = (level: '.5x' | '1x' | '1.5x' | '2x'): number => {
+    switch (level) { case '.5x': return 0; case '1x': return 0.15; case '1.5x': return 0.25; case '2x': return 0.4; }
+  };
+
+  const cycleZoom = () => {
+    const currentLevel = getZoomLevel(zoom);
+    let nextLevel: '.5x' | '1x' | '1.5x' | '2x';
+    
+    switch (currentLevel) {
+      case '.5x': nextLevel = '1x'; break;
+      case '1x': nextLevel = '1.5x'; break;
+      case '1.5x': nextLevel = '2x'; break;
+      case '2x': nextLevel = '.5x'; break;
+    }
+    
+    setZoom(getZoomValue(nextLevel));
+  };
+
+  const currentZoomLabel = getZoomLevel(zoom);
 
   const isTakingRef = useRef(false);
 
@@ -57,8 +92,8 @@ export function useCameraScreen(): CameraScreenProps {
     })();
   };
 
-  const toggleFlash = () => {
-    setFlash(prev => (prev === 'off' ? 'on' : 'off'));
+  const toggleTorch = () => {
+    setTorch(prev => !prev);
   };
 
   const goBack = () => {
@@ -77,8 +112,14 @@ export function useCameraScreen(): CameraScreenProps {
     goBack,
     gotoEditPhotos,
 
-    flash,
-    toggleFlash,
+    torch,
+    toggleTorch,
     takePhoto,
+
+    zoom,
+    setZoom,
+    cycleZoom,
+    currentZoomLabel,
+    zoomLevels,
   };
 }

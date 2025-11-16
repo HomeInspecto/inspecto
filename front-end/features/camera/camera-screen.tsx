@@ -1,4 +1,4 @@
-import { useCameraPermissions, type CameraView, type FlashMode } from 'expo-camera';
+import { useCameraPermissions, type CameraView } from 'expo-camera';
 import CameraScreenView from './views/camera-screen-view';
 import { useCameraScreen } from './hooks/use-camera-screen';
 import type { Photo } from '../edit-observation/state';
@@ -9,12 +9,18 @@ export interface CameraScreenProps {
 
   cameraRef: RefObject<CameraView | null>;
 
-  flash: FlashMode;
+  torch: boolean;
   takePhoto: () => void;
-  toggleFlash: () => void;
+  toggleTorch: () => void;
 
   goBack: () => void;
   gotoEditPhotos: () => void;
+
+  zoom: number;
+  setZoom: (value: number) => void;
+  cycleZoom: () => void;
+  currentZoomLabel: '.5x' | '1x' | '1.5x' | '2x';
+  zoomLevels: Array<'.5x' | '1x' | '1.5x' | '2x'>;
 }
 
 export default function CameraScreen() {

@@ -11,30 +11,23 @@ import Sheet from '@/components/views/bottom-sheet/bottom-sheet';
 export default function EditObservation() {
   const bottomSheetRef = useRef<BottomSheetRef>(null);
 
-  function goToLogObservation() {
-    bottomSheetRef?.current?.snapToIndex(2);
-  }
+  function goToLogObservation() { bottomSheetRef?.current?.snapToIndex(2); }
 
   return (
     <View
-      style={{
-        flex: 1,
-        justifyContent: 'flex-end',
-        backgroundColor: COLORS.pageBackground,
-        position: 'relative',
-        gap: 16,
-      }}
+      style={{ flex: 1, backgroundColor: COLORS.pageBackground, position: 'relative', }}
     >
-      <View style={{ aspectRatio: '3 / 4' }}>
-        <PhotoEditor />
-      </View>
-
+      <PhotoEditor />
       <View
         style={{
+          position: 'absolute',
+          bottom: 94,
+          left: 0,
+          right: 0,
+          backgroundColor: COLORS.pageBackground,
           paddingHorizontal: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
+          paddingTop: 16,
+          paddingBottom: 16,
         }}
       >
         <FilmStrip />

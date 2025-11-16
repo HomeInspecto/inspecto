@@ -5,6 +5,8 @@ import DrawingToolsView from './drawing-tools-view';
 import SvgOverlayView from './svg-overlay-view';
 import type { PhotoEditorProps } from '../photo-editor';
 import IconButton from '@/components/views/icon-button/icon-button';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { COLORS } from '@/constants/colors';
 
 export function PhotoEditorView({
   currentTool,
@@ -18,60 +20,50 @@ export function PhotoEditorView({
   handleTouchMove,
   handleTouchStart,
 }: PhotoEditorProps) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <GestureHandlerRootView>
-      <View
-        style={{
-          flex: 1,
-          width: '100%',
-          aspectRatio: '3 / 4',
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-        }}
-      >
-        <Image
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            aspectRatio: '3/4',
-          }}
-          source={{ uri: photo.uri }}
-          contentFit="cover"
-          onError={() => {}}
-        />
-
-        <SvgOverlayView
-          shapes={photo.shapes || []}
-          previewShape={previewShape}
-          currentTool={currentTool}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        />
-
-        <View style={{ marginLeft: 20, marginTop: 16 }}>
-          <IconButton icon="chevron.left" onPress={goBack} color={'critical'} />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: COLORS.pageBackground }}>
+        <View style={{ flex: 1, backgroundColor: 'black' }}>
+          <Image
+            style={{ width: '100%', height: '100%', }}
+            source={{ uri: photo.uri }}
+            contentFit="cover"
+            onError={() => {}}
+          />
         </View>
 
         <View
-          style={{
-            gap: 8,
-            marginRight: 20,
-            marginTop: 16,
-          }}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'space-between', }}
         >
-          <DrawingToolsView
-            onToolSelect={tool =>
-              currentTool !== tool ? setCurrentTool(tool) : setCurrentTool(null)
-            }
+          <SvgOverlayView
+            shapes={photo.shapes || []}
+            previewShape={previewShape}
             currentTool={currentTool}
-            undoLastShape={undoLastShape}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           />
-          <IconButton icon="trash" onPress={deleteActivePhoto} color={'critical'} />
+
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: insets.top + 16, }}
+          >
+            <View style={{ marginLeft: 4 }}>
+              <IconButton icon="chevron.left" onPress={goBack} color={'critical'} />
+            </View>
+
+            <View
+              style={{ gap: 8, marginRight: 4, }}
+            >
+              <DrawingToolsView
+                onToolSelect={ tool => currentTool !== tool ? setCurrentTool(tool) : setCurrentTool(null) }
+                currentTool={currentTool}
+                undoLastShape={undoLastShape}
+              />
+              <IconButton icon="trash" onPress={deleteActivePhoto} color={'critical'} />
+            </View>
+          </View>
         </View>
       </View>
     </GestureHandlerRootView>
