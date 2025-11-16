@@ -102,15 +102,16 @@ export const LogObservationView = ({
       <View style={{ gap: 8 }}>
         <Text variant="headline">Severity</Text>
         <RadioGroup
-          value={severity}
-          onChange={setSeverity}
+          value={severity ?? ''} // handle null/undefined nicely
+          onValueChange={value => setSeverity(value as Severity)}
           options={[
-            { label: 'Critical', value: 'critical' },
-            { label: 'Medium', value: 'medium' },
-            { label: 'Low', value: 'low' }
+            { name: 'Critical', value: 'critical' },
+            { name: 'Medium', value: 'medium' },
+            { name: 'Low', value: 'low' },
           ]}
         />
       </View>
+
 
       <Button icon="plus" text="Log observation" onPress={onLog}></Button>
     </View>

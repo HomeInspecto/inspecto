@@ -44,7 +44,7 @@ export function useLogObersation(): LogObservationProps {
 
   const addObservation = useActiveInspectionStore(useShallow(state => state.addObservation));
 
-  const onLog = useCallback(() => {
+  const onLog = useCallback(async () => {
     const obsrState = useActiveObservationStore.getState();
 
       // Check if severity is selected
@@ -64,7 +64,32 @@ export function useLogObersation(): LogObservationProps {
       fieldNote: obsrState.fieldNote,
     };
 
-    // TODO SEND TO BACKEND HERE
+
+    try {
+      await fetch(
+        'https://inspecto-production.up.railway.app/api/observations/createObservation',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            section_id: obsrState.section,          // for now, using whatever is in `section`
+            obs_name: obsrState.name,
+            description: obsrState.description,
+            severity: obsrState.severity,
+            status: 'open',
+            recommendation: obsrState.recommendation,
+            implication: obsrState.implications,
+            files: [],                              // images can be wired later
+          }),
+        }
+      );
+    } catch (error) {
+      console.error('Error calling createObservation', error);
+    }
+
+
     addObservation(structuredClone(observation));
 
     router.push(`/active-inspection/${id}`);

@@ -14,7 +14,7 @@ interface RadioGroupProps {
 }
 
 export function RadioGroup({ value, onValueChange, options }: RadioGroupProps) {
-  const [selected, setSelected] = useState(value);
+  const selected = value;
 
   return (
     <View
@@ -36,7 +36,6 @@ export function RadioGroup({ value, onValueChange, options }: RadioGroupProps) {
           <Pressable
             key={option.value}
             onPress={() => {
-              setSelected(option.value);
               onValueChange(option.value);
             }}
             style={{ flexDirection: 'row', justifyContent: 'space-between' }}
