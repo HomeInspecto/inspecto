@@ -38,22 +38,25 @@ export default function CameraScreenView(props: CameraScreenProps) {
       </View>
 
       <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          justifyContent: 'space-between',
-        }}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'space-between', }}
       >
+        <View pointerEvents="none" style={StyleSheet.absoluteFillObject}>
+          <View
+            style={{ position: 'absolute', top: 0, bottom: 0, left: '33.33%', width: 1, backgroundColor: COLORS.label.onDark.primary, opacity: 0.1, }}
+          />
+          <View
+            style={{ position: 'absolute', top: 0, bottom: 0, left: '66.66%', width: 1, backgroundColor: COLORS.label.onDark.primary, opacity: 0.1, }}
+          />
+          <View
+            style={{ position: 'absolute', left: 0, right: 0, top: '33.33%', height: 1, backgroundColor: COLORS.label.onDark.primary, opacity: 0.1, }}
+          />
+          <View
+            style={{ position: 'absolute', left: 0, right: 0, top: '66.66%', height: 1, backgroundColor: COLORS.label.onDark.primary, opacity: 0.1, }}
+          />
+        </View>
+
         <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 16,
-            paddingTop: 80,
-          }}
+          style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 80, }}
         >
           <IconButton icon="chevron.left" onPress={goBack} />
         </View>
@@ -105,8 +108,8 @@ export default function CameraScreenView(props: CameraScreenProps) {
           </View>
 
           <View style={{ flex: 1 }}>
-            {photos.length > 0 && (
-              <Button color="secondary" text={`Edit (${photos.length})`} onPress={gotoEditPhotos} />
+            {photos.length > 0 && ( 
+              <Button color="secondary" text={`Edit (${photos.length})`} onPress={gotoEditPhotos} /> 
             )}
           </View>
         </View>
