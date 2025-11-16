@@ -80,7 +80,7 @@ export function useLogObersation(): LogObservationProps {
             severity: 'critical',
             status: 'open',
             recommendation: 'fenceReco',
-            implication: 'fenceImpli',
+            implication: 'obsrState.implications',
             files: [],                              // images can be wired later
           }),
         }
