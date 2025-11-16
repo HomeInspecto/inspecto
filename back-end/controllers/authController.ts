@@ -47,9 +47,6 @@ const anonKey = sanitize(process.env.SUPABASE_ANON_KEY);
  *               phone:
  *                 type: string
  *                 description: User phone number (optional)
- *               organization_id:
- *                 type: string
- *                 description: Organization ID for creating inspector record (optional)
  *     responses:
  *       '201':
  *         description: User created successfully
@@ -71,7 +68,7 @@ const anonKey = sanitize(process.env.SUPABASE_ANON_KEY);
  */
 export const signup = async (req: Request, res: Response) => {
   try {
-    const { email, password, full_name, phone, organization_id } = req.body;
+    const { email, password, full_name, phone } = req.body;
 
     // Validate required fields
     if (!email || !password) {
@@ -128,12 +125,10 @@ export const signup = async (req: Request, res: Response) => {
       });
     }
 
-    // Create inspector record if organization_id is provided
-    if (data.user && organization_id && supabaseAdmin) {
+    // Create inspector record for this user (if admin client is available)
+    if (data.user && supabaseAdmin) {
       try {
         const inspectorData = {
-          user_id: data.user.id,
-          organization_id: organization_id,
           full_name: full_name || data.user.email?.split('@')[0] || 'Inspector',
           email: data.user.email || null,
           phone: phone || null,
@@ -141,7 +136,10 @@ export const signup = async (req: Request, res: Response) => {
           active: true,
         };
 
-        const { data: inspectorResult, error: inspectorError } = await DatabaseService.insertDataAdmin('inspectors', inspectorData);
+        const { data: inspectorResult, error: inspectorError } = await DatabaseService.insertDataAdmin(
+          'inspector',
+          inspectorData
+        );
 
         if (inspectorError) {
           console.error('Inspector creation error:', inspectorError);
@@ -200,9 +198,6 @@ export const signup = async (req: Request, res: Response) => {
  *               password:
  *                 type: string
  *                 description: User password
- *               organization_id:
- *                 type: string
- *                 description: Organization ID for creating inspector record (optional)
  *     responses:
  *       '200':
  *         description: Login successful
@@ -228,7 +223,7 @@ export const signup = async (req: Request, res: Response) => {
  */
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password, organization_id } = req.body;
+    const { email, password } = req.body;
 
     // Validate required fields
     if (!email || !password) {
@@ -268,46 +263,6 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ 
         error: 'Login failed - invalid response' 
       });
-    }
-
-    // Check if inspector record exists for this user, create one if it doesn't exist
-    if (supabaseAdmin) {
-      try {
-        // Check if inspector already exists
-        const { data: existingInspectors, error: inspectorCheckError } = await supabaseAdmin
-          .from('inspectors')
-          .select('id')
-          .eq('user_id', data.user.id)
-          .limit(1);
-
-        // If inspector doesn't exist and organization_id is provided, create one
-        if (!inspectorCheckError && (!existingInspectors || existingInspectors.length === 0)) {
-          if (organization_id) {
-            const inspectorData = {
-              user_id: data.user.id,
-              organization_id: organization_id,
-              full_name: data.user.email?.split('@')[0] || 'Inspector',
-              email: data.user.email || null,
-              phone: null,
-              certifications: [],
-              active: true,
-            };
-
-            const { data: inspectorResult, error: inspectorError } = await DatabaseService.insertDataAdmin('inspectors', inspectorData);
-
-            if (inspectorError) {
-              console.error('Inspector creation error:', inspectorError);
-              // Don't fail the login if inspector creation fails
-              // Inspector can be created later via the inspectors endpoint
-            } else {
-              console.log(`Inspector record created for user ${data.user.id}`);
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Error checking/creating inspector:', err);
-        // Don't fail the login if inspector check/creation fails
-      }
     }
 
     // Return user, session, and tokens
