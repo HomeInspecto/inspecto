@@ -57,7 +57,6 @@ export interface Database {
           id: string;
           inspector_id: string;
           property_id: string;
-          organization_id: string;
           status: 'draft' | 'in_progress' | 'ready_for_review' | 'published';
           created_at: string;
           scheduled_for: string | null;
@@ -70,7 +69,6 @@ export interface Database {
           id?: string;
           inspector_id: string;
           property_id: string;
-          organization_id: string;
           status: 'draft' | 'in_progress' | 'ready_for_review' | 'published';
           created_at?: string;
           scheduled_for?: string | null;
@@ -83,7 +81,6 @@ export interface Database {
           id?: string;
           inspector_id?: string;
           property_id?: string;
-          organization_id?: string;
           status?: 'draft' | 'in_progress' | 'ready_for_review' | 'published';
           created_at?: string;
           scheduled_for?: string | null;
@@ -93,11 +90,9 @@ export interface Database {
           summary?: string | null;
         };
       };
-      inspectors: {
+      inspector: {
         Row: {
           id: string;
-          organization_id: string;
-          user_id: string | null;
           full_name: string;
           email: string | null;
           phone: string | null;
@@ -112,8 +107,6 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          organization_id: string;
-          user_id?: string | null;
           full_name: string;
           email?: string | null;
           phone?: string | null;
@@ -128,8 +121,6 @@ export interface Database {
         };
         Update: {
           id?: string;
-          organization_id?: string;
-          user_id?: string | null;
           full_name?: string;
           email?: string | null;
           phone?: string | null;
@@ -219,71 +210,9 @@ export interface Database {
           recommendation?: string | null;
         };
       };
-      organization_users: {
-        Row: {
-          organization_id: string;
-          user_id: string;
-          role: 'owner';
-        };
-        Insert: {
-          organization_id: string;
-          user_id: string;
-          role: 'owner';
-        };
-        Update: {
-          organization_id?: string;
-          user_id?: string;
-          role?: 'owner';
-        };
-      };
-      organizations: {
-        Row: {
-          id: string;
-          name: string;
-          logo_url: string | null;
-          website: string | null;
-          phone: string | null;
-          address_line1: string | null;
-          address_line2: string | null;
-          city: string | null;
-          postal_code: string | null;
-          country: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          logo_url?: string | null;
-          website?: string | null;
-          phone?: string | null;
-          address_line1?: string | null;
-          address_line2?: string | null;
-          city?: string | null;
-          postal_code?: string | null;
-          country?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          logo_url?: string | null;
-          website?: string | null;
-          phone?: string | null;
-          address_line1?: string | null;
-          address_line2?: string | null;
-          city?: string | null;
-          postal_code?: string | null;
-          country?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
       properties: {
         Row: {
           id: string;
-          organization_id: string;
           address_line1: string;
           address_line2: string | null;
           unit: string | null;
@@ -303,7 +232,6 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          organization_id: string;
           address_line1: string;
           address_line2?: string | null;
           unit?: string | null;
@@ -323,7 +251,6 @@ export interface Database {
         };
         Update: {
           id?: string;
-          organization_id?: string;
           address_line1?: string;
           address_line2?: string | null;
           unit?: string | null;
@@ -379,7 +306,6 @@ export interface Database {
           phone: string | null;
           avatar_url: string | null;
           timezone: string | null;
-          default_org_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -390,7 +316,6 @@ export interface Database {
           phone?: string | null;
           avatar_url?: string | null;
           timezone?: string | null;
-          default_org_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -401,7 +326,6 @@ export interface Database {
           phone?: string | null;
           avatar_url?: string | null;
           timezone?: string | null;
-          default_org_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };

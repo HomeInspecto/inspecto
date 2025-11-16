@@ -5,10 +5,10 @@ import crypto from 'crypto';
 
 /**
  * @swagger
- * /api/observations:
+ * /api/observations/all:
  *   get:
- *     summary: Get all observations
- *     description: Retrieves a list of observations, optionally filtered by section_id, severity, or status
+ *     summary: Get observations
+ *     description: Retrieves observations, optionally filtered by section_id, severity, or status
  *     tags:
  *       - Observations
  *     parameters:
@@ -16,17 +16,17 @@ import crypto from 'crypto';
  *         name: section_id
  *         schema:
  *           type: string
- *         description: Filter observations by section ID
+ *         description: Filter by section ID
  *       - in: query
  *         name: severity
  *         schema:
  *           type: string
- *         description: Filter observations by severity
+ *         description: Filter by severity
  *       - in: query
  *         name: status
  *         schema:
  *           type: string
- *         description: Filter observations by status
+ *         description: Filter by status
  *     responses:
  *       '200':
  *         description: List of observations
@@ -51,7 +51,11 @@ export const getAllObservations = async (req: Request, res: Response) => {
     if (severity) filters.severity = severity as string;
     if (status) filters.status = status as string;
     
-    const { data, error } = await DatabaseService.fetchDataAdmin('observations', '*', Object.keys(filters).length ? filters : undefined);
+    const { data, error } = await DatabaseService.fetchDataAdmin(
+      'observations',
+      '*',
+      Object.keys(filters).length ? filters : undefined
+    );
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
@@ -63,6 +67,73 @@ export const getAllObservations = async (req: Request, res: Response) => {
     return res.status(500).json({ 
       error: 'Database query failed', 
       details: err instanceof Error ? err.message : 'Unknown error'
+    });
+  }
+};
+
+
+/**
+ * @swagger
+ * /api/observations/observation/{observation_id}:
+ *   get:
+ *     summary: Get a single observation
+ *     description: Retrieves a single observation by its ID
+ *     tags:
+ *       - Observations
+ *     parameters:
+ *       - in: path
+ *         name: observation_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the observation
+ *     responses:
+ *       '200':
+ *         description: Observation details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 observation:
+ *                   type: object
+ *       '404':
+ *         description: Observation not found
+ *       '500':
+ *         description: Database query failed
+ */
+export const getObservationById = async (req: Request, res: Response) => {
+  try {
+    const { observation_id } = req.params;
+
+    if (!observation_id) {
+      return res.status(400).json({ error: 'observation_id is required' });
+    }
+
+    const { data, error } = await DatabaseService.fetchDataAdmin(
+      'observations',
+      '*',
+      { id: observation_id }
+    );
+
+    if (error) {
+      return res.status(500).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+
+    const observation = Array.isArray(data) ? data[0] : data;
+
+    if (!observation) {
+      return res.status(404).json({ error: 'Observation not found' });
+    }
+
+    return res.json({ observation });
+  } catch (err) {
+    console.error('Database query error:', err);
+    return res.status(500).json({
+      error: 'Database query failed',
+      details: err instanceof Error ? err.message : 'Unknown error',
     });
   }
 };
@@ -95,6 +166,8 @@ export const getAllObservations = async (req: Request, res: Response) => {
  *                 type: string
  *                 enum: [minor, moderate, major, critical]
  *               status:
+ *                 type: string
+ *               recommendation:
  *                 type: string
  *               implication:
  *                 type: string
@@ -140,13 +213,14 @@ export const getAllObservations = async (req: Request, res: Response) => {
  */
 export const createObservation = async (req: Request, res: Response) => {
   try {
-    const { section_id, obs_name, description, severity, status, implication } = req.body as {
+    const { section_id, obs_name, description, severity, status, implication, recommendation } = req.body as {
       section_id?: string;
       obs_name?: string;
       description?: string;
       severity?: string | null;
       status?: string | null;
       implication?: string | null;
+      recommendation?: string | null;
     };
 
     if (!section_id || !obs_name) {
@@ -159,7 +233,8 @@ export const createObservation = async (req: Request, res: Response) => {
       description: description ?? null,
       severity: severity ?? null,
       status: status ?? null,
-      implication: implication ?? null
+      implication: implication ?? null,
+      recommendation: recommendation ?? null
     });
     
     console.log('data', data);

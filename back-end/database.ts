@@ -7,8 +7,8 @@ export class DatabaseService {
    */
   static async testConnection() {
     try {
-      // Test with organizations table since it's likely to exist and be accessible
-      const { data, error } = await supabase.from('organizations').select('id').limit(1);
+      // Test with properties table since it's likely to exist and be accessible
+      const { data, error } = await supabase.from('properties').select('id').limit(1);
       return { success: !error, error };
     } catch (err) {
       return { success: false, error: err };

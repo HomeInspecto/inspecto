@@ -6,15 +6,10 @@ import DatabaseService from '../database';
  * /api/inspectors:
  *   get:
  *     summary: Get all inspectors
- *     description: Retrieves a list of inspectors, optionally filtered by organization_id or active status
+ *     description: Retrieves a list of inspectors, optionally filtered by active status
  *     tags:
  *       - Inspectors
  *     parameters:
- *       - in: query
- *         name: organization_id
- *         schema:
- *           type: string
- *         description: Filter inspectors by organization ID
  *       - in: query
  *         name: active
  *         schema:
@@ -37,13 +32,12 @@ import DatabaseService from '../database';
  */
 export const getAllInspectors = async (req: Request, res: Response) => {
   try {
-    const { organization_id, active } = req.query;
+    const { active } = req.query;
     const filters: Record<string, any> = {};
     
-    if (organization_id) filters.organization_id = organization_id as string;
     if (active !== undefined) filters.active = active === 'true';
     
-    const { data, error } = await DatabaseService.fetchDataAdmin('inspectors', '*', Object.keys(filters).length ? filters : undefined);
+    const { data, error } = await DatabaseService.fetchDataAdmin('inspector', '*', Object.keys(filters).length ? filters : undefined);
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
@@ -74,10 +68,6 @@ export const getAllInspectors = async (req: Request, res: Response) => {
  *           schema:
  *             type: object
  *             properties:
- *               organization_id:
- *                 type: string
- *               user_id:
- *                 type: string
  *               full_name:
  *                 type: string
  *               email:
@@ -111,8 +101,8 @@ export const getAllInspectors = async (req: Request, res: Response) => {
  */
 export const createInspector = async (req: Request, res: Response) => {
   try {
-    const { organization_id, user_id, full_name, email, phone, license_number, certifications, signature_image_url, timezone, bio, active } = req.body;
-    const { data, error } = await DatabaseService.insertDataAdmin('inspectors', { organization_id, user_id, full_name, email, phone, license_number, certifications, signature_image_url, timezone, bio, active });
+    const { full_name, email, phone, license_number, certifications, signature_image_url, timezone, bio, active } = req.body;
+    const { data, error } = await DatabaseService.insertDataAdmin('inspector', { full_name, email, phone, license_number, certifications, signature_image_url, timezone, bio, active });
   if (error) {
     return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
   }
