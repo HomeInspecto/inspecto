@@ -6,7 +6,7 @@ import DatabaseService from '../database';
  * /api/report/generate/{inspection_id}:
  *   get:
  *     summary: Generate inspection report for an inspection
- *     description: Generates a comprehensive inspection report including property details, organization info, inspection data, sections, observations, and media
+ *     description: Generates a comprehensive inspection report including property details, inspection data, sections, observations, and media
  *     tags:
  *       - Reports
  *     parameters:
@@ -24,26 +24,6 @@ import DatabaseService from '../database';
  *             schema:
  *               type: object
  *               properties:
- *                 organization:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                     logo:
- *                       type: string
- *                     website:
- *                       type: string
- *                     contact:
- *                       type: object
- *                       properties:
- *                         phone:
- *                           type: string
- *                         address:
- *                           type: string
- *                     properties:
- *                       type: array
- *                       items:
- *                         type: object
  *                 inspection:
  *                   type: object
  *                   properties:
@@ -107,6 +87,16 @@ export const generateReport = async (req: Request, res: Response) => {
     if (!inspection) {
       return res.status(404).json({ error: 'Inspection not found' });
     }
+    // 1.5) Get inspector from inspection
+    const { data: inspectors, error: inspErr2 } = await DatabaseService.fetchDataAdmin('inspector', '*', { id: inspection.inspector_id });
+    if (inspErr2) {
+      console.error('Error fetching inspector:', inspErr2);
+      return res.status(500).json({ error: asMsg(inspErr2), details: inspErr2 });
+    }
+    const inspector = (Array.isArray(inspectors) ? inspectors[0] : inspectors) as any;
+    if (!inspector) {
+      return res.status(404).json({ error: 'Inspector not found' });
+    }
 
     // 2) Get property from inspection
     const { data: props, error: propErr } = await DatabaseService.fetchDataAdmin('properties', '*', { id: inspection.property_id });
@@ -121,12 +111,7 @@ export const generateReport = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Property not found' });
     }
 
-    // 3) Organization
-    const { data: orgs, error: orgErr } = await DatabaseService.fetchDataAdmin('organizations', '*', { id: property.organization_id });
-    if (orgErr) return res.status(500).json({ error: asMsg(orgErr) });
-    const organization = (Array.isArray(orgs) ? orgs[0] : orgs) as any;
-
-    // 4) Sections for the inspection
+    // 3) Sections for the inspection
     let sections: any[] = [];
     if (inspection?.id) {
       console.log('Fetching sections for inspection_id:', inspection.id);
@@ -181,19 +166,18 @@ export const generateReport = async (req: Request, res: Response) => {
     console.log(`Total sections with observations: ${sectionsWithObservations.length}`);
 
     // Build response strictly from DB
-    const orgBlock = {
-      name: organization?.name ?? null,
-      logo: organization?.logo_url ?? null,
-      website: organization?.website ?? null,
-      contact: {
-        phone: organization?.phone ?? null,
-        address: [organization?.address_line1, organization?.address_line2, organization?.city, organization?.postal_code, organization?.country]
-          .filter(Boolean)
-          .join(', '),
-      },
-      inspector: null as any, // Optional: join to an inspector if your data model links one
-      properties: [
-        {
+    const report = {
+      inspection: {
+        summary: inspection?.summary ?? null,
+        created_at: inspection?.created_at ?? null,
+        inspector: {
+          name: inspector?.full_name ?? null,
+          email: inspector?.email ?? null,
+          phone: inspector?.phone ?? null,
+          license_number: inspector?.license_number ?? null,
+          certifications: inspector?.certifications ?? null,
+        },
+        property: {
           address: [property?.address_line1, property?.unit && `Unit ${property.unit}`, property?.city, property?.region].filter(Boolean).join(', '),
           year_built: property?.year_built ?? null,
           type: property?.dwelling_type ?? null,
@@ -203,20 +187,11 @@ export const generateReport = async (req: Request, res: Response) => {
           garage: property?.garage ?? null,
           notes: property?.notes ?? null,
         },
-      ],
-    };
-
-    const report = {
-      organization: orgBlock,
-      inspection: {
-        summary: inspection?.summary ?? null,
-        created_at: inspection?.created_at ?? null,
         sections: sectionsWithObservations,
       },
     };
 
     console.log('Final report structure:', {
-      hasOrganization: !!report.organization,
       hasInspection: !!report.inspection,
       sectionsCount: report.inspection.sections.length,
       sections: report.inspection.sections.map(s => ({

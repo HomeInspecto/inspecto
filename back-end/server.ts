@@ -12,7 +12,6 @@ import dotenv from 'dotenv';
 
 // Routes
 import healthRoutes from './routes/health';
-import organizationsRoutes from './routes/organizations';
 import propertiesRoutes from './routes/properties';
 import inspectionsRoutes from './routes/inspections';
 import inspectorsRoutes from './routes/inspectors';
@@ -60,7 +59,6 @@ app.use('/api/swagger', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // Routes
 app.use('/', healthRoutes); // ✅ Health check routes (/, /health)
-app.use('/api/organizations', organizationsRoutes); // ✅ Organization-related routes
 app.use('/api/properties', propertiesRoutes); // ✅ Property-related routes
 app.use('/api/inspections', inspectionsRoutes); // ✅ Inspection-related routes
 app.use('/api/inspectors', inspectorsRoutes); // ✅ Inspector-related routes
@@ -83,13 +81,12 @@ app.listen(port, () => {
   console.log(`🔗 Supabase test endpoint: http://localhost:${port}/supabase/test`);
   console.log(`📚 API documentation: http://localhost:${port}/api`);
   console.log(`\n📋 Available API Endpoints:`);
+  console.log(`   GET  /api/properties - List all properties`);
+  console.log(`   GET  /api/inspections - List inspections (filter by inspector_id, status)`);
   console.log(`   POST /api/auth/signup - Sign up a new user`);
   console.log(`   POST /api/auth/login - Login user`);
   console.log(`   POST /api/auth/logout - Logout user`);
-  console.log(`   GET  /api/organizations - List all organizations`);
-  console.log(`   GET  /api/properties - List properties (filter by organization_id)`);
-  console.log(`   GET  /api/inspections - List inspections (filter by organization_id, inspector_id, status)`);
   console.log(`   POST /api/inspections - Create new inspection`);
-  console.log(`   GET  /api/inspectors - List inspectors (filter by organization_id, active)`);
+  console.log(`   GET  /api/inspectors - List inspectors (filter by active)`);
   console.log(`   GET  /api/observations - List observations (filter by section_id, severity, status)`);
 });
