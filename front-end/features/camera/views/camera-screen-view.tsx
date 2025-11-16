@@ -82,17 +82,19 @@ export default function CameraScreenView(props: CameraScreenProps) {
                 paddingHorizontal: 16,
                 paddingVertical: 8,
                 flexDirection: 'row',
-                gap: 12,
+                gap: 20,
                 alignItems: 'center',
                 marginBottom: 16,
               }}
             >
               {zoomLevels.map((level) => {
                 const isActive = currentZoomLabel === level;
+                const displayText = isActive ? level : level.replace('x', '');
                 return (
                   <Pressable
                     key={level}
                     onPress={() => setZoom(getZoomValue(level))}
+                    style={{ paddingHorizontal: 4.5, paddingVertical: 2, minWidth: 14, alignItems: 'center', }}
                   >
                     <Text
                       variant="callout"
@@ -101,7 +103,7 @@ export default function CameraScreenView(props: CameraScreenProps) {
                         color: isActive ? COLORS.label.onDark.primary : COLORS.label.onDark.tertiary,
                       }}
                     >
-                      {level}
+                      {displayText}
                     </Text>
                   </Pressable>
                 );
