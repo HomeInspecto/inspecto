@@ -14,6 +14,7 @@ import dotenv from 'dotenv';
 import healthRoutes from './routes/health';
 import propertiesRoutes from './routes/properties';
 import inspectionsRoutes from './routes/inspections';
+import inspectionSectionsRoutes from './routes/inspectionSections';
 import inspectorsRoutes from './routes/inspectors';
 import observationsRoutes from './routes/observations';
 import supabaseRoutes from './routes/supabase';
@@ -66,6 +67,7 @@ app.use('/api/swagger', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.use('/', healthRoutes); // ✅ Health check routes (/, /health)
 app.use('/api/properties', propertiesRoutes); // ✅ Property-related routes
 app.use('/api/inspections', inspectionsRoutes); // ✅ Inspection-related routes
+app.use('/api/sections', inspectionSectionsRoutes); // ✅ Inspection section-related routes
 app.use('/api/inspectors', inspectorsRoutes); // ✅ Inspector-related routes
 app.use('/api/observations', observationsRoutes); // ✅ Observation-related routes
 app.use('/api/observations/media', observationMediaRoutes); // ✅ Observation media upload/list
