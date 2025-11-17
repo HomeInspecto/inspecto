@@ -11,12 +11,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading, error, clearError, isAuthenticated, checkAuth } = useAuthStore();
-
-  useEffect(() => {
-    // Check if user is already authenticated on mount
-    checkAuth();
-  }, [checkAuth]);
+  const { login, isLoading, error, clearError, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -26,7 +21,7 @@ export default function LoginScreen() {
 
   useEffect(() => {
     clearError();
-  }, [clearError]);
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -36,7 +31,7 @@ export default function LoginScreen() {
     try {
       await login(email, password);
       router.replace('/home');
-    } catch {
+    } catch (err) {
       // Error is already set in the store
     }
   };
@@ -62,7 +57,7 @@ export default function LoginScreen() {
 
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text variant="caption1" weight="emphasized" style={styles.label}>
+              <Text variant="caption" weight="emphasized" style={styles.label}>
                 Email
               </Text>
               <TextInput
@@ -80,7 +75,7 @@ export default function LoginScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text variant="caption1" weight="emphasized" style={styles.label}>
+              <Text variant="caption" weight="emphasized" style={styles.label}>
                 Password
               </Text>
               <TextInput
@@ -117,7 +112,7 @@ export default function LoginScreen() {
 
               <View style={styles.signupLink}>
                 <Text variant="body" style={styles.signupText}>
-                  Don&apos;t have an account?{' '}
+                  Don't have an account?{' '}
                 </Text>
                 <Text
                   variant="body"
@@ -196,3 +191,4 @@ const styles = StyleSheet.create({
     color: COLORS.label.onDark.primary,
   },
 });
+

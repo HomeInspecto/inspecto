@@ -3,6 +3,7 @@ import React from 'react';
 import { Text as RNText, TextProps, StyleProp, TextStyle } from 'react-native';
 
 type TextVariant =
+  | 'largeTitle'
   | 'title1'
   | 'title2'
   | 'title3'
@@ -31,6 +32,7 @@ interface Props extends TextProps {
 }
 
 const variantStyles: Record<TextVariant, TextStyle> = {
+  largeTitle: { fontSize: 34, fontWeight: '400' },
   title1: { fontSize: 28, fontWeight: '400' },
   title2: { fontSize: 22, fontWeight: '400' },
   title3: { fontSize: 20, fontWeight: '400' },

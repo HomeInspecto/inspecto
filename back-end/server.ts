@@ -37,6 +37,9 @@ app.use(
     const allowedOrigins = [
       'http://localhost:3000', // local frontend
       'http://localhost:4000', // local backend
+      'http://localhost:8081', // Expo Metro bundler
+      'http://localhost:19000', // Expo CLI
+      'http://localhost:19006', // Expo web
       'https://dist-rose-ten.vercel.app', // deployed frontend
       'https://inspecto-production.up.railway.app', // your Railway backend domain
     ];
