@@ -25,7 +25,7 @@ export default function SignupScreen() {
 
   useEffect(() => {
     clearError();
-  }, []);
+  }, [clearError]);
 
   const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
@@ -43,7 +43,7 @@ export default function SignupScreen() {
     try {
       await signup(email, password, fullName || undefined, phone || undefined);
       router.replace('/home');
-    } catch (err) {
+    } catch {
       // Error is already set in the store
     }
   };
@@ -76,7 +76,7 @@ export default function SignupScreen() {
 
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text variant="caption" weight="emphasized" style={styles.label}>
+              <Text variant="caption1" weight="emphasized" style={styles.label}>
                 Email
               </Text>
               <TextInput
@@ -94,7 +94,7 @@ export default function SignupScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text variant="caption" weight="emphasized" style={styles.label}>
+              <Text variant="caption1" weight="emphasized" style={styles.label}>
                 Full Name (Optional)
               </Text>
               <TextInput
@@ -111,7 +111,7 @@ export default function SignupScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text variant="caption" weight="emphasized" style={styles.label}>
+              <Text variant="caption1" weight="emphasized" style={styles.label}>
                 Phone (Optional)
               </Text>
               <TextInput
@@ -128,7 +128,7 @@ export default function SignupScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text variant="caption" weight="emphasized" style={styles.label}>
+              <Text variant="caption1" weight="emphasized" style={styles.label}>
                 Password
               </Text>
               <TextInput
@@ -148,7 +148,7 @@ export default function SignupScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text variant="caption" weight="emphasized" style={styles.label}>
+              <Text variant="caption1" weight="emphasized" style={styles.label}>
                 Confirm Password
               </Text>
               <TextInput

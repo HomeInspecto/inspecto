@@ -3,7 +3,6 @@ import {
   TextInput as RNTextInput,
   TextInputProps as RNTextInputProps,
   Pressable,
-  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';

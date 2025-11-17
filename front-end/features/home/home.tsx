@@ -1,15 +1,13 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { useState } from 'react';
 import Text from '@/components/views/text/text';
-import { View } from 'react-native';
 import { COLORS } from '@/constants/colors';
 import TextInput from '@/components/views/text-input/text-input';
 import { router } from 'expo-router';
 import { InspectionsList } from './inspections-list/inspections-list';
 import IconButton from '@/components/views/icon-button/icon-button';
-import Button from '@/components/views/button/button';
 import { useAuthStore } from '@/store/auth-store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useState } from 'react';
 
 export default function Home() {
   const { logout } = useAuthStore();

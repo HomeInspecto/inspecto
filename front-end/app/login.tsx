@@ -21,7 +21,7 @@ export default function LoginScreen() {
 
   useEffect(() => {
     clearError();
-  }, []);
+  }, [clearError]);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -31,7 +31,7 @@ export default function LoginScreen() {
     try {
       await login(email, password);
       router.replace('/home');
-    } catch (err) {
+    } catch {
       // Error is already set in the store
     }
   };
@@ -57,7 +57,7 @@ export default function LoginScreen() {
 
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text variant="caption" weight="emphasized" style={styles.label}>
+              <Text variant="caption1" weight="emphasized" style={styles.label}>
                 Email
               </Text>
               <TextInput
@@ -75,7 +75,7 @@ export default function LoginScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text variant="caption" weight="emphasized" style={styles.label}>
+              <Text variant="caption1" weight="emphasized" style={styles.label}>
                 Password
               </Text>
               <TextInput
@@ -112,7 +112,7 @@ export default function LoginScreen() {
 
               <View style={styles.signupLink}>
                 <Text variant="body" style={styles.signupText}>
-                  Don't have an account?{' '}
+                  Don&apos;t have an account?{' '}
                 </Text>
                 <Text
                   variant="body"
