@@ -1,8 +1,8 @@
-import { Alert } from 'react-native';
-import { CameraView, type FlashMode } from 'expo-camera';
+import { Alert, Animated } from 'react-native';
+import { CameraView } from 'expo-camera';
 import type { CameraScreenProps } from '../camera-screen';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useShallow } from 'zustand/shallow';
 
@@ -12,7 +12,10 @@ export function useCameraScreen(): CameraScreenProps {
   const clearObservation = useActiveObservationStore(useShallow(s => s.clearObservation));
 
   const cameraRef = useRef<CameraView>(null);
-  const [flash, setFlash] = useState<FlashMode>('off');
+  const [torch, setTorch] = useState(false);
+  const [zoom, setZoomState] = useState(0);
+  const animatedZoom = useRef(new Animated.Value(zoom)).current;
+  const [displayZoom, setDisplayZoom] = useState(Math.max(0.01, zoom));
 
   const { photos, addPhoto } = useActiveObservationStore(
     useShallow(state => ({
@@ -21,7 +24,6 @@ export function useCameraScreen(): CameraScreenProps {
     }))
   );
 
-  // Example: Add a new photo
   function handleAddPhoto(newUri: string) {
     const newPhoto = {
       id: `photo_${Date.now()}`,
@@ -30,6 +32,38 @@ export function useCameraScreen(): CameraScreenProps {
     };
     addPhoto(newPhoto);
   }
+
+  const setZoom = (value: number) => {
+    setZoomState(Math.max(0, Math.min(1, value)));
+  };
+
+  useEffect(() => {
+    const listenerId = animatedZoom.addListener(({ value }) => {
+      setDisplayZoom(Math.max(0.01, value));
+    });
+    return () => {
+      animatedZoom.removeListener(listenerId);
+    };
+  }, []);
+
+  // zoom animation
+  useEffect(() => {
+    Animated.spring(animatedZoom, { toValue: zoom, useNativeDriver: false, tension: 50, friction: 7, }).start();
+  }, [zoom]);
+
+  const zoomLevels: Array<'1x' | '2x' | '3x'> = ['1x', '2x', '3x'];
+
+  const getZoomLevel = (zoomValue: number): '1x' | '2x' | '3x' => {
+    if (zoomValue == 0) return '1x';
+    if (zoomValue == 0.15) return '2x';
+    return '3x';
+  };
+
+  const getZoomValue = (level: '1x' | '2x' | '3x'): number => {
+    switch (level) { case '1x': return 0; case '2x': return 0.15; case '3x': return 0.25; }
+  };
+
+  const currentZoomLabel = getZoomLevel(zoom);
 
   const isTakingRef = useRef(false);
 
@@ -57,8 +91,8 @@ export function useCameraScreen(): CameraScreenProps {
     })();
   };
 
-  const toggleFlash = () => {
-    setFlash(prev => (prev === 'off' ? 'on' : 'off'));
+  const toggleTorch = () => {
+    setTorch(prev => !prev);
   };
 
   const goBack = () => {
@@ -71,14 +105,16 @@ export function useCameraScreen(): CameraScreenProps {
 
   return {
     photos,
-
     cameraRef,
-
     goBack,
     gotoEditPhotos,
-
-    flash,
-    toggleFlash,
+    torch,
+    toggleTorch,
     takePhoto,
+    setZoom,
+    displayZoom,
+    currentZoomLabel,
+    zoomLevels,
+    getZoomValue,
   };
 }

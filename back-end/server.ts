@@ -20,6 +20,7 @@ import supabaseRoutes from './routes/supabase';
 import transcribeRoutes from './routes/transcribe';
 import observationMediaRoutes from './routes/observationMedia';
 import generateReportRoutes from './routes/report';
+import authRoutes from './routes/auth';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -36,6 +37,9 @@ app.use(
     const allowedOrigins = [
       'http://localhost:3000', // local frontend
       'http://localhost:4000', // local backend
+      'http://localhost:8081', // Expo Metro bundler
+      'http://localhost:19000', // Expo CLI
+      'http://localhost:19006', // Expo web
       'https://dist-rose-ten.vercel.app', // deployed frontend
       'https://inspecto-production.up.railway.app', // your Railway backend domain
       'http://localhost:8081',
@@ -66,6 +70,7 @@ app.use('/api/inspectors', inspectorsRoutes); // ✅ Inspector-related routes
 app.use('/api/observations', observationsRoutes); // ✅ Observation-related routes
 app.use('/api/observations/media', observationMediaRoutes); // ✅ Observation media upload/list
 app.use('/supabase', supabaseRoutes); // ✅ Supabase test routes
+app.use('/api/auth', authRoutes); // ✅ Authentication routes (signup, login, logout)
 
 //routes
 app.use('/api/transcriptions', transcribeRoutes);
@@ -83,6 +88,9 @@ app.listen(port, () => {
   console.log(`\n📋 Available API Endpoints:`);
   console.log(`   GET  /api/properties - List all properties`);
   console.log(`   GET  /api/inspections - List inspections (filter by inspector_id, status)`);
+  console.log(`   POST /api/auth/signup - Sign up a new user`);
+  console.log(`   POST /api/auth/login - Login user`);
+  console.log(`   POST /api/auth/logout - Logout user`);
   console.log(`   POST /api/inspections - Create new inspection`);
   console.log(`   GET  /api/inspectors - List inspectors (filter by active)`);
   console.log(`   GET  /api/observations - List observations (filter by section_id, severity, status)`);

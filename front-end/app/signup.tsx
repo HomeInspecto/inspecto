@@ -7,16 +7,15 @@ import Button from '@/components/views/button/button';
 import { COLORS } from '@/constants/colors';
 import { useAuthStore } from '@/store/auth-store';
 
-export default function LoginScreen() {
+export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading, error, clearError, isAuthenticated, checkAuth } = useAuthStore();
-
-  useEffect(() => {
-    // Check if user is already authenticated on mount
-    checkAuth();
-  }, [checkAuth]);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { signup, isLoading, error, clearError, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -28,18 +27,33 @@ export default function LoginScreen() {
     clearError();
   }, [clearError]);
 
-  const handleLogin = async () => {
-    if (!email || !password) {
+  const handleSignup = async () => {
+    if (!email || !password || !confirmPassword) {
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      return;
+    }
+
+    if (password.length < 6) {
       return;
     }
 
     try {
-      await login(email, password);
+      await signup(email, password, fullName || undefined, phone || undefined);
       router.replace('/home');
     } catch {
       // Error is already set in the store
     }
   };
+
+  const isFormValid =
+    email &&
+    password &&
+    confirmPassword &&
+    password === confirmPassword &&
+    password.length >= 6;
 
   return (
     <KeyboardAvoidingView
@@ -53,10 +67,10 @@ export default function LoginScreen() {
         <View style={styles.content}>
           <View style={styles.header}>
             <Text variant="largeTitle" weight="emphasized" style={styles.title}>
-              Welcome Back
+              Create Account
             </Text>
             <Text variant="body" style={styles.subtitle}>
-              Sign in to continue
+              Sign up to get started
             </Text>
           </View>
 
@@ -81,6 +95,40 @@ export default function LoginScreen() {
 
             <View style={styles.inputGroup}>
               <Text variant="caption1" weight="emphasized" style={styles.label}>
+                Full Name (Optional)
+              </Text>
+              <TextInput
+                value={fullName}
+                onChangeText={(text) => {
+                  setFullName(text);
+                  clearError();
+                }}
+                placeholder="Enter your full name"
+                leftIcon="person"
+                autoCapitalize="words"
+                autoComplete="name"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text variant="caption1" weight="emphasized" style={styles.label}>
+                Phone (Optional)
+              </Text>
+              <TextInput
+                value={phone}
+                onChangeText={(text) => {
+                  setPhone(text);
+                  clearError();
+                }}
+                placeholder="Enter your phone number"
+                leftIcon="call"
+                keyboardType="phone-pad"
+                autoComplete="tel"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text variant="caption1" weight="emphasized" style={styles.label}>
                 Password
               </Text>
               <TextInput
@@ -89,15 +137,51 @@ export default function LoginScreen() {
                   setPassword(text);
                   clearError();
                 }}
-                placeholder="Enter your password"
+                placeholder="Enter your password (min. 6 characters)"
                 leftIcon="lock-closed"
                 rightIcon={showPassword ? 'eye-off' : 'eye'}
                 onRightIconPress={() => setShowPassword(!showPassword)}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
-                autoComplete="password"
+                autoComplete="password-new"
               />
             </View>
+
+            <View style={styles.inputGroup}>
+              <Text variant="caption1" weight="emphasized" style={styles.label}>
+                Confirm Password
+              </Text>
+              <TextInput
+                value={confirmPassword}
+                onChangeText={(text) => {
+                  setConfirmPassword(text);
+                  clearError();
+                }}
+                placeholder="Confirm your password"
+                leftIcon="lock-closed"
+                rightIcon={showConfirmPassword ? 'eye-off' : 'eye'}
+                onRightIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                secureTextEntry={!showConfirmPassword}
+                autoCapitalize="none"
+                autoComplete="password-new"
+              />
+            </View>
+
+            {password && confirmPassword && password !== confirmPassword && (
+              <View style={styles.errorContainer}>
+                <Text variant="footnote" style={styles.errorText}>
+                  Passwords do not match
+                </Text>
+              </View>
+            )}
+
+            {password && password.length < 6 && (
+              <View style={styles.errorContainer}>
+                <Text variant="footnote" style={styles.errorText}>
+                  Password must be at least 6 characters
+                </Text>
+              </View>
+            )}
 
             {error && (
               <View style={styles.errorContainer}>
@@ -109,23 +193,23 @@ export default function LoginScreen() {
 
             <View style={styles.buttonGroup}>
               <Button
-                text="Sign In"
-                onPress={handleLogin}
-                disabled={isLoading || !email || !password}
-                accessibilityLabel="Sign in"
+                text="Sign Up"
+                onPress={handleSignup}
+                disabled={isLoading || !isFormValid}
+                accessibilityLabel="Sign up"
               />
 
-              <View style={styles.signupLink}>
-                <Text variant="body" style={styles.signupText}>
-                  Don&apos;t have an account?{' '}
+              <View style={styles.loginLink}>
+                <Text variant="body" style={styles.loginText}>
+                  Already have an account?{' '}
                 </Text>
                 <Text
                   variant="body"
                   weight="emphasized"
-                  style={styles.signupLinkText}
-                  onPress={() => router.push('/signup')}
+                  style={styles.loginLinkText}
+                  onPress={() => router.push('/login')}
                 >
-                  Sign Up
+                  Sign In
                 </Text>
               </View>
             </View>
@@ -161,7 +245,7 @@ const styles = StyleSheet.create({
     color: COLORS.label.onDark.secondary,
   },
   form: {
-    gap: 24,
+    gap: 20,
   },
   inputGroup: {
     gap: 8,
@@ -184,15 +268,16 @@ const styles = StyleSheet.create({
     gap: 16,
     marginTop: 8,
   },
-  signupLink: {
+  loginLink: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  signupText: {
+  loginText: {
     color: COLORS.label.onDark.secondary,
   },
-  signupLinkText: {
+  loginLinkText: {
     color: COLORS.label.onDark.primary,
   },
 });
+
