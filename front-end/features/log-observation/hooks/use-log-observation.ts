@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { LogObservationProps } from '../views/log-observation-view';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useShallow } from 'zustand/react/shallow';
@@ -12,6 +12,18 @@ import { useActiveInspectionStore } from '@/features/inspection-details/state';
 
 export function useLogObersation(): LogObservationProps {
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  const [sectionOptions, setSectionOptions] = useState<
+    { name: string; value: string }[]
+  >([]);
+
+
+  type SectionFromApi = {
+    id: string;
+    section_name: string;
+    notes: string | null;
+    priority_rating: number;
+  };
 
   const [
     setObservation,
@@ -46,6 +58,36 @@ export function useLogObersation(): LogObservationProps {
 
   const onLog = useCallback(async () => {
     const obsrState = useActiveObservationStore.getState();
+
+
+  useEffect(() => {
+    const fetchSections = async () => {
+      try {
+        const res = await fetch(
+          'https://my-branch-production.up.railway.app/api/sections/all'
+        );
+
+        const data = (await res.json()) as { sections: SectionFromApi[] };
+
+        const options = data.sections.map(section => ({
+          name: section.section_name, // what user sees
+          value: section.id,          // what we send to backend
+        }));
+
+        setSectionOptions(options);
+
+        // If no section is selected yet, default to the first one
+        if (!useActiveObservationStore.getState().section && options.length > 0) {
+          Alert.alert('Required Field', 'Please select a section before logging the observation.');
+        }
+      } catch (error) {
+        console.error('Error fetching sections', error);
+      }
+    };
+
+    fetchSections();
+  }, []);
+  
 
       // Check if severity is selected
       if (!obsrState.severity) {
