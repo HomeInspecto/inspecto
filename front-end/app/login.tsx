@@ -11,12 +11,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading, error, clearError, isAuthenticated, checkAuth } = useAuthStore();
-
-  useEffect(() => {
-    // Check if user is already authenticated on mount
-    checkAuth();
-  }, [checkAuth]);
+  const { login, isLoading, error, clearError, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -196,3 +191,4 @@ const styles = StyleSheet.create({
     color: COLORS.label.onDark.primary,
   },
 });
+
