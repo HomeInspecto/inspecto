@@ -162,5 +162,6 @@ export function useLogObersation(): LogObservationProps {
     setRecommendation,
     setSection,
     setSeverity,
+    sectionOptions
   };
 }
