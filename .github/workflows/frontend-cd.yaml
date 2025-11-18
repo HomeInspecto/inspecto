@@ -1,4 +1,4 @@
-name: Frontend CD (Vercel Production) / Preview
+name: Frontend Deployment
 
 on:
   push:
@@ -37,6 +37,20 @@ jobs:
         run: npx expo export -p web --output-dir dist
         env:
           EXPO_NO_DOTENV: 1
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+
+      - name: Create vercel.json for static deployment
+        run: |
+          cat > dist/vercel.json << 'EOF'
+          {
+            "version": 2,
+            "buildCommand": "",
+            "outputDirectory": ".",
+            "installCommand": "",
+            "framework": null,
+            "routes": [{ "src": "/(.*)", "dest": "/$1" }]
+          }
+          EOF
 
       - name: Install Vercel CLI
         run: npm i -g vercel
@@ -71,6 +85,20 @@ jobs:
         run: npx expo export -p web --output-dir dist
         env:
           EXPO_NO_DOTENV: 1
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+
+      - name: Create vercel.json for static deployment
+        run: |
+          cat > dist/vercel.json << 'EOF'
+          {
+            "version": 2,
+            "buildCommand": "",
+            "outputDirectory": ".",
+            "installCommand": "",
+            "framework": null,
+            "routes": [{ "src": "/(.*)", "dest": "/$1" }]
+          }
+          EOF
 
       - name: Install Vercel CLI
         run: npm i -g vercel
@@ -80,4 +108,3 @@ jobs:
 
       - name: Deploy dist/ to Vercel (preview)
         run: vercel deploy dist --yes --prod=false --token ${{ secrets.VERCEL_TOKEN }}
-
