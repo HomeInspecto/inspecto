@@ -37,6 +37,7 @@ const MAPPING: IconMapping = {
 
   // Editor icons
   pencil: 'edit',
+  'square.and.pencil': 'edit-square',
   'arrow.right': 'arrow-forward',
   circle: 'radio-button-unchecked',
   eraser: 'web-asset',
