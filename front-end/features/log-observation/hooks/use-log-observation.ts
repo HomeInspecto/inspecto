@@ -17,7 +17,7 @@ export function useLogObersation(): LogObservationProps {
 
   const [sectionOptions, setSectionOptions] = useState<
     { name: string; value: string }[]
-  >([]);
+  >([]);  
 
 
   type SectionFromApi = {
