@@ -51,7 +51,7 @@ export default function LoginScreen() {
               Welcome Back
             </Text>
             <Text variant="body" style={styles.subtitle}>
-              Sign in to continue
+              Log in to continue
             </Text>
           </View>
 
