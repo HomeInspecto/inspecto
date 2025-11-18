@@ -2,8 +2,8 @@ import { View, StyleSheet, Animated, Pressable } from 'react-native';
 import { CameraView } from 'expo-camera';
 import { useRef } from 'react';
 import IconButton from '@/components/views/icon-button/icon-button';
-import Button from '@/components/views/button/button';
 import Text from '@/components/views/text/text';
+import PhotoThumbnailStackView from './photo-thumbnail-stack-view';
 import type { CameraScreenProps } from '../camera-screen';
 import { COLORS } from '@/constants/colors';
 
@@ -97,10 +97,8 @@ export default function CameraScreenView(props: CameraScreenProps) {
             <IconButton size="lg" icon="camera.fill" onPress={handleTakePhoto} />
           </View>
 
-          <View style={{ flex: 1 }}>
-            {photos.length > 0 && ( 
-              <Button color="secondary" text={`Edit (${photos.length})`} onPress={gotoEditPhotos} /> 
-            )}
+          <View style={{ flex: 1, alignItems: 'flex-end' }}>
+            <PhotoThumbnailStackView photos={photos} onPress={gotoEditPhotos} />
           </View>
         </View>
       </View>
