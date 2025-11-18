@@ -2,6 +2,7 @@ import { COLORS } from '@/constants/colors';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { Icon, type IconName } from '@/components/views/icon/icon';
+import type { ReactNode } from 'react';
 
 type IconButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
@@ -16,7 +17,8 @@ type IconButtonProps = {
   onPress?: () => void;
   size?: IconButtonSize; // enforce "sm", "md", "lg"
   color?: 'primary' | 'secondary' | 'critical'; // primary = light, secondary = dark
-  icon: IconName;
+  icon?: IconName;
+  iconSlot?: ReactNode;
   disabled?: boolean;
   accessibilityLabel?: string;
 };
@@ -26,6 +28,7 @@ export default function IconButton({
   size = 'md',
   color = 'primary',
   icon,
+  iconSlot,
   disabled,
   accessibilityLabel,
 }: IconButtonProps) {
@@ -74,7 +77,11 @@ export default function IconButton({
         <View
           style={[styles.iconSlot, { width: pixelSize, height: pixelSize, pointerEvents: 'none' }]}
         >
-          <Icon name={icon} size={iconSize} color={iconColor} />
+          {iconSlot ? (
+            iconSlot
+          ) : (
+            <Icon name={icon || 'questionmark'} size={iconSize} color={iconColor} />
+          )}
         </View>
       </View>
     </Pressable>
