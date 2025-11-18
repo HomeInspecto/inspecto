@@ -1,9 +1,0 @@
-{
-  "version": 2,
-  "buildCommand": "cd front-end && npm install && npm run build:web",
-  "outputDirectory": "front-end/web-build",
-  "installCommand": "cd front-end && npm install",
-  "framework": null,
-  "routes": [{ "src": "/(.*)", "dest": "/$1" }]
-}
-
