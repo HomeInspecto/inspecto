@@ -13,7 +13,6 @@ export async function apiRequest<T>(
   const { method = 'GET', headers = {}, body } = options;
 
   const url = `${API_BASE_URL}${endpoint}`;
-  console.log('url', url);
 
   const config: RequestInit = {
     method,
