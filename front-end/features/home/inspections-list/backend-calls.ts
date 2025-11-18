@@ -1,6 +1,6 @@
 import type { Inspection } from '../state';
 
-export const API_BASE = 'https://inspecto-production.up.railway.app';
+const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
 
 export interface InspectionApi {
   id: string;
