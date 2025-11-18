@@ -126,10 +126,17 @@ jobs:
           fi
           echo "preview_url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
 
-      - name: Comment preview URL on PR
+      - name: Post Comment to PR
         if: steps.vercel_preview.outputs.preview_url != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           PREVIEW_URL: ${{ steps.vercel_preview.outputs.preview_url }}
         run: |
-          gh pr comment ${{ github.event.pull_request.number }} --body "✅ Preview deployment: ${PREVIEW_URL}"
+          PR_NUMBER=$(jq '.pull_request.number' $GITHUB_EVENT_PATH)
+          GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
+          COMMENT_BODY="✅ Preview deployment: ${PREVIEW_URL}"
+          COMMENT_URL="https://api.github.com/repos/${{ github.repository }}/issues/$PR_NUMBER/comments"
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+               -X POST \
+               -d "{\"body\": \"$COMMENT_BODY\"}" \
+               $COMMENT_URL
