@@ -10,9 +10,9 @@ const API_BASE_URL = "http://localhost:4000";
 
 //a41bf1a8-03f0-4ec3-bc9d-1d1cc71a27ea
 
-const { propertyId } = Astro.params;
+const { inspectionId } = Astro.params;
 
-const res = await fetch(`${API_BASE_URL}/api/report/generate/${propertyId}`);
+const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`);
 const reportData = await res.json();
 
 // For mock data fallback:
@@ -20,8 +20,6 @@ const reportData = await res.json();
 // const { organization, inspection } = reportData ?? inspectionReport;
 
 const { organization, inspection } = reportData;
-
-console.log("REPORT DATA:", reportData);
 
 
 
