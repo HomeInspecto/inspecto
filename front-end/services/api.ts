@@ -1,4 +1,10 @@
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
+import Constants from 'expo-constants';
+
+// Get API URL from environment variable or expo constants
+const API_BASE_URL = 
+  process.env.EXPO_PUBLIC_API_URL || 
+  Constants.expoConfig?.extra?.apiUrl || 
+  'http://localhost:4000';
 
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
