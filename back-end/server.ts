@@ -42,12 +42,17 @@ const allowedOrigins = [
 ];
 
 const vercelPreviewPattern = /^https:\/\/dist-[a-z0-9]+-lucas-vuongs-projects\.vercel\.app\/?$/i;
+const vercelGeneralPattern = /^https:\/\/[a-z0-9-]+\.vercel\.app\/?$/i;
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
     if (!origin) return callback(null, true); // Swagger / curl
 
-    if (allowedOrigins.includes(origin) || vercelPreviewPattern.test(origin)) {
+    if (
+      allowedOrigins.includes(origin) ||
+      vercelPreviewPattern.test(origin) ||
+      vercelGeneralPattern.test(origin)
+    ) {
       return callback(null, true);
     }
 
