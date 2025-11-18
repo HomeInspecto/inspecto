@@ -89,7 +89,7 @@ export const LogObservationView = ({
         <Text variant="headline">Section</Text>
         {/* TODO: Replace with RadioGroup */}
         <RadioGroup
-          value={section}
+          value={section ?? ''}
           onValueChange={setSection}
           options={sectionOptions}
         />
