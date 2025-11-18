@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import DatabaseService from '../database';
+import { supabaseAdmin } from '../supabase';
 
 /**
  * @swagger
@@ -111,35 +112,51 @@ export const generateReport = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Property not found' });
     }
 
-    // 3) Sections for the inspection
-    let sections: any[] = [];
+    // 3) Get all observations for this inspection
+    let observations: any[] = [];
     if (inspection?.id) {
-      console.log('Fetching sections for inspection_id:', inspection.id);
-      const { data: secs, error: secErr } = await DatabaseService.fetchDataAdmin('inspection_sections', '*', { inspection_id: inspection.id });
+      console.log('Fetching observations for inspection_id:', inspection.id);
+      const { data: obs, error: obsErr } = await DatabaseService.fetchDataAdmin('observations', '*', { inspection_id: inspection.id });
+      if (obsErr) {
+        console.error('Error fetching observations:', obsErr);
+        return res.status(500).json({ error: asMsg(obsErr) });
+      }
+      observations = (obs || []) as any[];
+      console.log(`Found ${observations.length} observations for inspection ${inspection.id}`);
+    } else {
+      console.warn('Inspection ID is missing, cannot fetch observations');
+    }
+
+    // 4) Get unique section IDs from observations
+    const sectionIds = [...new Set(observations.map((ob: any) => ob.section_id).filter(Boolean))];
+    console.log(`Found ${sectionIds.length} unique sections:`, sectionIds);
+
+    // 5) Fetch section details for all section IDs
+    let sectionsMap = new Map<string, any>();
+    if (sectionIds.length > 0 && supabaseAdmin) {
+      const { data: secs, error: secErr } = await supabaseAdmin
+        .from('inspection_sections')
+        .select('*')
+        .in('id', sectionIds);
       if (secErr) {
         console.error('Error fetching sections:', secErr);
         return res.status(500).json({ error: asMsg(secErr) });
       }
-      sections = (secs || []) as any[];
-      console.log(`Found ${sections.length} sections:`, sections.map(s => ({ id: s.id, name: s.section_name })));
-    } else {
-      console.warn('Inspection ID is missing, cannot fetch sections');
+      const relevantSections = (secs || []) as any[];
+      relevantSections.forEach((sec: any) => {
+        sectionsMap.set(sec.id, sec);
+      });
+      console.log(`Found ${relevantSections.length} sections:`, relevantSections.map(s => ({ id: s.id, name: s.section_name })));
     }
 
-    // 5) Observations per section + media per observation
+    // 6) Group observations by section and fetch media
     const sectionsWithObservations = [] as any[];
-    for (const sec of sections) {
-      console.log(`Fetching observations for section_id: ${sec.id} (${sec.section_name})`);
-      const { data: obs, error: obsErr } = await DatabaseService.fetchDataAdmin('observations', '*', { section_id: sec.id });
-      if (obsErr) {
-        console.error(`Error fetching observations for section ${sec.id}:`, obsErr);
-        return res.status(500).json({ error: asMsg(obsErr) });
-      }
-      const obsArr = (obs || []) as any[];
-      console.log(`Found ${obsArr.length} observations for section ${sec.id}`);
+    for (const [sectionId, section] of sectionsMap.entries()) {
+      const sectionObservations = observations.filter((ob: any) => ob.section_id === sectionId);
+      console.log(`Processing ${sectionObservations.length} observations for section ${section.section_name} (${sectionId})`);
 
       const observationsWithMedia = [] as any[];
-      for (const ob of obsArr) {
+      for (const ob of sectionObservations) {
         console.log(`Fetching media for observation_id: ${ob.id}`);
         const { data: media, error: medErr } = await DatabaseService.fetchDataAdmin('observation_media', '*', { observation_id: ob.id });
         if (medErr) {
@@ -152,13 +169,17 @@ export const generateReport = async (req: Request, res: Response) => {
           name: ob.obs_name,
           severity: ob.severity,
           description: ob.description,
+          implication: ob.implication,
+          recommendation: ob.recommendation,
+          status: ob.status,
           media: medArr.map((m) => ({ caption: m.caption ?? null, url: m.storage_key })),
         });
       }
 
       sectionsWithObservations.push({
-        name: sec.section_name,
-        note: sec.notes ?? undefined,
+        name: section.section_name,
+        note: section.notes ?? undefined,
+        priority_rating: section.priority_rating ?? undefined,
         observations: observationsWithMedia,
       });
     }
