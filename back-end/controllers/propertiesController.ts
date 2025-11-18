@@ -26,20 +26,59 @@ import DatabaseService from '../database';
  */
 export const getAllProperties = async (req: Request, res: Response) => {
   try {
-<<<<<<< HEAD
     const { data, error } = await DatabaseService.fetchDataAdmin('properties');
-=======
-    const { organization_id } = req.query;
-    const filters = organization_id ? { organization_id: organization_id as string } : undefined;
-    
-    const { data, error } = await DatabaseService.fetchDataAdmin('properties', '*', filters);
->>>>>>> 2db3dea (Fix DB RLD issue)
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
     
     return res.json({ properties: data });
+  } catch (err) {
+    console.error('Database query error:', err);
+    return res.status(500).json({ 
+      error: 'Database query failed', 
+      details: err instanceof Error ? err.message : 'Unknown error'
+    });
+  }
+};
+
+
+/**
+ * @swagger
+ * /api/properties/property/{property_id}:
+ *   get:
+ *     summary: Get a property by ID
+ *     description: Retrieves a property by its ID
+ *     tags:
+ *       - Properties
+ *     parameters:
+ *       - name: property_id
+ *         in: path
+ *         required: true
+ *         description: The ID of the property to retrieve
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Property retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 property:
+ *                   type: object
+ *       '500':
+ *         description: Database query failed
+ */
+export const getPropertyById = async (req: Request, res: Response) => {
+  try {
+    const { property_id } = req.params;
+    const { data, error } = await DatabaseService.fetchDataAdmin('properties', '*', { id: property_id });
+    if (error) {
+      return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+    return res.json({ property: data });
   } catch (err) {
     console.error('Database query error:', err);
     return res.status(500).json({ 
@@ -109,13 +148,8 @@ export const getAllProperties = async (req: Request, res: Response) => {
  */
 export const createProperty = async (req: Request, res: Response) => {
   try {
-<<<<<<< HEAD
     const { address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes } = req.body;
     const { data, error } = await DatabaseService.insertDataAdmin('properties', { address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes });
-=======
-    const { organization_id, address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes } = req.body;
-    const { data, error } = await DatabaseService.insertDataAdmin('properties', { organization_id, address_line1, address_line2, unit, city, region, postal_code, country, year_built, dwelling_type, sqft, bedrooms, bathrooms, garage, notes });
->>>>>>> 2db3dea (Fix DB RLD issue)
     console.log('data', data);
     console.log('error', error);
     if (error) {
