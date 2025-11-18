@@ -42,4 +42,4 @@ app-example
 /ios
 /android
 
-.rnstorybook/storybook.requires.ts
+*rnstorybook/*

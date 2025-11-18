@@ -11,6 +11,8 @@ import crypto from 'crypto';
  *     description: Retrieves a single observation by its ID
  *     tags:
  *       - Observations
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: observation_id
@@ -77,6 +79,8 @@ export const getObservationById = async (req: Request, res: Response) => {
  *     description: Retrieves all observations for a given inspection, grouped by section name
  *     tags:
  *       - Observations
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: inspection_id
@@ -187,6 +191,8 @@ export const getObservationsByInspectionId = async (req: Request, res: Response)
  *     description: Retrieves observations filtered by both inspection_id and section_id
  *     tags:
  *       - Observations
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: inspection_id
@@ -262,6 +268,8 @@ export const getObservationsByInspectionAndSection = async (req: Request, res: R
  *     description: Creates a new observation and optionally uploads media files to Supabase Storage
  *     tags:
  *       - Observations
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:

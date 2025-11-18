@@ -8,6 +8,7 @@ import { Request, Response } from 'express';
  *     description: Returns a simple message indicating the server is running
  *     tags:
  *       - Health
+ *     security: []  # Public endpoint - no authentication required
  *     responses:
  *       '200':
  *         description: Server is running
@@ -37,6 +38,7 @@ export const getRoot = (req: Request, res: Response) => {
  *     description: Returns the health status of the backend service
  *     tags:
  *       - Health
+ *     security: []  # Public endpoint - no authentication required
  *     responses:
  *       '200':
  *         description: Service is healthy

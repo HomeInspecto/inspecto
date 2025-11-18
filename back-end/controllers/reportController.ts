@@ -10,6 +10,8 @@ import { supabaseAdmin } from '../supabase';
  *     description: Generates a comprehensive inspection report including property details, inspection data, sections, observations, and media
  *     tags:
  *       - Reports
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: inspection_id
