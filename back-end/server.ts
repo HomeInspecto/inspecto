@@ -4,11 +4,6 @@ import cors from 'cors';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import swaggerOptions from './swagger.config';
-import { transcribeAudio } from './controllers/transcriptionController';
-import { polishTranscription, repolishTranscription } from './controllers/polishController';
-import { CohereClient } from 'cohere-ai';
-import dotenv from 'dotenv';
-
 
 // Routes
 import healthRoutes from './routes/health';
