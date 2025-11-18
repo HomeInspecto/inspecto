@@ -37,6 +37,7 @@ jobs:
         run: npx expo export -p web --output-dir dist
         env:
           EXPO_NO_DOTENV: 1
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
 
       - name: Install Vercel CLI
         run: npm i -g vercel
@@ -71,6 +72,7 @@ jobs:
         run: npx expo export -p web --output-dir dist
         env:
           EXPO_NO_DOTENV: 1
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
 
       - name: Install Vercel CLI
         run: npm i -g vercel
