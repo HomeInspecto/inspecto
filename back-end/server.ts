@@ -4,11 +4,6 @@ import cors from 'cors';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import swaggerOptions from './swagger.config';
-import { transcribeAudio } from './controllers/transcriptionController';
-import { polishTranscription, repolishTranscription } from './controllers/polishController';
-import { CohereClient } from 'cohere-ai';
-import dotenv from 'dotenv';
-
 
 // Routes
 import healthRoutes from './routes/health';
@@ -29,33 +24,45 @@ const port = process.env.PORT || 4000;
 // Load environment variables
 //dotenv.config();
 
+// CORS configuration shared between main middleware and OPTIONS preflight
+const allowedOrigins = [
+  'http://localhost:3000', // local frontend
+  'http://localhost:4000', // local backend
+  'http://localhost:8081', // Expo Metro bundler
+  'http://localhost:19000', // Expo CLI
+  'http://localhost:19006', // Expo web
+  'https://dist-rose-ten.vercel.app', // deployed frontend
+  'https://inspecto-production.up.railway.app', // Railway backend
+  'https://my-branch-production.up.railway.app',
+];
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    // Allow non-browser tools like curl (no origin header)
+    if (!origin) return callback(null, true);
+
+    // Allow specific domains
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Allow your Vercel preview subdomain pattern if you want
+    if (/\.vercel\.app$/.test(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
 // Middleware
 app.use(express.json());
-app.use(
-  cors({
-    origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // allow same-origin Swagger + curl
-    const allowedOrigins = [
-      'http://localhost:3000', // local frontend
-      'http://localhost:4000', // local backend
-      'http://localhost:8081', // Expo Metro bundler
-      'http://localhost:19000', // Expo CLI
-      'http://localhost:19006', // Expo web
-      'https://dist-rose-ten.vercel.app', // deployed frontend
-      'https://inspecto-production.up.railway.app', // your Railway backend domain
-      'http://localhost:8081',
-      'https://my-branch-production.up.railway.app',
-    ];
-    return allowedOrigins.includes(origin)
-      ? callback(null, true)
-      : callback(new Error('Not allowed by CORS'));
-  },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
-
-app.options('*', cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
