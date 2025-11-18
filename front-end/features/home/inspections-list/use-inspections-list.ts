@@ -1,9 +1,10 @@
-import { dummyInspection, useInspectionsStore, type Inspection } from '../state';
+import { useInspectionsStore } from '../state';
 import { router } from 'expo-router';
 import type { InspectionsListViewProps } from './inspections-list-view';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useShallow } from 'zustand/shallow';
 import { useEffect } from 'react';
+import { fetchInspectionsWithAddresses } from './backend-calls';
 
 export function useInspectionsList(): InspectionsListViewProps {
   const inspections = useInspectionsStore(state => state.inspections);
@@ -13,28 +14,32 @@ export function useInspectionsList(): InspectionsListViewProps {
 
   // runs one time on mount
   useEffect(() => {
-    async function fetchInspections() {
-      const API_BASE = 'https://inspecto-production.up.railway.app';
+    let isMounted = true;
 
-      const res = await fetch(API_BASE + '/api/inspections/all');
-      const data = await res.json();
+    async function load() {
+      try {
+        const mappedInspections = await fetchInspectionsWithAddresses();
 
-      const inspections: Inspection[] = data.inspections.map((inspection: any) => ({
-        id: inspection.id,
-        client: '',
-        address: '',
-        createdAt: inspection.created_at,
-      }));
-
-      setInspections(inspections);
+        if (isMounted) {
+          setInspections(mappedInspections);
+        }
+      } catch (err) {
+        console.error('Failed to fetch inspections:', err);
+        if (isMounted) {
+          setInspections([]);
+        }
+      }
     }
 
-    fetchInspections();
-  }, []);
+    load();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [setInspections]);
 
   const onSelectInspection = (id: string) => {
     clearObservation();
-
     router.push(`/active-inspection/${id}`);
   };
 
