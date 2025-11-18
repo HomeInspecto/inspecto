@@ -10,6 +10,8 @@ import {
 } from '@/features/edit-observation/state';
 import { useActiveInspectionStore } from '@/features/inspection-details/state';
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'localhost:4000';
+
 export function useLogObersation(): LogObservationProps {
   const { id } = useLocalSearchParams<{ id: string }>();
 
@@ -63,7 +65,7 @@ export function useLogObersation(): LogObservationProps {
     const fetchSections = async () => {
       try {
         const res = await fetch(
-          'https://my-branch-production.up.railway.app/api/sections/all'
+          (`${API_BASE_URL}/api/sections/all`)
         );
 
         const data = (await res.json()) as { sections: SectionFromApi[] };
@@ -117,7 +119,7 @@ export function useLogObersation(): LogObservationProps {
 
     try {
       await fetch(
-        'https://my-branch-production.up.railway.app/api/observations/createObservation',
+        `${API_BASE_URL}/api/observations/createObservation`,
         {
           method: 'POST',
           headers: {
