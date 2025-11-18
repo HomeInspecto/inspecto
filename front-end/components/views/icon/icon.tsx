@@ -37,6 +37,7 @@ const MAPPING: IconMapping = {
 
   // Editor icons
   pencil: 'edit',
+  'square.and.pencil': 'edit-square',
   'arrow.right': 'arrow-forward',
   circle: 'radio-button-unchecked',
   eraser: 'web-asset',
@@ -54,6 +55,8 @@ const MAPPING: IconMapping = {
   'person.fill': 'person',
   'exclamationmark.triangle.fill': 'priority-high',
   'exclamationmark.circle.fill': 'error-outline',
+  'pencil.tip': 'edit-square',
+  questionmark: 'question-mark',
 } as const;
 
 export type IconName = keyof typeof MAPPING;
