@@ -43,12 +43,13 @@ app.use(
       'http://localhost:19006', // Expo web
       'https://dist-rose-ten.vercel.app', // deployed frontend
       'https://inspecto-production.up.railway.app', // your Railway backend domain
-      'http://localhost:8081',
       'https://my-branch-production.up.railway.app',
     ];
-    return allowedOrigins.includes(origin)
-      ? callback(null, true)
-      : callback(new Error('Not allowed by CORS'));
+    const previewDomainPattern = /^https:\/\/dist-[^-]+-lucas-vuongs-projects\.vercel\.app\/?$/i;
+    if (allowedOrigins.includes(origin) || previewDomainPattern.test(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
   },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
