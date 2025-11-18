@@ -41,22 +41,22 @@ const allowedOrigins = [
   'https://my-branch-production.up.railway.app',
 ];
 
-const vercelPreviewPattern = /^https:\/\/dist-[a-z0-9]+-lucas-vuongs-projects\.vercel\.app\/?$/i;
-const vercelGeneralPattern = /^https:\/\/[a-z0-9-]+\.vercel\.app\/?$/i;
-
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // Swagger / curl
+    // Allow non-browser tools like curl (no origin header)
+    if (!origin) return callback(null, true);
 
-    if (
-      allowedOrigins.includes(origin) ||
-      vercelPreviewPattern.test(origin) ||
-      vercelGeneralPattern.test(origin)
-    ) {
+    // Allow specific domains
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
 
-    return callback(new Error(`Not allowed by CORS: ${origin}`));
+    // Allow your Vercel preview subdomain pattern if you want
+    if (/\.vercel\.app$/.test(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
