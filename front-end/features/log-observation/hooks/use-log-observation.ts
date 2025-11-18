@@ -54,12 +54,11 @@ export function useLogObersation(): LogObservationProps {
   const setSection = (v: string) => setObservation({ section: v });
   const setSeverity = (v: Severity) => setObservation({ severity: v });
 
-  const addObservation = useActiveInspectionStore(useShallow(state => state.addObservation));
+  const addObservation = useActiveInspectionStore(
+    useShallow(state => state.addObservation)
+  );
 
-  const onLog = useCallback(async () => {
-    const obsrState = useActiveObservationStore.getState();
-
-
+  // 🔹 Fetch sections once when the hook is used
   useEffect(() => {
     const fetchSections = async () => {
       try {
@@ -75,11 +74,7 @@ export function useLogObersation(): LogObservationProps {
         }));
 
         setSectionOptions(options);
-
-        // If no section is selected yet, default to the first one
-        if (!useActiveObservationStore.getState().section && options.length > 0) {
-          Alert.alert('Required Field', 'Please select a section before logging the observation.');
-        }
+        // User must manually select a section (no auto-selection)
       } catch (error) {
         console.error('Error fetching sections', error);
       }
@@ -87,13 +82,27 @@ export function useLogObersation(): LogObservationProps {
 
     fetchSections();
   }, []);
-  
 
-      // Check if severity is selected
-      if (!obsrState.severity) {
-        Alert.alert('Required Field', 'Please select a severity level before logging the observation.');
-        return;
-      }
+  const onLog = useCallback(async () => {
+    const obsrState = useActiveObservationStore.getState();
+
+    // Check if severity is selected
+    if (!obsrState.severity) {
+      Alert.alert(
+        'Required Field',
+        'Please select a severity level before logging the observation.'
+      );
+      return;
+    }
+
+    // Check if section is selected
+    if (!obsrState.section) {
+      Alert.alert(
+        'Required Field',
+        'Please select a section before logging the observation.'
+      );
+      return;
+    }
 
     const observation: Observation = {
       name: obsrState.name,
@@ -106,7 +115,6 @@ export function useLogObersation(): LogObservationProps {
       fieldNote: obsrState.fieldNote,
     };
 
-
     try {
       await fetch(
         'https://my-branch-production.up.railway.app/api/observations/createObservation',
@@ -116,21 +124,20 @@ export function useLogObersation(): LogObservationProps {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            section_id: obsrState.section,          // for now, using whatever is in `section`
+            section_id: obsrState.section,          // now a real section_id
             obs_name: obsrState.name,
             description: obsrState.description,
-            severity: 'minor',
+            severity: obsrState.severity,           // ✅ use selected severity
             status: 'open',
             recommendation: obsrState.recommendation,
             implication: obsrState.implications,
-            files: [],                              // images can be wired later
+            files: [],
           }),
         }
       );
     } catch (error) {
       console.error('Error calling createObservation', error);
     }
-
 
     addObservation(structuredClone(observation));
 
