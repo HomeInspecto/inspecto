@@ -29,12 +29,12 @@ const port = process.env.PORT || 4000;
 // Load environment variables
 //dotenv.config();
 
-// Middleware
-app.use(express.json());
-app.use(
-  cors({
-    origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // allow same-origin Swagger + curl
+// CORS configuration - allows all Vercel preview deployments automatically
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow requests with no origin (like mobile apps, Postman, curl)
+    if (!origin) return callback(null, true);
+    
     const allowedOrigins = [
       'http://localhost:3000', // local frontend
       'http://localhost:4000', // local backend
@@ -45,20 +45,28 @@ app.use(
       'https://inspecto-production.up.railway.app', // your Railway backend domain
       'https://my-branch-production.up.railway.app',
     ];
+    
     // Allow all Vercel preview deployments (pattern: *.vercel.app)
-    const isVercelDeployment = origin.includes('.vercel.app');
+    // This covers all preview links like: dist-*.vercel.app, *.vercel.app
+    const isVercelDeployment = /\.vercel\.app$/.test(origin);
+    
     if (isVercelDeployment || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    return callback(new Error('Not allowed by CORS'));
+    
+    return callback(new Error(`Not allowed by CORS: ${origin}`));
   },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  })
-);
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
 
-app.options('*', cors());
+// Middleware
+app.use(express.json());
+app.use(cors(corsOptions));
+
+// Handle preflight requests with the same CORS configuration
+app.options('*', cors(corsOptions));
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
