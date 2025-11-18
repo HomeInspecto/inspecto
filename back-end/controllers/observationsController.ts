@@ -5,75 +5,6 @@ import crypto from 'crypto';
 
 /**
  * @swagger
- * /api/observations/all:
- *   get:
- *     summary: Get observations
- *     description: Retrieves observations, optionally filtered by section_id, severity, or status
- *     tags:
- *       - Observations
- *     parameters:
- *       - in: query
- *         name: section_id
- *         schema:
- *           type: string
- *         description: Filter by section ID
- *       - in: query
- *         name: severity
- *         schema:
- *           type: string
- *         description: Filter by severity
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *         description: Filter by status
- *     responses:
- *       '200':
- *         description: List of observations
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 observations:
- *                   type: array
- *                   items:
- *                     type: object
- *       '500':
- *         description: Database query failed
- */
-export const getAllObservations = async (req: Request, res: Response) => {
-  try {
-    const { section_id, severity, status } = req.query;
-    const filters: Record<string, any> = {};
-    
-    if (section_id) filters.section_id = section_id as string;
-    if (severity) filters.severity = severity as string;
-    if (status) filters.status = status as string;
-    
-    const { data, error } = await DatabaseService.fetchDataAdmin(
-      'observations',
-      '*',
-      Object.keys(filters).length ? filters : undefined
-    );
-    
-    if (error) {
-      return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-    }
-    
-    return res.json({ observations: data });
-  } catch (err) {
-    console.error('Database query error:', err);
-    return res.status(500).json({ 
-      error: 'Database query failed', 
-      details: err instanceof Error ? err.message : 'Unknown error'
-    });
-  }
-};
-
-
-/**
- * @swagger
  * /api/observations/observation/{observation_id}:
  *   get:
  *     summary: Get a single observation
@@ -140,6 +71,191 @@ export const getObservationById = async (req: Request, res: Response) => {
 
 /**
  * @swagger
+ * /api/observations/by-inspection/{inspection_id}:
+ *   get:
+ *     summary: Get all observations by inspection ID grouped by section name
+ *     description: Retrieves all observations for a given inspection, grouped by section name
+ *     tags:
+ *       - Observations
+ *     parameters:
+ *       - in: path
+ *         name: inspection_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the inspection
+ *     responses:
+ *       '200':
+ *         description: Observations grouped by section name
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 observations:
+ *                   type: object
+ *                   additionalProperties:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *       '400':
+ *         description: inspection_id is required
+ *       '500':
+ *         description: Database query failed
+ */
+export const getObservationsByInspectionId = async (req: Request, res: Response) => {
+  try {
+    const { inspection_id } = req.params;
+
+    if (!inspection_id) {
+      return res.status(400).json({ error: 'inspection_id is required' });
+    }
+
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: 'Admin client not configured' });
+    }
+
+    // Query observations directly by inspection_id
+    const { data: observations, error: observationsError } = await DatabaseService.fetchDataAdmin(
+      'observations',
+      '*',
+      { inspection_id }
+    );
+
+    if (observationsError) {
+      return res.status(500).json({
+        error: 'Failed to fetch observations',
+        details: observationsError instanceof Error ? observationsError.message : 'Unknown error',
+      });
+    }
+
+    if (!observations || (Array.isArray(observations) && observations.length === 0)) {
+      return res.json({ observations: {} });
+    }
+
+    const observationsArray = Array.isArray(observations) ? observations : [];
+
+    // Get unique section IDs
+    const sectionIds = [...new Set(observationsArray.map((obs: any) => obs.section_id))];
+
+    // Fetch section names for all section IDs
+    const { data: sections, error: sectionsError } = await supabaseAdmin
+      .from('inspection_sections')
+      .select('id, section_name')
+      .in('id', sectionIds);
+
+    if (sectionsError) {
+      return res.status(500).json({
+        error: 'Failed to fetch section names',
+        details: sectionsError instanceof Error ? sectionsError.message : 'Unknown error',
+      });
+    }
+
+    // Create a map of section_id to section_name
+    const sectionMap = new Map<string, string>();
+    const sectionsArray = Array.isArray(sections) ? sections : [];
+    sectionsArray.forEach((section: any) => {
+      sectionMap.set(section.id, section.section_name);
+    });
+
+    // Group observations by section name
+    const groupedObservations: Record<string, any[]> = {};
+    
+    observationsArray.forEach((observation: any) => {
+      const sectionName = sectionMap.get(observation.section_id) || 'Unknown Section';
+      if (!groupedObservations[sectionName]) {
+        groupedObservations[sectionName] = [];
+      }
+      groupedObservations[sectionName].push(observation);
+    });
+
+    return res.json({ observations: groupedObservations });
+  } catch (err) {
+    console.error('Database query error:', err);
+    return res.status(500).json({
+      error: 'Database query failed',
+      details: err instanceof Error ? err.message : 'Unknown error',
+    });
+  }
+};
+
+/**
+ * @swagger
+ * /api/observations/by-inspection-and-section:
+ *   get:
+ *     summary: Get observations by inspection ID and section ID
+ *     description: Retrieves observations filtered by both inspection_id and section_id
+ *     tags:
+ *       - Observations
+ *     parameters:
+ *       - in: query
+ *         name: inspection_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the inspection
+ *       - in: query
+ *         name: section_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the section
+ *     responses:
+ *       '200':
+ *         description: List of observations matching both filters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 observations:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       '400':
+ *         description: inspection_id and section_id are required
+ *       '500':
+ *         description: Database query failed
+ */
+export const getObservationsByInspectionAndSection = async (req: Request, res: Response) => {
+  try {
+    const { inspection_id, section_id } = req.query;
+
+    if (!inspection_id || !section_id) {
+      return res.status(400).json({ 
+        error: 'Both inspection_id and section_id are required as query parameters' 
+      });
+    }
+
+    // Query observations by both inspection_id and section_id
+    const { data, error } = await DatabaseService.fetchDataAdmin(
+      'observations',
+      '*',
+      { 
+        inspection_id: inspection_id as string,
+        section_id: section_id as string
+      }
+    );
+
+    if (error) {
+      return res.status(500).json({
+        error: 'Failed to fetch observations',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+
+    return res.json({ observations: data || [] });
+  } catch (err) {
+    console.error('Database query error:', err);
+    return res.status(500).json({
+      error: 'Database query failed',
+      details: err instanceof Error ? err.message : 'Unknown error',
+    });
+  }
+};
+
+/**
+ * @swagger
  * /api/observations/createObservation:
  *   post:
  *     summary: Create a new observation with optional media files
@@ -155,18 +271,23 @@ export const getObservationById = async (req: Request, res: Response) => {
  *             required:
  *               - section_id
  *               - obs_name
+ *               - inspection_id
  *             properties:
  *               section_id:
  *                 type: string
  *               obs_name:
  *                 type: string
+ *               inspection_id:
+ *                 type: string
+ *                 description: inspection ID to link the observation to an inspection
  *               description:
  *                 type: string
  *               severity:
  *                 type: string
- *                 enum: [minor, moderate, major, critical]
+ *                 enum: [low, medium, critical]
  *               status:
  *                 type: string
+ *                 enum: [open, resolved, defer]
  *               recommendation:
  *                 type: string
  *               implication:
@@ -213,9 +334,10 @@ export const getObservationById = async (req: Request, res: Response) => {
  */
 export const createObservation = async (req: Request, res: Response) => {
   try {
-    const { section_id, obs_name, description, severity, status, implication, recommendation } = req.body as {
+    const { section_id, obs_name, inspection_id, description, severity, status, implication, recommendation } = req.body as {
       section_id?: string;
       obs_name?: string;
+      inspection_id?: string;
       description?: string;
       severity?: string | null;
       status?: string | null;
@@ -230,6 +352,7 @@ export const createObservation = async (req: Request, res: Response) => {
     const { data, error } = await DatabaseService.insertDataAdmin('observations', {
       section_id,
       obs_name,
+      inspection_id: inspection_id,
       description: description ?? null,
       severity: severity ?? null,
       status: status ?? null,
