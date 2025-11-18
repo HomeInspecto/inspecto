@@ -104,7 +104,7 @@ export default function LoginScreen() {
 
             <View style={styles.buttonGroup}>
               <Button
-                text="Sign In"
+                text="Log In"
                 onPress={handleLogin}
                 disabled={isLoading || !email || !password}
                 accessibilityLabel="Sign in"
