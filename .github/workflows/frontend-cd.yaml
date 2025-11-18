@@ -39,19 +39,6 @@ jobs:
           EXPO_NO_DOTENV: 1
           EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
 
-      - name: Create vercel.json for static deployment
-        run: |
-          cat > dist/vercel.json << 'EOF'
-          {
-            "version": 2,
-            "buildCommand": "",
-            "outputDirectory": ".",
-            "installCommand": "",
-            "framework": null,
-            "routes": [{ "src": "/(.*)", "dest": "/$1" }]
-          }
-          EOF
-
       - name: Install Vercel CLI
         run: npm i -g vercel
 
@@ -86,19 +73,6 @@ jobs:
         env:
           EXPO_NO_DOTENV: 1
           EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
-
-      - name: Create vercel.json for static deployment
-        run: |
-          cat > dist/vercel.json << 'EOF'
-          {
-            "version": 2,
-            "buildCommand": "",
-            "outputDirectory": ".",
-            "installCommand": "",
-            "framework": null,
-            "routes": [{ "src": "/(.*)", "dest": "/$1" }]
-          }
-          EOF
 
       - name: Install Vercel CLI
         run: npm i -g vercel
