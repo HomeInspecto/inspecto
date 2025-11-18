@@ -1,9 +1,19 @@
 import Constants from 'expo-constants';
 
 // Get API URL from environment variable or expo constants
+// Debug: Log all possible sources
+if (typeof window !== 'undefined') {
+  console.log('Environment check:', {
+    'process.env.EXPO_PUBLIC_API_URL': process.env.EXPO_PUBLIC_API_URL,
+    'Constants.expoConfig?.extra?.apiUrl': Constants.expoConfig?.extra?.apiUrl,
+    'Constants.manifest?.extra?.apiUrl': Constants.manifest?.extra?.apiUrl,
+  });
+}
+
 const API_BASE_URL = 
   process.env.EXPO_PUBLIC_API_URL || 
   Constants.expoConfig?.extra?.apiUrl || 
+  Constants.manifest?.extra?.apiUrl ||
   'http://localhost:4000';
 
 interface RequestOptions {

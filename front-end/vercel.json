@@ -1,4 +1,8 @@
 {
   "version": 2,
+  "buildCommand": "npm run build:web",
+  "outputDirectory": "web-build",
+  "installCommand": "npm install",
+  "framework": null,
   "routes": [{ "src": "/(.*)", "dest": "/$1" }]
 }
