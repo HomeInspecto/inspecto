@@ -66,30 +66,19 @@ export async function fetchInspectionsWithAddresses(): Promise<Inspection[]> {
 
   const inspectionsApi: InspectionApi[] = inspectionsJson.inspections ?? inspectionsJson ?? [];
 
-  const propertiesRes = await fetch(`${API_BASE}/api/properties`);
-  const propertiesJson = await propertiesRes.json();
+  const mappedInspections: Inspection[] = await Promise.all(
+    inspectionsApi.map(async inspection => {
+      const propertiesRes = await fetch(`${API_BASE}/api/properties/${inspection.property_id}`);
+      const property = propertiesRes.ok ? await propertiesRes.json() : undefined;
 
-  const propertiesArray: PropertyApi[] = propertiesJson.properties ?? propertiesJson ?? [];
-
-  const propertiesById = new Map<string, PropertyApi>();
-  for (const p of propertiesArray) {
-    if (p && p.id) {
-      propertiesById.set(p.id, p);
-    }
-  }
-
-  const mappedInspections: Inspection[] = inspectionsApi.map(inspection => {
-    const property = inspection.property_id
-      ? propertiesById.get(inspection.property_id)
-      : undefined;
-
-    return {
-      id: inspection.id,
-      client: '', // TODO: fill client from API when available
-      address: formatAddress(property),
-      createdAt: new Date(inspection.created_at).getTime(),
-    };
-  });
+      return {
+        id: inspection.id,
+        client: '', // TODO: fill client from API when available
+        address: formatAddress(property),
+        createdAt: new Date(inspection.created_at).getTime(),
+      };
+    })
+  );
 
   return mappedInspections;
 }

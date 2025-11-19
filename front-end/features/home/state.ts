@@ -13,15 +13,8 @@ export interface InspectionStore {
   setInspections: (inspections: Inspection[]) => void;
 }
 
-const dummyInspection: Inspection = {
-  id: 'llmquc1213kr4ql2',
-  client: 'Kelly Brown',
-  address: '3172 Cedar Hill Rd',
-  createdAt: 1761792433130,
-};
-
 export const useInspectionsStore = create<InspectionStore>(set => ({
-  inspections: [dummyInspection],
+  inspections: [],
   createInspection: (inspection: Inspection) =>
     set(state => ({
       inspections: [...state.inspections, inspection],

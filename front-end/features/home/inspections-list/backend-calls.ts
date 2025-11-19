@@ -55,38 +55,37 @@ function formatAddress(property?: PropertyApi | null): string {
 }
 
 /**
- * Fetch inspections + properties and map them into the UI `Inspection` shape.
+ * Fetch inspections and fetch each property's data individually,
+ * then map them into the UI `Inspection` shape.
  */
 export async function fetchInspectionsWithAddresses(): Promise<Inspection[]> {
   const inspectionsRes = await fetch(`${API_BASE}/api/inspections/all`);
+  if (!inspectionsRes.ok) return [];
+
   const inspectionsJson = await inspectionsRes.json();
 
   const inspectionsApi: InspectionApi[] = inspectionsJson.inspections ?? inspectionsJson ?? [];
 
-  const propertiesRes = await fetch(`${API_BASE}/api/properties`);
-  const propertiesJson = await propertiesRes.json();
+  const mappedInspections: Inspection[] = await Promise.all(
+    inspectionsApi.map(async inspection => {
+      let property: PropertyApi | undefined = undefined;
 
-  const propertiesArray: PropertyApi[] = propertiesJson.properties ?? propertiesJson ?? [];
+      if (inspection.property_id) {
+        const propertyRes = await fetch(`${API_BASE}/api/properties/${inspection.property_id}`);
 
-  const propertiesById = new Map<string, PropertyApi>();
-  for (const p of propertiesArray) {
-    if (p && p.id) {
-      propertiesById.set(p.id, p);
-    }
-  }
+        if (propertyRes.ok) {
+          property = await propertyRes.json();
+        }
+      }
 
-  const mappedInspections: Inspection[] = inspectionsApi.map(inspection => {
-    const property = inspection.property_id
-      ? propertiesById.get(inspection.property_id)
-      : undefined;
-
-    return {
-      id: inspection.id,
-      client: '', // TODO: fill client from API when available
-      address: formatAddress(property),
-      createdAt: new Date(inspection.created_at).getTime(),
-    };
-  });
+      return {
+        id: inspection.id,
+        client: '', // TODO: fill client from API when available
+        address: formatAddress(property),
+        createdAt: new Date(inspection.created_at).getTime(),
+      };
+    })
+  );
 
   return mappedInspections;
 }
