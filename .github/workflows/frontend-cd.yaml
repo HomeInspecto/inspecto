@@ -1,4 +1,8 @@
-name: Frontend CD (Vercel Production) / Preview
+name: Frontend Deployment
+
+permissions:
+  contents: read
+  pull-requests: write
 
 on:
   push:
@@ -37,6 +41,20 @@ jobs:
         run: npx expo export -p web --output-dir dist
         env:
           EXPO_NO_DOTENV: 1
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+
+      - name: Create vercel.json for static deployment
+        run: |
+          cat > dist/vercel.json << 'EOF'
+          {
+            "version": 2,
+            "buildCommand": "",
+            "outputDirectory": ".",
+            "installCommand": "",
+            "framework": null,
+            "routes": [{ "src": "/(.*)", "dest": "/$1" }]
+          }
+          EOF
 
       - name: Install Vercel CLI
         run: npm i -g vercel
@@ -45,10 +63,13 @@ jobs:
         run: vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy dist/ to Vercel (production)
-        run: vercel deploy dist --yes --prod=true --token ${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy dist --yes --prod --token ${{ secrets.VERCEL_TOKEN }}
 
   preview:
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -71,6 +92,20 @@ jobs:
         run: npx expo export -p web --output-dir dist
         env:
           EXPO_NO_DOTENV: 1
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+
+      - name: Create vercel.json for static deployment
+        run: |
+          cat > dist/vercel.json << 'EOF'
+          {
+            "version": 2,
+            "buildCommand": "",
+            "outputDirectory": ".",
+            "installCommand": "",
+            "framework": null,
+            "routes": [{ "src": "/(.*)", "dest": "/$1" }]
+          }
+          EOF
 
       - name: Install Vercel CLI
         run: npm i -g vercel
@@ -79,5 +114,29 @@ jobs:
         run: vercel pull --yes --environment=preview --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy dist/ to Vercel (preview)
-        run: vercel deploy dist --yes --prod=false --token ${{ secrets.VERCEL_TOKEN }}
+        id: vercel_preview
+        run: |
+          set -euo pipefail
+          DEPLOY_OUTPUT="$(vercel deploy dist --yes --token "${{ secrets.VERCEL_TOKEN }}")"
+          echo "$DEPLOY_OUTPUT"
+          PREVIEW_URL=$(echo "$DEPLOY_OUTPUT" | grep -Eo 'https://[A-Za-z0-9.-]+\.vercel\.app' | tail -n1)
+          if [ -z "$PREVIEW_URL" ]; then
+            echo "Failed to detect preview URL from Vercel output." >&2
+            exit 1
+          fi
+          echo "preview_url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
 
+      - name: Post Comment to PR
+        if: steps.vercel_preview.outputs.preview_url != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          PREVIEW_URL: ${{ steps.vercel_preview.outputs.preview_url }}
+        run: |
+          PR_NUMBER=$(jq '.pull_request.number' $GITHUB_EVENT_PATH)
+          GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
+          COMMENT_BODY="✅ Preview deployment: ${PREVIEW_URL}"
+          COMMENT_URL="https://api.github.com/repos/${{ github.repository }}/issues/$PR_NUMBER/comments"
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+               -X POST \
+               -d "{\"body\": \"$COMMENT_BODY\"}" \
+               $COMMENT_URL

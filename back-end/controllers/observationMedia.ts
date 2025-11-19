@@ -11,6 +11,8 @@ import crypto from 'crypto';
  *     description: Retrieves all media files associated with a specific observation
  *     tags:
  *       - Observation Media
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: observation_id
@@ -67,6 +69,8 @@ export const getAllObservationMedia = async (req: Request, res: Response) => {
  *     description: Uploads a media file (photo, video, or audio) to Supabase Storage and creates an observation_media record
  *     tags:
  *       - Observation Media
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: observation_id

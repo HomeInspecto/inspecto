@@ -9,6 +9,8 @@ import DatabaseService from '../database';
  *     description: Retrieves a list of inspectors, optionally filtered by active status
  *     tags:
  *       - Inspectors
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: active
@@ -61,6 +63,8 @@ export const getAllInspectors = async (req: Request, res: Response) => {
  *     description: Creates a new inspector record
  *     tags:
  *       - Inspectors
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:

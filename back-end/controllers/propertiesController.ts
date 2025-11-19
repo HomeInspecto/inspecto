@@ -9,6 +9,8 @@ import DatabaseService from '../database';
  *     description: Retrieves a list of properties
  *     tags:
  *       - Properties
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       '200':
  *         description: List of properties
@@ -42,6 +44,54 @@ export const getAllProperties = async (req: Request, res: Response) => {
   }
 };
 
+
+/**
+ * @swagger
+ * /api/properties/property/{property_id}:
+ *   get:
+ *     summary: Get a property by ID
+ *     description: Retrieves a property by its ID
+ *     tags:
+ *       - Properties
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - name: property_id
+ *         in: path
+ *         required: true
+ *         description: The ID of the property to retrieve
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Property retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 property:
+ *                   type: object
+ *       '500':
+ *         description: Database query failed
+ */
+export const getPropertyById = async (req: Request, res: Response) => {
+  try {
+    const { property_id } = req.params;
+    const { data, error } = await DatabaseService.fetchDataAdmin('properties', '*', { id: property_id });
+    if (error) {
+      return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+    return res.json({ property: data });
+  } catch (err) {
+    console.error('Database query error:', err);
+    return res.status(500).json({ 
+      error: 'Database query failed', 
+      details: err instanceof Error ? err.message : 'Unknown error'
+    });
+  }
+};
+
 /**
  * @swagger
  * /api/properties/createProperty:
@@ -50,6 +100,8 @@ export const getAllProperties = async (req: Request, res: Response) => {
  *     description: Creates a new property record
  *     tags:
  *       - Properties
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:

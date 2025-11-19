@@ -32,21 +32,18 @@ export interface Database {
       inspection_sections: {
         Row: {
           id: string;
-          inspection_id: string;
           section_name: string;
           notes: string | null;
           priority_rating: number | null;
         };
         Insert: {
           id?: string;
-          inspection_id: string;
           section_name: string;
           notes?: string | null;
           priority_rating?: number | null;
         };
         Update: {
           id?: string;
-          inspection_id?: string;
           section_name?: string;
           notes?: string | null;
           priority_rating?: number | null;
@@ -178,12 +175,13 @@ export interface Database {
           section_id: string;
           obs_name: string;
           description: string | null;
-          severity: 'minor' | 'moderate' | 'critical' | null;
+          severity: 'low' | 'medium' | 'critical' | null;
           status: 'open' | 'resolved' | 'defer' | null;
           created_at: string;
           updated_at: string;
           implication: string | null;
           recommendation: string | null;
+          inspection_id: string | null;
         };
         Insert: {
           id?: string;
@@ -196,6 +194,7 @@ export interface Database {
           updated_at?: string;
           implication?: string | null;
           recommendation?: string | null;
+          inspection_id?: string | null;
         };
         Update: {
           id?: string;
@@ -208,6 +207,7 @@ export interface Database {
           updated_at?: string;
           implication?: string | null;
           recommendation?: string | null;
+          inspection_id?: string | null;
         };
       };
       properties: {
