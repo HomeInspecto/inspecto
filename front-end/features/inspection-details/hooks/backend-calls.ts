@@ -74,12 +74,15 @@ export async function fetchInspectionsWithAddresses(): Promise<Inspection[]> {
 
   const mappedInspections: Inspection[] = await Promise.all(
     inspectionsApi.map(async inspection => {
-      const propertiesRes = await fetch(`${API_BASE}/api/properties/${inspection.property_id}`, {
-        headers: {
-          ...(await authService.authHeaders()),
-          'Content-Type': 'application/json',
-        },
-      });
+      const propertiesRes = await fetch(
+        `${API_BASE}/api/properties/property/${inspection.property_id}`,
+        {
+          headers: {
+            ...(await authService.authHeaders()),
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       const property = propertiesRes.ok ? await propertiesRes.json() : undefined;
 
       return {
@@ -164,12 +167,15 @@ export async function fetchActiveInspectionDetails(
   let address = '';
 
   if (inspectionApi.property_id) {
-    const propertyRes = await fetch(`${API_BASE}/api/properties/${inspectionApi.property_id}`, {
-      headers: {
-        ...(await authService.authHeaders()),
-        'Content-Type': 'application/json',
-      },
-    });
+    const propertyRes = await fetch(
+      `${API_BASE}/api/properties/property/${inspectionApi.property_id}`,
+      {
+        headers: {
+          ...(await authService.authHeaders()),
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
     const property: PropertyApi | undefined = await propertyRes.json();
     address = formatAddress(property);

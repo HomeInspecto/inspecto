@@ -78,12 +78,15 @@ export async function fetchInspectionsWithAddresses(): Promise<Inspection[]> {
       let property: PropertyApi | undefined = undefined;
 
       if (inspection.property_id) {
-        const propertyRes = await fetch(`${API_BASE}/api/properties/${inspection.property_id}`, {
-          headers: {
-            ...(await authService.authHeaders()),
-            'Content-Type': 'application/json',
-          },
-        });
+        const propertyRes = await fetch(
+          `${API_BASE}/api/properties/property/${inspection.property_id}`,
+          {
+            headers: {
+              ...(await authService.authHeaders()),
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
         if (propertyRes.ok) {
           property = await propertyRes.json();
