@@ -63,11 +63,13 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
           name: 'recording.m4a',
           type: 'audio/m4a',
         } as any);
-
+        
+        const token = await authService.getAccessToken();
         const res = await fetch(`${API_BASE}${TRANSCRIBE_PATH}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'multipart/form-data' },
-          body: form,
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },          body: form,
         });
 
         const json = await res.json().catch(() => ({}));
@@ -171,7 +173,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
       });
 
       const json = await res.json();
-      if (!res.ok) {
+      if (!res.ok) {    
         throw new Error(json?.error || `Polish failed (${res.status})`);
       }
 

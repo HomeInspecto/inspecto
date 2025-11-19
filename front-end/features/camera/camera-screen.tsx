@@ -4,6 +4,10 @@ import { useCameraScreen } from './hooks/use-camera-screen';
 import type { Photo } from '../edit-observation/state';
 import type { RefObject } from 'react';
 
+// ✅ NEW: imports for focus fix
+import { View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+
 export interface CameraScreenProps {
   photos: Photo[];
 
@@ -25,14 +29,25 @@ export interface CameraScreenProps {
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
+  const isFocused = useIsFocused();
   const props = useCameraScreen();
 
-  if (!permission?.granted) {
-    requestPermission();
-    return;
+  // Permission not loaded yet → render nothing
+  if (!permission) {
+    return null;
   }
 
-  if (permission?.granted) {
-    return <CameraScreenView {...props} />;
+  // Permission not granted → request and render nothing
+  if (!permission.granted) {
+    requestPermission();
+    return null;
   }
+
+  // Screen not focused → do NOT render the camera
+  if (!isFocused) {
+    return <View style={{ flex: 1, backgroundColor: 'black' }} />;
+  }
+
+  // Focused + permission granted → show the camera
+  return <CameraScreenView {...props} />;
 }
