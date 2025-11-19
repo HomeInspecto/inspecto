@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { useInspectionsStore } from '../state';
 import { useShallow } from 'zustand/react/shallow';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
+import { Alert } from 'react-native';
 
 export function useCreateInspection(): CreateInspectionViewProps {
   const [client, setClient] = useState<string>('');

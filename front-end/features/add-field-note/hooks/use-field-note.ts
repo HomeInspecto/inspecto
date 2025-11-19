@@ -4,8 +4,9 @@ import type { AddFieldNoteProps } from '../views/add-field-note-view';
 import { Keyboard, Alert } from 'react-native';
 // inspection store not required here; navigation will use goToLogObservation passed in
 import { Audio } from 'expo-av';
+import { authService } from '@/services/auth';
 
-const API_BASE = 'https://inspecto-production.up.railway.app';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'localhost:4000';
 const TRANSCRIBE_PATH = '/api/transcriptions/transcribe';
 const POLISH_PATH = '/api/transcriptions/polish';
 
@@ -63,10 +64,12 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
           type: 'audio/m4a',
         } as any);
 
-        const res = await fetch(`${API_BASE}${TRANSCRIBE_PATH}`, {
+        const token = await authService.getAccessToken();
+        const res = await fetch(`${API_BASE_URL}${TRANSCRIBE_PATH}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'multipart/form-data' },
-          body: form,
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },          body: form,
         });
 
         const json = await res.json().catch(() => ({}));
@@ -156,14 +159,21 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
     
     try {
       setIsPolishing(true);
-      const res = await fetch(`${API_BASE}${POLISH_PATH}`, {
+      
+      // Get auth token from auth service
+      const token = await authService.getAccessToken();
+      
+      const res = await fetch(`${API_BASE_URL}${POLISH_PATH}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ transcription: note }),
       });
 
       const json = await res.json();
-      if (!res.ok) {
+      if (!res.ok) {    
         throw new Error(json?.error || `Polish failed (${res.status})`);
       }
 
