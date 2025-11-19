@@ -4,6 +4,7 @@ import type { AddFieldNoteProps } from '../views/add-field-note-view';
 import { Keyboard, Alert } from 'react-native';
 // inspection store not required here; navigation will use goToLogObservation passed in
 import { Audio } from 'expo-av';
+import { authService } from '@/services/auth';
 
 const API_BASE = 'https://inspecto-production.up.railway.app';
 const TRANSCRIBE_PATH = '/api/transcriptions/transcribe';
@@ -156,9 +157,16 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
     
     try {
       setIsPolishing(true);
+      
+      // Get auth token from auth service
+      const token = await authService.getAccessToken();
+      
       const res = await fetch(`${API_BASE}${POLISH_PATH}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ transcription: note }),
       });
 
