@@ -1,3 +1,4 @@
+import { authService } from '@/services/auth';
 import type { Inspection } from '../state';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
@@ -59,7 +60,13 @@ function formatAddress(property?: PropertyApi | null): string {
  * then map them into the UI `Inspection` shape.
  */
 export async function fetchInspectionsWithAddresses(): Promise<Inspection[]> {
-  const inspectionsRes = await fetch(`${API_BASE}/api/inspections/all`);
+  const inspectionsRes = await fetch(`${API_BASE}/api/inspections/all`, {
+    headers: {
+      ...(await authService.authHeaders()),
+      'Content-Type': 'application/json',
+    },
+  });
+
   if (!inspectionsRes.ok) return [];
 
   const inspectionsJson = await inspectionsRes.json();
@@ -71,7 +78,12 @@ export async function fetchInspectionsWithAddresses(): Promise<Inspection[]> {
       let property: PropertyApi | undefined = undefined;
 
       if (inspection.property_id) {
-        const propertyRes = await fetch(`${API_BASE}/api/properties/${inspection.property_id}`);
+        const propertyRes = await fetch(`${API_BASE}/api/properties/${inspection.property_id}`, {
+          headers: {
+            ...(await authService.authHeaders()),
+            'Content-Type': 'application/json',
+          },
+        });
 
         if (propertyRes.ok) {
           property = await propertyRes.json();

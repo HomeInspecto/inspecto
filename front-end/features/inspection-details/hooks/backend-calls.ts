@@ -2,6 +2,7 @@
 import type { Inspection } from '@/features/home/state';
 import type { Observation } from '../../edit-observation/state';
 import type { ActiveInspection } from '../state';
+import { authService } from '@/services/auth';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -61,14 +62,24 @@ function formatAddress(property?: PropertyApi | null): string {
  * Fetch inspections + properties and map them into the UI `Inspection` shape.
  */
 export async function fetchInspectionsWithAddresses(): Promise<Inspection[]> {
-  const inspectionsRes = await fetch(`${API_BASE}/api/inspections/all`);
+  const inspectionsRes = await fetch(`${API_BASE}/api/inspections/all`, {
+    headers: {
+      ...(await authService.authHeaders()),
+      'Content-Type': 'application/json',
+    },
+  });
   const inspectionsJson = await inspectionsRes.json();
 
   const inspectionsApi: InspectionApi[] = inspectionsJson.inspections ?? inspectionsJson ?? [];
 
   const mappedInspections: Inspection[] = await Promise.all(
     inspectionsApi.map(async inspection => {
-      const propertiesRes = await fetch(`${API_BASE}/api/properties/${inspection.property_id}`);
+      const propertiesRes = await fetch(`${API_BASE}/api/properties/${inspection.property_id}`, {
+        headers: {
+          ...(await authService.authHeaders()),
+          'Content-Type': 'application/json',
+        },
+      });
       const property = propertiesRes.ok ? await propertiesRes.json() : undefined;
 
       return {
@@ -101,7 +112,12 @@ export interface ObservationApi {
  * Fetch observations for a given inspection, mapped to your `Observation` shape.
  */
 export async function fetchObservationsByInspection(inspectionId: string): Promise<Observation[]> {
-  const res = await fetch(`${API_BASE}/api/observations/by-inspection/${inspectionId}`);
+  const res = await fetch(`${API_BASE}/api/observations/by-inspection/${inspectionId}`, {
+    headers: {
+      ...(await authService.authHeaders()),
+      'Content-Type': 'application/json',
+    },
+  });
   const json = await res.json();
 
   const observationsBySection: Record<string, ObservationApi[]> = json.observations ?? {};
@@ -135,18 +151,27 @@ export async function fetchObservationsByInspection(inspectionId: string): Promi
 export async function fetchActiveInspectionDetails(
   inspectionId: string
 ): Promise<ActiveInspection> {
-  const inspectionRes = await fetch(`${API_BASE}/api/inspections/inspection/${inspectionId}`);
+  const inspectionRes = await fetch(`${API_BASE}/api/inspections/inspection/${inspectionId}`, {
+    headers: {
+      ...(await authService.authHeaders()),
+      'Content-Type': 'application/json',
+    },
+  });
 
   const inspectionJson = await inspectionRes.json();
   const inspectionApi: InspectionApi = inspectionJson.inspection ?? inspectionJson;
 
   let address = '';
+
   if (inspectionApi.property_id) {
-    const propertyRes = await fetch(`${API_BASE}/api/properties`);
-    const propertyJson = await propertyRes.json();
-    const property: PropertyApi = propertyJson.properties.find(
-      (property: any) => property.id === inspectionApi.property_id
-    );
+    const propertyRes = await fetch(`${API_BASE}/api/properties/${inspectionApi.property_id}`, {
+      headers: {
+        ...(await authService.authHeaders()),
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const property: PropertyApi | undefined = await propertyRes.json();
     address = formatAddress(property);
   }
 

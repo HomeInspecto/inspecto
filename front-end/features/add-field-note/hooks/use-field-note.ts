@@ -4,6 +4,7 @@ import type { AddFieldNoteProps } from '../views/add-field-note-view';
 import { Keyboard, Alert } from 'react-native';
 // inspection store not required here; navigation will use goToLogObservation passed in
 import { Audio } from 'expo-av';
+import { authService } from '@/services/auth';
 
 const API_BASE = 'https://inspecto-production.up.railway.app';
 const TRANSCRIBE_PATH = '/api/transcriptions/transcribe';
@@ -65,7 +66,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
 
         const res = await fetch(`${API_BASE}${TRANSCRIBE_PATH}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: await authService.authHeaders(),
           body: form,
         });
 
@@ -153,7 +154,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
   // Simplified function to polish and go to log observation
   const onNextWithPolish = useCallback(async () => {
     if (!note?.trim()) return;
-    
+
     try {
       setIsPolishing(true);
       const res = await fetch(`${API_BASE}${POLISH_PATH}`, {
@@ -174,11 +175,12 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
       // Update all observation fields in one go
       const setObservation = useActiveObservationStore.getState().setObservation;
       const severity = o.severity?.toLowerCase() || null;
-      
+
       // Make sure we have a valid severity; if not provided leave it null so UI is unselected
-      const validatedSeverity = (severity === 'critical' || severity === 'medium' || severity === 'low')
-        ? (severity as 'critical' | 'medium' | 'low')
-        : null;
+      const validatedSeverity =
+        severity === 'critical' || severity === 'medium' || severity === 'low'
+          ? (severity as 'critical' | 'medium' | 'low')
+          : null;
 
       // Update the store with all fields including severity
       setObservation({
@@ -187,7 +189,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
         implications: o.implications || '',
         recommendation: o.recommendation || '',
         severity: validatedSeverity,
-        section: o.section || 'General' // Default to General if no section provided
+        section: o.section || 'General', // Default to General if no section provided
       });
 
       // Then go to log observation page
