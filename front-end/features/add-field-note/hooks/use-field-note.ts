@@ -6,7 +6,7 @@ import { Keyboard, Alert } from 'react-native';
 import { Audio } from 'expo-av';
 import { authService } from '@/services/auth';
 
-const API_BASE = 'https://inspecto-production.up.railway.app';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'localhost:4000';
 const TRANSCRIBE_PATH = '/api/transcriptions/transcribe';
 const POLISH_PATH = '/api/transcriptions/polish';
 
@@ -63,9 +63,9 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
           name: 'recording.m4a',
           type: 'audio/m4a',
         } as any);
-        
+
         const token = await authService.getAccessToken();
-        const res = await fetch(`${API_BASE}${TRANSCRIBE_PATH}`, {
+        const res = await fetch(`${API_BASE_URL}${TRANSCRIBE_PATH}`, {
           method: 'POST',
           headers: {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -163,7 +163,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
       // Get auth token from auth service
       const token = await authService.getAccessToken();
       
-      const res = await fetch(`${API_BASE}${POLISH_PATH}`, {
+      const res = await fetch(`${API_BASE_URL}${POLISH_PATH}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
