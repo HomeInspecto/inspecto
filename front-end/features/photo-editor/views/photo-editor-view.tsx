@@ -1,4 +1,4 @@
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, Animated } from 'react-native';
 import { Image } from 'expo-image';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DrawingToolsView from './drawing-tools-view';
@@ -11,6 +11,7 @@ import { COLORS } from '@/constants/colors';
 export function PhotoEditorView({
   currentTool,
   photo,
+  photos,
   undoLastShape,
   previewShape,
   goBack,
@@ -19,19 +20,33 @@ export function PhotoEditorView({
   handleTouchEnd,
   handleTouchMove,
   handleTouchStart,
+  translateX,
+  screenWidth,
 }: PhotoEditorProps) {
   const insets = useSafeAreaInsets();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: COLORS.pageBackground }}>
-        <View style={{ flex: 1, backgroundColor: 'black' }}>
-          <Image
-            style={{ width: '100%', height: '100%', }}
-            source={{ uri: photo.uri }}
-            contentFit="cover"
-            onError={() => {}}
-          />
+        <View style={{ flex: 1, backgroundColor: 'black', overflow: 'hidden' }}>
+          <Animated.View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              transform: [{ translateX }],
+              width: screenWidth * photos.length,
+            }}
+          >
+            {photos.map((p) => (
+              <Image
+                key={p.id}
+                style={{ width: screenWidth, height: '100%' }}
+                source={{ uri: p.uri }}
+                contentFit="cover"
+                onError={() => {}}
+              />
+            ))}
+          </Animated.View>
         </View>
 
         <View
