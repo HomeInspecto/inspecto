@@ -2,178 +2,200 @@
 export const prerender = false;
 import "../../../styles/style.css";
 
-// const { reportID } = Astro.props;
-
 const API_BASE_URL = "http://localhost:4000";
-
-//http://localhost:4000/api/report/generate/
-
-//a41bf1a8-03f0-4ec3-bc9d-1d1cc71a27ea
-
 const { inspectionId } = Astro.params;
 
-const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`);
-const reportData = await res.json();
+let reportData: any = null;
+let loadMessage: string | null = null;
+let loadSuccess = false;
 
-// For mock data fallback:
-// import inspectionReport from "../../../../mock.json";
-// const { organization, inspection } = reportData ?? inspectionReport;
+try {
+  const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`);
 
-const { organization, inspection } = reportData;
+  if (!res.ok) {
+    loadMessage = `Failed to load report. Server responded with: ${res.status}`;
+  } else {
+    reportData = await res.json();
+    if (!reportData || !reportData.inspection) {
+      loadMessage = "Report not found or invalid response format.";
+    } else {
+      loadSuccess = true;
+      loadMessage = "Report loaded successfully.";
+    }
+  }
+} catch (err) {
+  loadMessage = "Error connecting to server. Check backend status.";
+}
 
-
+// If we have data, destructure safely
+const organization = reportData?.organization;
+const inspection = reportData?.inspection;
 
 export interface Media {
-  caption: string;
+  caption: string | null;
   url: string;
 }
 
 export interface Observation {
   name: string;
-  severity: "minor" | "moderate" | "major";
+  severity: string; // they use "medium" etc.
   description: string;
+  implication?: string;
+  recommendation?: string;
+  status: "open" | "closed";
   media?: Media[];
 }
 
 export interface Section {
   name: string;
-  note: string;
+  note: string | null;
+  priority_rating?: number;
   observations: Observation[];
-}
-
-export interface Inspection {
-  summary: string;
-  sections: Section[];
-  created_at: string;
 }
 
 export interface Property {
   address: string;
   year_built?: number;
-  type: string;
-  sqft?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  garage?: boolean;
-  notes?: string;
+  type?: string | null;
+  sqft?: number | null;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  garage?: boolean | null;
+  notes?: string | null;
 }
 
 export interface Inspector {
   name: string;
   email: string;
   phone: string;
+  license_number?: string | null;
+  certifications?: string[];
 }
 
-export interface ContactInfo {
-  phone?: string;
-  address: string;
+export interface Inspection {
+  summary: string | null;
+  created_at: string;
+  inspector: Inspector;
+  property: Property;
+  sections: Section[];
 }
 
 export interface Organization {
   name: string;
   logo?: string;
   website?: string;
-  contact: ContactInfo;
-  inspector: Inspector | null;
-  properties: Property[];
-}
-
-export interface ReportData {
-  organization: Organization;
-  inspection: Inspection;
+  contact: {
+    phone?: string;
+    address?: string;
+  };
 }
 ---
-
 <body>
   <main class="report-container">
-    <header class="report-header">
-      {
-        organization.logo && (
-          <img
-            src={organization.logo}
-            alt={`${organization.name} logo`}
-            class="logo"
-          />
-        )
-      }
-      <h1>{organization.name}</h1>
 
-      <p><strong>Address:</strong> {organization.contact.address}</p>
-      {
-        organization.contact.phone && (
-          <p>
-            <strong>Phone:</strong> {organization.contact.phone}
-          </p>
-        )
-      }
+    <!-- LOAD STATUS MESSAGE -->
+    {loadMessage && (
+      <div style={`padding: 12px; border-radius: 6px; margin-bottom: 20px; 
+        background: ${loadSuccess ? '#d4f8d4' : '#ffd4d4'};
+        color: ${loadSuccess ? '#0a4d0a' : '#7a0000'};
+        font-weight: bold;`}>
+        {loadMessage}
+      </div>
+    )}
 
-      {
-        organization.website && (
-          <p>
-            <strong>Website:</strong>
-            <a href={organization.website} target="_blank">
-              {organization.website}
-            </a>
-          </p>
-        )
-      }
-
-      <!-- ignoring inspector field for now -->
-      <!-- {
-        organization.inspector && (
-          <>
-            <h2>Inspector</h2>
-            <p>{organization.inspector.name}</p>
-            <p>{organization.inspector.email}</p>
-            <p>{organization.inspector.phone}</p>
-          </>
-        )
-      } -->
-
-      <h2>Inspection Summary</h2>
-      <p>{inspection.summary}</p>
-      <p>
-        <strong>Date:</strong>
-        {new Date(inspection.created_at).toLocaleDateString()}
-      </p>
-    </header>
-
-    {
-      inspection.sections.map((section) => (
-        <section class="section-card">
-          <h2>{section.name}</h2>
-          <p>{section.note}</p>
-
-          {section.observations.length > 0 && (
-            <div class="observations">
-              {section.observations.map((obs) => (
-                <div class="observation-card">
-                  <h3>{obs.name}</h3>
-                  <p>
-                    <strong>Severity:</strong> {obs.severity}
-                  </p>
-                  <p>{obs.description}</p>
-
-                  {obs.media && obs.media.length > 0 && (
-                    <div class="media-gallery">
-                      {obs.media.map((m) => (
-                        <figure>
-                          <img
-                            src={m.url}
-                            alt={m.caption}
-                            class="media-photo"
-                          />
-                          <figcaption>{m.caption}</figcaption>
-                        </figure>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+    {loadSuccess && (
+      <>
+        <header class="report-header">
+          {organization?.logo && (
+            <img
+              src={organization.logo}
+              alt={`${organization.name} logo`}
+              class="logo"
+            />
           )}
-        </section>
-      ))
-    }
+
+          <h1>{organization?.name}</h1>
+
+          {organization?.contact?.address && (
+            <p><strong>Address:</strong> {organization.contact.address}</p>
+          )}
+
+          {organization?.contact?.phone && (
+            <p><strong>Phone:</strong> {organization.contact.phone}</p>
+          )}
+
+          {organization?.website && (
+            <p>
+              <strong>Website:</strong>
+              <a href={organization.website} target="_blank">
+                {organization.website}
+              </a>
+            </p>
+          )}
+
+          <h2>Inspector</h2>
+          <p>{inspection.inspector.name}</p>
+          <p>{inspection.inspector.email}</p>
+          <p>{inspection.inspector.phone}</p>
+
+          <h2>Property</h2>
+          <p>{inspection.property.address}</p>
+          {inspection.property.year_built && (
+            <p><strong>Year Built:</strong> {inspection.property.year_built}</p>
+          )}
+          {inspection.property.type && (
+            <p><strong>Type:</strong> {inspection.property.type}</p>
+          )}
+
+          <h2>Inspection Summary</h2>
+          <p>{inspection.summary}</p>
+          <p><strong>Date:</strong> {new Date(inspection.created_at).toLocaleDateString()}</p>
+        </header>
+
+        {inspection.sections.map((section: Section) => (
+          <section class="section-card">
+            <h2>{section.name}</h2>
+            {section.note && <p>{section.note}</p>}
+
+            {section.observations.length > 0 && (
+              <div class="observations">
+                {section.observations.map((obs) => (
+                  <div class="observation-card">
+                    <h3>{obs.name}</h3>
+                    <p><strong>Severity:</strong> {obs.severity}</p>
+                    <p>{obs.description}</p>
+
+                    {obs.implication && (
+                      <p><strong>Implication:</strong> {obs.implication}</p>
+                    )}
+
+                    {obs.recommendation && (
+                      <p><strong>Recommendation:</strong> {obs.recommendation}</p>
+                    )}
+
+                    <p><strong>Status:</strong> {obs.status}</p>
+
+                    {obs.media && obs.media.length > 0 && (
+                      <div class="media-gallery">
+                        {obs.media.map((m) => (
+                          <figure>
+                            <img
+                              src={m.url}
+                              alt={m.caption ?? ""}
+                              class="media-photo"
+                            />
+                            {m.caption && <figcaption>{m.caption}</figcaption>}
+                          </figure>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        ))}
+      </>
+    )}
   </main>
 </body>

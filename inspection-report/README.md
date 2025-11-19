@@ -4,6 +4,10 @@
 npm create astro@latest -- --template minimal
 ```
 
+To view report locally use:
+http://localhost:4321/view/(inspectionId)
+
+
 > 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
 ## 🚀 Project Structure

@@ -1,21 +1,22 @@
 import { Request, Response } from 'express';
 import DatabaseService from '../database';
+import { supabaseAdmin } from '../supabase';
 
 /**
  * @swagger
- * /api/report/generate/{property_id}:
+ * /api/report/generate/{inspection_id}:
  *   get:
- *     summary: Generate inspection report for a property
- *     description: Generates a comprehensive inspection report including property details, organization info, inspection data, sections, observations, and media
+ *     summary: Generate inspection report for an inspection
+ *     description: Generates a comprehensive inspection report including property details, inspection data, sections, observations, and media
  *     tags:
  *       - Reports
  *     parameters:
  *       - in: path
- *         name: property_id
+ *         name: inspection_id
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the property
+ *         description: The ID of the inspection
  *     responses:
  *       '200':
  *         description: Report generated successfully
@@ -24,26 +25,6 @@ import DatabaseService from '../database';
  *             schema:
  *               type: object
  *               properties:
- *                 organization:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                     logo:
- *                       type: string
- *                     website:
- *                       type: string
- *                     contact:
- *                       type: object
- *                       properties:
- *                         phone:
- *                           type: string
- *                         address:
- *                           type: string
- *                     properties:
- *                       type: array
- *                       items:
- *                         type: object
  *                 inspection:
  *                   type: object
  *                   properties:
@@ -82,97 +63,142 @@ import DatabaseService from '../database';
  *                                       url:
  *                                         type: string
  *       '404':
- *         description: Property not found
+ *         description: Inspection not found
  *       '500':
  *         description: Error generating report
  */
 export const generateReport = async (req: Request, res: Response) => {
   try {
-    const { property_id } = req.params as { property_id: string };
-    console.log('property_id', property_id);
+    const { inspection_id } = req.params as { inspection_id: string };
+    console.log('inspection_id', inspection_id);
     
-    if (!property_id) {
-      return res.status(400).json({ error: 'Property ID is required' });
+    if (!inspection_id) {
+      return res.status(400).json({ error: 'Inspection ID is required' });
     }
     
-    // 1) Property
-    const { data: props, error: propErr } = await DatabaseService.fetchDataAdmin('properties', '*', { id: property_id });
-    console.log('props', props);
-    console.log('propErr', propErr);
+    // 1) Get inspection directly
+    const { data: inspections, error: inspErr } = await DatabaseService.fetchDataAdmin('inspections', '*', { id: inspection_id });
+    if (inspErr) {
+      console.error('Error fetching inspection:', inspErr);
+      return res.status(500).json({ error: asMsg(inspErr), details: inspErr });
+    }
+    
+    const inspection = (Array.isArray(inspections) ? inspections[0] : inspections) as any;
+    
+    if (!inspection) {
+      return res.status(404).json({ error: 'Inspection not found' });
+    }
+    // 1.5) Get inspector from inspection
+    const { data: inspectors, error: inspErr2 } = await DatabaseService.fetchDataAdmin('inspector', '*', { id: inspection.inspector_id });
+    if (inspErr2) {
+      console.error('Error fetching inspector:', inspErr2);
+      return res.status(500).json({ error: asMsg(inspErr2), details: inspErr2 });
+    }
+    const inspector = (Array.isArray(inspectors) ? inspectors[0] : inspectors) as any;
+    if (!inspector) {
+      return res.status(404).json({ error: 'Inspector not found' });
+    }
+
+    // 2) Get property from inspection
+    const { data: props, error: propErr } = await DatabaseService.fetchDataAdmin('properties', '*', { id: inspection.property_id });
     if (propErr) {
       console.error('Error fetching property:', propErr);
       return res.status(500).json({ error: asMsg(propErr), details: propErr });
     }
     
-    console.log('props', props);
     const property = (Array.isArray(props) ? props[0] : props) as any;
-    console.log('property', property);
     
     if (!property) {
       return res.status(404).json({ error: 'Property not found' });
     }
 
-    // 2) Organization
-    const { data: orgs, error: orgErr } = await DatabaseService.fetchDataAdmin('organizations', '*', { id: property.organization_id });
-    if (orgErr) return res.status(500).json({ error: asMsg(orgErr) });
-    const organization = (Array.isArray(orgs) ? orgs[0] : orgs) as any;
-
-    // 3) Latest inspection for this property (by created_at desc)
-    const { data: inspections, error: inspErr } = await DatabaseService.fetchDataAdmin('inspections', '*', { property_id });
-    if (inspErr) return res.status(500).json({ error: asMsg(inspErr) });
-    const inspectionsArr = (inspections || []) as any[];
-    inspectionsArr.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    const inspection = inspectionsArr[0];
-
-    // 4) Sections for the inspection
-    let sections: any[] = [];
+    // 3) Get all observations for this inspection
+    let observations: any[] = [];
     if (inspection?.id) {
-      const { data: secs, error: secErr } = await DatabaseService.fetchDataAdmin('inspection_sections', '*', { inspection_id: inspection.id });
-      if (secErr) return res.status(500).json({ error: asMsg(secErr) });
-      sections = (secs || []) as any[];
+      console.log('Fetching observations for inspection_id:', inspection.id);
+      const { data: obs, error: obsErr } = await DatabaseService.fetchDataAdmin('observations', '*', { inspection_id: inspection.id });
+      if (obsErr) {
+        console.error('Error fetching observations:', obsErr);
+        return res.status(500).json({ error: asMsg(obsErr) });
+      }
+      observations = (obs || []) as any[];
+      console.log(`Found ${observations.length} observations for inspection ${inspection.id}`);
+    } else {
+      console.warn('Inspection ID is missing, cannot fetch observations');
     }
 
-    // 5) Observations per section + media per observation
+    // 4) Get unique section IDs from observations
+    const sectionIds = [...new Set(observations.map((ob: any) => ob.section_id).filter(Boolean))];
+    console.log(`Found ${sectionIds.length} unique sections:`, sectionIds);
+
+    // 5) Fetch section details for all section IDs
+    let sectionsMap = new Map<string, any>();
+    if (sectionIds.length > 0 && supabaseAdmin) {
+      const { data: secs, error: secErr } = await supabaseAdmin
+        .from('inspection_sections')
+        .select('*')
+        .in('id', sectionIds);
+      if (secErr) {
+        console.error('Error fetching sections:', secErr);
+        return res.status(500).json({ error: asMsg(secErr) });
+      }
+      const relevantSections = (secs || []) as any[];
+      relevantSections.forEach((sec: any) => {
+        sectionsMap.set(sec.id, sec);
+      });
+      console.log(`Found ${relevantSections.length} sections:`, relevantSections.map(s => ({ id: s.id, name: s.section_name })));
+    }
+
+    // 6) Group observations by section and fetch media
     const sectionsWithObservations = [] as any[];
-    for (const sec of sections) {
-      const { data: obs, error: obsErr } = await DatabaseService.fetchDataAdmin('observations', '*', { section_id: sec.id });
-      if (obsErr) return res.status(500).json({ error: asMsg(obsErr) });
-      const obsArr = (obs || []) as any[];
+    for (const [sectionId, section] of sectionsMap.entries()) {
+      const sectionObservations = observations.filter((ob: any) => ob.section_id === sectionId);
+      console.log(`Processing ${sectionObservations.length} observations for section ${section.section_name} (${sectionId})`);
 
       const observationsWithMedia = [] as any[];
-      for (const ob of obsArr) {
+      for (const ob of sectionObservations) {
+        console.log(`Fetching media for observation_id: ${ob.id}`);
         const { data: media, error: medErr } = await DatabaseService.fetchDataAdmin('observation_media', '*', { observation_id: ob.id });
-        if (medErr) return res.status(500).json({ error: asMsg(medErr) });
+        if (medErr) {
+          console.error(`Error fetching media for observation ${ob.id}:`, medErr);
+          return res.status(500).json({ error: asMsg(medErr) });
+        }
         const medArr = (media || []) as any[];
+        console.log(`Found ${medArr.length} media items for observation ${ob.id}`);
         observationsWithMedia.push({
           name: ob.obs_name,
           severity: ob.severity,
           description: ob.description,
+          implication: ob.implication,
+          recommendation: ob.recommendation,
+          status: ob.status,
           media: medArr.map((m) => ({ caption: m.caption ?? null, url: m.storage_key })),
         });
       }
 
       sectionsWithObservations.push({
-        name: sec.section_name,
-        note: sec.notes ?? undefined,
+        name: section.section_name,
+        note: section.notes ?? undefined,
+        priority_rating: section.priority_rating ?? undefined,
         observations: observationsWithMedia,
       });
     }
 
+    console.log(`Total sections with observations: ${sectionsWithObservations.length}`);
+
     // Build response strictly from DB
-    const orgBlock = {
-      name: organization?.name ?? null,
-      logo: organization?.logo_url ?? null,
-      website: organization?.website ?? null,
-      contact: {
-        phone: organization?.phone ?? null,
-        address: [organization?.address_line1, organization?.address_line2, organization?.city, organization?.postal_code, organization?.country]
-          .filter(Boolean)
-          .join(', '),
-      },
-      inspector: null as any, // Optional: join to an inspector if your data model links one
-      properties: [
-        {
+    const report = {
+      inspection: {
+        summary: inspection?.summary ?? null,
+        created_at: inspection?.created_at ?? null,
+        inspector: {
+          name: inspector?.full_name ?? null,
+          email: inspector?.email ?? null,
+          phone: inspector?.phone ?? null,
+          license_number: inspector?.license_number ?? null,
+          certifications: inspector?.certifications ?? null,
+        },
+        property: {
           address: [property?.address_line1, property?.unit && `Unit ${property.unit}`, property?.city, property?.region].filter(Boolean).join(', '),
           year_built: property?.year_built ?? null,
           type: property?.dwelling_type ?? null,
@@ -182,17 +208,18 @@ export const generateReport = async (req: Request, res: Response) => {
           garage: property?.garage ?? null,
           notes: property?.notes ?? null,
         },
-      ],
-    };
-
-    const report = {
-      organization: orgBlock,
-      inspection: {
-        summary: inspection?.summary ?? null,
-        created_at: inspection?.created_at ?? null,
         sections: sectionsWithObservations,
       },
     };
+
+    console.log('Final report structure:', {
+      hasInspection: !!report.inspection,
+      sectionsCount: report.inspection.sections.length,
+      sections: report.inspection.sections.map(s => ({
+        name: s.name,
+        observationsCount: s.observations.length
+      }))
+    });
 
     return res.json(report);
   } catch (error) {

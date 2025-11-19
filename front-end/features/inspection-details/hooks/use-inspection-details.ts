@@ -43,9 +43,18 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
 
   const onCreateReport = () => {
     if (!activeInspection) return;
-    const url = `https://inspection-report-topaz.vercel.app/view/${activeInspection.id}`;
+    const i_id = activeInspection.id;
+    console.log("i_id", i_id);
+    // Open the local report preview server with the real inspection id
+    // (developer: change the host/port via env if your preview server runs elsewhere)
+    
+    //const url = `http://localhost:4321/view/${activeInspection.id}`;
+    const url = `http://localhost:4321/view/9c6b71e5-5059-4f02-8ddd-2df015514972`;
     Linking.openURL(url);
   };
+  //Not yet done or connected
+
+  // https://inspection-report-topaz.vercel.app/view/lmquckr4ql
 
   const [searchTerm, setSearchTerm] = useState('');
   const onSearchChange = (text: string) => {

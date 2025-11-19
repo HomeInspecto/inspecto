@@ -50,15 +50,11 @@ export const getAllInspections = async (req: Request, res: Response) => {
     if (property_id) filters.property_id = property_id as string;
     if (status) filters.status = status as string;
     
-<<<<<<< HEAD
     const { data, error } = await DatabaseService.fetchDataAdmin(
       'inspections',
       '*',
       Object.keys(filters).length ? filters : undefined
     );
-=======
-    const { data, error } = await DatabaseService.fetchDataAdmin('inspections', '*', Object.keys(filters).length ? filters : undefined);
->>>>>>> 2db3dea (Fix DB RLD issue)
     
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
@@ -180,7 +176,6 @@ export const createInspection = async (req: Request, res: Response) => {
  */
 export const getInspectionById = async (req: Request, res: Response) => {
   try {
-<<<<<<< HEAD
     const { inspection_id } = req.params;
     console.log("in get inspection by id inspection_id", inspection_id);
     if (!inspection_id) {
@@ -193,10 +188,6 @@ export const getInspectionById = async (req: Request, res: Response) => {
       { id: inspection_id }
     );
 
-=======
-    const { inspection_id, section_name, notes, priority_rating } = req.body;
-    const { data, error } = await DatabaseService.insertDataAdmin('inspection_sections', { inspection_id, section_name, notes, priority_rating });
->>>>>>> 2db3dea (Fix DB RLD issue)
     if (error) {
       return res.status(500).json({
         error: error instanceof Error ? error.message : 'Unknown error',

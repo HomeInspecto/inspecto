@@ -77,7 +77,7 @@ const dummyInspection = {
 };
 
 export const useActiveInspectionStore = create<ActiveInspectionStore>((set, get) => ({
-  activeInspection: structuredClone(dummyInspection),
+  activeInspection: undefined,
 
   setActiveInspection: inspection => set({ activeInspection: inspection }),
 
