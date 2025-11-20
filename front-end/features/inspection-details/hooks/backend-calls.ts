@@ -129,6 +129,30 @@ export async function fetchObservationsByInspection(inspectionId: string): Promi
 
   for (const [sectionTitle, obsArray] of Object.entries(observationsBySection)) {
     for (const apiObs of obsArray) {
+      // fetch photos for observation
+      let photos: Observation['photos'] = [];
+      try {
+        const mediaRes = await fetch(`${API_BASE}/api/observations/media/${apiObs.id}`, {
+          headers: {
+            ...(await authService.authHeaders()),
+            'Content-Type': 'application/json',
+          },
+        });
+        if (mediaRes.ok) {
+          const mediaJson = await mediaRes.json();
+          const media = mediaJson.media || [];
+          photos = media
+            .filter((m: any) => m.type === 'photo')
+            .map((m: any) => ({
+              id: m.id,
+              uri: m.storage_key,
+              timestamp: new Date(m.created_at || Date.now()).getTime(),
+            }));
+        }
+      } catch (error) {
+        console.error(`Error fetching photos for observation ${apiObs.id}:`, error);
+      }
+
       const mapped: Observation = {
         name: apiObs.obs_name,
         description: apiObs.description,
@@ -137,7 +161,7 @@ export async function fetchObservationsByInspection(inspectionId: string): Promi
         section: sectionTitle,
         severity: apiObs.severity as Observation['severity'], // 'low' | 'medium' | 'critical'
         fieldNote: '',
-        photos: [],
+        photos,
       };
 
       results.push(mapped);
