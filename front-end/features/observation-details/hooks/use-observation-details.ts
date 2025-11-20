@@ -1,9 +1,12 @@
-import { useMemo } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useShallow } from 'zustand/react/shallow';
+import { Dimensions } from 'react-native';
 import type { ObservationDetailsViewProps } from '../views/observation-details-view';
 import { useActiveInspectionStore } from '@/features/inspection-details/state';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
+
+const screenWidth = Dimensions.get('window').width;
 
 export function useObservationDetails(): ObservationDetailsViewProps {
   const { id, observationId } = useLocalSearchParams<{ id?: string; observationId?: string }>();
@@ -25,7 +28,19 @@ export function useObservationDetails(): ObservationDetailsViewProps {
   const onEdit = () => {
     if (!observation || !id) return;
     setObservation(observation);
-    router.push(`/active-inspection/${id}/edit-observation`);
+    router.push(`/active-inspection/${id}/log-observation`);
+  };
+
+  const photos = observation?.photos || [];
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const scrollViewRef = useRef<any>(null);
+
+  const onScroll = (event: any) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(offsetX / screenWidth);
+    if (index !== activePhotoIndex && index >= 0 && index < photos.length) {
+      setActivePhotoIndex(index);
+    }
   };
 
   return {
@@ -33,6 +48,10 @@ export function useObservationDetails(): ObservationDetailsViewProps {
     observation,
     onGoBack: () => router.back(),
     onEdit,
+    scrollViewRef,
+    onScroll,
+    activePhotoIndex,
+    screenWidth: screenWidth,
   };
 }
 

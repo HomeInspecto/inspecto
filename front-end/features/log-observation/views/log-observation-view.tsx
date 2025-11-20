@@ -1,12 +1,17 @@
-import { View, Platform, StyleSheet } from 'react-native';
+import { View, ScrollView, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Text from '@/components/views/text/text';
 import TextInput from '@/components/views/text-input/text-input';
 import Button from '@/components/views/button/button';
 import type { Severity } from '@/features/edit-observation/state';
 import { RadioGroup } from '@/components/views/radio-group/radio-group';
+import IconButton from '@/components/views/icon-button/icon-button';
+import { COLORS } from '@/constants/colors';
 
 export interface LogObservationProps {
   onLog: () => void;
+  onGoBack?: () => void;
+  isStandalone?: boolean;
   name: string;
   description: string;
   implication: string;
@@ -30,6 +35,8 @@ export interface LogObservationProps {
 
 export const LogObservationView = ({
   onLog,
+  onGoBack,
+  isStandalone,
   name,
   description,
   implication,
@@ -44,8 +51,8 @@ export const LogObservationView = ({
   setSeverity,
   sectionOptions,
 }: LogObservationProps) => {
-  return (
-    <View style={{ flex: 1, gap: 20, paddingBottom: 80 }}>
+  const content = (
+    <View style={{ gap: 20 }}>
       <Text variant="title3" style={{ textAlign: 'center' }}>
         Edit observation
       </Text>
@@ -109,7 +116,36 @@ export const LogObservationView = ({
       </View>
 
 
-      <Button icon="plus" text="Log observation" onPress={onLog}></Button>
+      <Button icon="plus" text="Log observation" onPress={onLog} disabled={isStandalone}></Button>
     </View>
   );
+
+  if (onGoBack) {
+    return (
+      <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: COLORS.pageBackground }}>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingTop: 8,
+            paddingBottom: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+          }}
+        >
+          <IconButton icon="chevron.left" size="sm" onPress={onGoBack} />
+        </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            {content}
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+    );
+  }
+
+  return content;
 };
