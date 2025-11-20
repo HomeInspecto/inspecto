@@ -119,7 +119,8 @@ export function useLogObersation(): LogObservationProps {
 
     try {
       const formData = new FormData();
-
+      
+      formData.append('inspection_id', id);
       formData.append('section_id', obsrState.section);
       formData.append('obs_name', obsrState.name ?? '');
       formData.append('description', obsrState.description ?? '');
@@ -127,6 +128,7 @@ export function useLogObersation(): LogObservationProps {
       formData.append('status', 'open');
       formData.append('recommendation', obsrState.recommendation ?? '');
       formData.append('implication', obsrState.implications ?? '');
+    
 
       //add photos
       if (obsrState.photos && obsrState.photos.length > 0) {
