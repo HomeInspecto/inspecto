@@ -111,9 +111,8 @@ export interface ObservationApi {
   inspection_id: string;
 }
 
-/**
- * Fetch observations for a given inspection, mapped to your `Observation` shape.
- */
+
+// fetch observations
 export async function fetchObservationsByInspection(inspectionId: string): Promise<Observation[]> {
   const res = await fetch(`${API_BASE}/api/observations/by-inspection/${inspectionId}`, {
     headers: {
@@ -125,11 +124,16 @@ export async function fetchObservationsByInspection(inspectionId: string): Promi
 
   const observationsBySection: Record<string, ObservationApi[]> = json.observations ?? {};
 
-  const results: Observation[] = [];
-
+  const allObservations: Array<{ apiObs: ObservationApi; sectionTitle: string }> = [];
   for (const [sectionTitle, obsArray] of Object.entries(observationsBySection)) {
     for (const apiObs of obsArray) {
-      // fetch photos for observation
+      allObservations.push({ apiObs, sectionTitle });
+    }
+  }
+
+  // fetch photos in parallel
+  const observationsWithPhotos = await Promise.all(
+    allObservations.map(async ({ apiObs, sectionTitle }) => {
       let photos: Observation['photos'] = [];
       try {
         const mediaRes = await fetch(`${API_BASE}/api/observations/media/${apiObs.id}`, {
@@ -153,22 +157,20 @@ export async function fetchObservationsByInspection(inspectionId: string): Promi
         console.error(`Error fetching photos for observation ${apiObs.id}:`, error);
       }
 
-      const mapped: Observation = {
+      return {
         name: apiObs.obs_name,
         description: apiObs.description,
         implications: apiObs.implication,
         recommendation: apiObs.recommendation,
         section: sectionTitle,
-        severity: apiObs.severity as Observation['severity'], // 'low' | 'medium' | 'critical'
+        severity: apiObs.severity as Observation['severity'],
         fieldNote: '',
         photos,
       };
+    })
+  );
 
-      results.push(mapped);
-    }
-  }
-
-  return results;
+  return observationsWithPhotos;
 }
 
 /**
