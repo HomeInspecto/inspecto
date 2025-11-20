@@ -6,6 +6,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { authService } from '@/services/auth';
 import { API_BASE_URL } from '@/services/api';
+import { Alert } from 'react-native';
 
 export function useCreateInspection(): CreateInspectionViewProps {
   const [client, setClient] = useState<string>('');

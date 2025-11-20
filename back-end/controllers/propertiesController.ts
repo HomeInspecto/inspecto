@@ -82,7 +82,7 @@ export const getPropertyById = async (req: Request, res: Response) => {
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
-    return res.json({ property: data });
+    return res.json(data?.[0] || {});
   } catch (err) {
     console.error('Database query error:', err);
     return res.status(500).json({ 

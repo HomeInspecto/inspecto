@@ -130,6 +130,7 @@ export const signup = async (req: Request, res: Response) => {
     if (data.user && supabaseAdmin) {
       try {
         const inspectorData = {
+          id: data.user.id,
           full_name: full_name || data.user.email?.split('@')[0] || 'Inspector',
           email: data.user.email || null,
           phone: phone || null,

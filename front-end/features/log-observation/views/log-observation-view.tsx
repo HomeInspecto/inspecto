@@ -14,6 +14,8 @@ export interface LogObservationProps {
 
   section: string;
   severity: Severity;
+  sectionOptions: { name: string; value: string }[];
+
 
   setName: (value: string) => void;
   setDescription: (value: string) => void;
@@ -40,6 +42,7 @@ export const LogObservationView = ({
   setRecommendation,
   setSection,
   setSeverity,
+  sectionOptions,
 }: LogObservationProps) => {
   return (
     <View style={{ flex: 1, gap: 20, paddingBottom: 80 }}>
@@ -85,32 +88,26 @@ export const LogObservationView = ({
       <View style={{ gap: 8 }}>
         <Text variant="headline">Section</Text>
         {/* TODO: Replace with RadioGroup */}
-        <View
-          style={{
-            padding: 12,
-            backgroundColor: '#2e2e2f',
-            borderRadius: 8,
-            opacity: 0.7,
-          }}
-        >
-          <Text style={{ color: '#aaa' }}>
-            [Radio options for section: Roof and Gutter, Backyard, Hot Water System]
-          </Text>
-        </View>
+        <RadioGroup
+          value={section ?? ''}
+          onValueChange={setSection}
+          options={sectionOptions}
+        />
       </View>
 
       <View style={{ gap: 8 }}>
         <Text variant="headline">Severity</Text>
         <RadioGroup
-          value={severity}
-          onChange={setSeverity}
+          value={severity ?? ''} // handle null/undefined nicely
+          onValueChange={value => setSeverity(value as Severity)}
           options={[
-            { label: 'Critical', value: 'critical' },
-            { label: 'Medium', value: 'medium' },
-            { label: 'Low', value: 'low' }
+            { name: 'Critical', value: 'critical' },
+            { name: 'Medium', value: 'medium' },
+            { name: 'Low', value: 'low' },
           ]}
         />
       </View>
+
 
       <Button icon="plus" text="Log observation" onPress={onLog}></Button>
     </View>
