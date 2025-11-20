@@ -5,12 +5,13 @@ import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { useShallow } from 'zustand/shallow';
 import { useEffect } from 'react';
 import { fetchInspectionsWithAddresses } from './backend-calls';
+import { useActiveInspectionStore } from '@/features/inspection-details/state';
 
 export function useInspectionsList(): InspectionsListViewProps {
   const inspections = useInspectionsStore(state => state.inspections);
   const setInspections = useInspectionsStore(useShallow(s => s.setInspections));
 
-  const clearObservation = useActiveObservationStore(useShallow(s => s.clearObservation));
+  const setActiveInspection = useActiveInspectionStore(useShallow(s => s.setActiveInspection));
 
   // runs one time on mount
   useEffect(() => {
@@ -39,7 +40,8 @@ export function useInspectionsList(): InspectionsListViewProps {
   }, [setInspections]);
 
   const onSelectInspection = (id: string) => {
-    clearObservation();
+    const inspection = inspections?.find(i => i.id === id);
+    if (inspection) setActiveInspection(structuredClone(inspection));
     router.push(`/active-inspection/${id}`);
   };
 
