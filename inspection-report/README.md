@@ -16,6 +16,9 @@ npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-image react reac
 Command to install React:
 npm install @astrojs/react react react-dom
 
+Command to install express and puppeteer:
+npm install express puppeteer
+
 
 > 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 

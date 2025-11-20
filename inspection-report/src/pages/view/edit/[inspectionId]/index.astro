@@ -1,32 +1,158 @@
 ---
+import "../../../../styles/style.css";
 export const prerender = false;
 
 import ReportEditor from "../../../../components/ReportEditor.jsx";
+
 const API_BASE_URL = "http://localhost:4000";
 const { inspectionId } = Astro.params;
 
 const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`);
 const reportData = await res.json();
 
-// Editable field example: inspection summary
-const initialContent = reportData.inspection.summary;
+const inspection = reportData.inspection;
+const organization = reportData.organization;
 
-// Client-side save URL; ReportEditor will PATCH { summary } to this URL
-const saveUrl = `${API_BASE_URL}/api/report/update/${inspectionId}`;
+const saveUrl = (fieldPath: string) =>
+  `${API_BASE_URL}/api/report/update/${inspectionId}?field=${fieldPath}`;
 ---
 
 <body>
-  <main class="report-container">
+  <main class="report-container" style="padding: 12px; max-width: 800px; margin: 0 auto;">
+    
+    <button
+    style="margin-bottom: 16px; padding: 8px 12px;"
+    onclick="window.location.href='http://localhost:4001/api/report/pdf/{{Astro.params.inspectionId}}';"
+    >
+    Download PDF
+    </button>
 
-    <h1>Edit Inspection Report</h1>
+    <h1>Inspection Editor</h1>
+    <div class="center-block">
 
-    <ReportEditor
-      initialContent={initialContent ?? ''}
-      saveUrl={saveUrl}
-      client:load
-    />
+      {organization && (
+        <section class="section-card" style="margin-bottom: 16px;">
+          {organization.logo && (
+            <img src={organization.logo} alt={`${organization.name} logo`} style="max-width: 120px; height: auto; margin-bottom: 8px;" />
+          )}
+          <h2><strong>Organization</strong></h2>
+          <ReportEditor initialContent={organization.name ?? ""} saveUrl={saveUrl("organization.name")} client:load />
+          {organization.contact?.address && (
+            <ReportEditor initialContent={organization.contact.address} saveUrl={saveUrl("organization.contact.address")} client:load />
+          )}
+          {organization.contact?.phone && (
+            <ReportEditor initialContent={organization.contact.phone} saveUrl={saveUrl("organization.contact.phone")} client:load />
+          )}
+          {organization.website && (
+            <ReportEditor initialContent={organization.website} saveUrl={saveUrl("organization.website")} client:load />
+          )}
+        </section>
+      )}
 
+      {inspection?.inspector && (
+        <section class="section-card" style="margin-bottom: 16px;">
+          <h2><strong>Inspector</strong></h2>
+          <ReportEditor initialContent={inspection.inspector.name} saveUrl={saveUrl("inspector.name")} client:load />
+          <ReportEditor initialContent={inspection.inspector.email} saveUrl={saveUrl("inspector.email")} client:load />
+          <ReportEditor initialContent={inspection.inspector.phone} saveUrl={saveUrl("inspector.phone")} client:load />
+          {inspection.inspector.license_number && (
+            <ReportEditor initialContent={inspection.inspector.license_number} saveUrl={saveUrl("inspector.license_number")} client:load />
+          )}
+        </section>
+      )}
+
+      {inspection?.property && (
+        <section class="section-card" style="margin-bottom: 16px;">
+          <h2><strong>Property</strong></h2>
+          <ReportEditor initialContent={inspection.property.address ?? ""} saveUrl={saveUrl("property.address")} client:load />
+          {inspection.property.year_built && (
+            <ReportEditor initialContent={String(inspection.property.year_built)} saveUrl={saveUrl("property.year_built")} client:load />
+          )}
+          {inspection.property.type && (
+            <ReportEditor initialContent={inspection.property.type} saveUrl={saveUrl("property.type")} client:load />
+          )}
+          {inspection.property.sqft && (
+            <ReportEditor initialContent={String(inspection.property.sqft)} saveUrl={saveUrl("property.sqft")} client:load />
+          )}
+          {inspection.property.bedrooms && (
+            <ReportEditor initialContent={String(inspection.property.bedrooms)} saveUrl={saveUrl("property.bedrooms")} client:load />
+          )}
+          {inspection.property.bathrooms && (
+            <ReportEditor initialContent={String(inspection.property.bathrooms)} saveUrl={saveUrl("property.bathrooms")} client:load />
+          )}
+          {inspection.property.notes && (
+            <ReportEditor initialContent={inspection.property.notes} saveUrl={saveUrl("property.notes")} client:load />
+          )}
+        </section>
+      )}
+
+      <section class="section-card" style="margin-bottom: 16px;">
+        <h2><strong>Inspection Summary</strong></h2>
+        <ReportEditor initialContent={inspection.summary ?? ""} saveUrl={saveUrl("summary")} client:load />
+        <p><strong>Date:</strong> {new Date(inspection.created_at).toLocaleDateString()}</p>
+      </section>
+
+    </div>
+
+    {inspection.sections?.map((section, i) => (
+      <section class="section-card" style="margin-bottom: 16px;">
+        <div class="center-block" style="font-size: 26px; font-weight: bold; margin-bottom: 12px;">
+        <ReportEditor
+            initialContent={section.name}
+            saveUrl={saveUrl(`sections.${i}.name`)}
+            client:load
+        />
+        </div>
+
+        {section.note && (
+          <ReportEditor initialContent={section.note} saveUrl={saveUrl(`sections.${i}.note`)} client:load />
+        )}
+
+        {section.observations.map((obs, j) => (
+          <div class="observation-card" style="margin-top: 12px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+            <h3><strong>Observation</strong></h3>
+            <ReportEditor initialContent={obs.name} saveUrl={saveUrl(`sections.${i}.observations.${j}.name`)} client:load />
+
+            <p><strong>Severity:</strong></p>
+            <ReportEditor initialContent={obs.severity} saveUrl={saveUrl(`sections.${i}.observations.${j}.severity`)} client:load />
+
+            <p><strong>Description:</strong></p>
+            <ReportEditor initialContent={obs.description} saveUrl={saveUrl(`sections.${i}.observations.${j}.description`)} client:load />
+
+            {obs.implication && (
+              <>
+                <p><strong>Implication:</strong></p>
+                <ReportEditor initialContent={obs.implication} saveUrl={saveUrl(`sections.${i}.observations.${j}.implication`)} client:load />
+              </>
+            )}
+
+            {obs.recommendation && (
+              <>
+                <p><strong>Recommendation:</strong></p>
+                <ReportEditor initialContent={obs.recommendation} saveUrl={saveUrl(`sections.${i}.observations.${j}.recommendation`)} client:load />
+              </>
+            )}
+
+            {obs.media && obs.media.length > 0 && (
+              <div class="media-gallery" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; justify-content: center;">
+                {obs.media.map((m, k) => (
+                  <figure style="flex: 1 1 100%; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
+                    <img src={m.url} alt={m.caption ?? ""} style="width: 100%; max-height: 350px; object-fit: cover; border-radius: 6px;" />
+
+                    <div style="width: 100%; max-width: 500px; margin-top: 6px;">
+                      <ReportEditor
+                        initialContent={m.caption ?? ""}
+                        saveUrl={saveUrl(`sections.${i}.observations.${j}.media.${k}.caption`)}
+                        client:load
+                      />
+                    </div>
+                  </figure>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </section>
+    ))}
   </main>
 </body>
-
-
