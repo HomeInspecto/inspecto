@@ -163,6 +163,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
       // Get auth token from auth service
       const token = await authService.getAccessToken();
       
+      
       const res = await fetch(`${API_BASE_URL}${POLISH_PATH}`, {
         method: 'POST',
         headers: {

@@ -9,6 +9,8 @@
     type Severity,
   } from '@/features/edit-observation/state';
   import { useActiveInspectionStore } from '@/features/inspection-details/state';
+  import { authService } from '@/services/auth';
+
 
   const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'localhost:4000';
 
@@ -60,13 +62,21 @@
       useShallow(state => state.addObservation)
     );
 
+    
     // 🔹 Fetch sections once when the hook is used
     useEffect(() => {
       const fetchSections = async () => {
         try {
-          const res = await fetch(
-            (`${API_BASE_URL}/api/sections/all`)
-          );
+          // Get auth token from auth service
+          const token = await authService.getAccessToken();
+
+          const res = await fetch(`${API_BASE_URL}/api/sections/all`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+          });
 
           const data = (await res.json()) as { sections: SectionFromApi[] };
 
