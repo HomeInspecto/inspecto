@@ -173,8 +173,11 @@ export function useLogObersation(): LogObservationProps {
     clearObservation,
   ]);
 
+  const onGoBack = () => router.back();
+
   return {
     onLog,
+    onGoBack,
     name,
     description,
     implication: implications,

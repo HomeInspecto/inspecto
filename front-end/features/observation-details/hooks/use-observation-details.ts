@@ -25,7 +25,7 @@ export function useObservationDetails(): ObservationDetailsViewProps {
   const onEdit = () => {
     if (!observation || !id) return;
     setObservation(observation);
-    router.push(`/active-inspection/${id}/edit-observation`);
+    router.push(`/active-inspection/${id}/log-observation`);
   };
 
   return {
