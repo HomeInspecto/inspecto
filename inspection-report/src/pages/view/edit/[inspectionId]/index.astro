@@ -1,0 +1,32 @@
+---
+export const prerender = false;
+
+import ReportEditor from "../../../../components/ReportEditor.jsx";
+const API_BASE_URL = "http://localhost:4000";
+const { inspectionId } = Astro.params;
+
+const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`);
+const reportData = await res.json();
+
+// Editable field example: inspection summary
+const initialContent = reportData.inspection.summary;
+
+// Client-side save URL; ReportEditor will PATCH { summary } to this URL
+const saveUrl = `${API_BASE_URL}/api/report/update/${inspectionId}`;
+---
+
+<body>
+  <main class="report-container">
+
+    <h1>Edit Inspection Report</h1>
+
+    <ReportEditor
+      initialContent={initialContent ?? ''}
+      saveUrl={saveUrl}
+      client:load
+    />
+
+  </main>
+</body>
+
+

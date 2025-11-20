@@ -6,6 +6,15 @@ npm create astro@latest -- --template minimal
 
 To view report locally use:
 http://localhost:4321/view/(inspectionId)
+(currently the only inspection id:9c6b71e5-5059-4f02-8ddd-2df015514972)
+
+http://localhost:4321/view/9c6b71e5-5059-4f02-8ddd-2df015514972
+
+Command for installing Tiptap for report editing:
+npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-image react react-dom
+
+Command to install React:
+npm install @astrojs/react react react-dom
 
 
 > 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
