@@ -5,7 +5,6 @@ import { Keyboard, Alert } from 'react-native';
 // inspection store not required here; navigation will use goToLogObservation passed in
 import { Audio } from 'expo-av';
 import { authService } from '@/services/auth';
-import { authService } from '@/services/auth';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'localhost:4000';
 const TRANSCRIBE_PATH = '/api/transcriptions/transcribe';
