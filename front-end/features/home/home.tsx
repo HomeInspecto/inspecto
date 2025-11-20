@@ -1,5 +1,5 @@
 import { Pressable, View } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Text from '@/components/views/text/text';
 import { COLORS } from '@/constants/colors';
 import TextInput from '@/components/views/text-input/text-input';
@@ -8,6 +8,7 @@ import { InspectionsList } from './inspections-list/inspections-list';
 import IconButton from '@/components/views/icon-button/icon-button';
 import { useAuthStore } from '@/store/auth-store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { authService } from '@/services/auth';
 
 export default function Home() {
   const { logout } = useAuthStore();
@@ -31,6 +32,26 @@ export default function Home() {
   function handleOverlayPress() {
     setShowDropdown(false);
   }
+
+  function todayFormatted() {
+    const now = new Date();
+
+    const weekday = now.toLocaleString('en-US', { weekday: 'long' });
+    const month = now.toLocaleString('en-US', { month: 'short' });
+    const day = now.getDate();
+
+    return `${weekday}, ${month} ${day}`;
+  }
+
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    async function fetchUser() {
+      const user = await authService.getUser();
+      setEmail(user.email);
+    }
+    fetchUser();
+  }, []);
 
   return (
     <View
@@ -80,7 +101,7 @@ export default function Home() {
             onPress={handleProfilePress}
             accessibilityLabel="Profile menu"
           />
-          
+
           {/* Dropdown Menu */}
           {showDropdown && (
             <View
@@ -125,10 +146,10 @@ export default function Home() {
       >
         <View>
           <Text variant="footnote" weight="emphasized">
-            Tuesday, OCT 21
+            {todayFormatted()}
           </Text>
           <Text variant="title1" weight="emphasized">
-            Lockwood Inc.
+            {email}
           </Text>
         </View>
 
