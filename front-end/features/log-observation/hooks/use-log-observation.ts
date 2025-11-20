@@ -13,7 +13,7 @@ import { authService } from '@/services/auth';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'localhost:4000';
 
-export function useLogObersation(): LogObservationProps {
+export function useLogObersation(isStandalone?: boolean): LogObservationProps {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const [sectionOptions, setSectionOptions] = useState<{ name: string; value: string }[]>([]);
@@ -173,11 +173,19 @@ export function useLogObersation(): LogObservationProps {
     clearObservation,
   ]);
 
+  useEffect(() => {
+    if (!isStandalone) return;
+
+    return () => {
+      clearObservation();
+    };
+  }, [isStandalone, clearObservation]);
+
   const onGoBack = () => router.back();
 
   return {
     onLog,
-    onGoBack,
+    onGoBack: isStandalone ? onGoBack : undefined,
     name,
     description,
     implication: implications,

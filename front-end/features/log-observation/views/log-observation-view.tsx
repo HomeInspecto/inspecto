@@ -11,6 +11,7 @@ import { COLORS } from '@/constants/colors';
 export interface LogObservationProps {
   onLog: () => void;
   onGoBack?: () => void;
+  isStandalone?: boolean;
   name: string;
   description: string;
   implication: string;
@@ -35,6 +36,7 @@ export interface LogObservationProps {
 export const LogObservationView = ({
   onLog,
   onGoBack,
+  isStandalone,
   name,
   description,
   implication,
@@ -114,7 +116,7 @@ export const LogObservationView = ({
       </View>
 
 
-      <Button icon="plus" text="Log observation" onPress={onLog}></Button>
+      <Button icon="plus" text="Log observation" onPress={onLog} disabled={isStandalone}></Button>
     </View>
   );
 
