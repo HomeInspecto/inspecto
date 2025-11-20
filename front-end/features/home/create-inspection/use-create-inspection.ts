@@ -78,7 +78,7 @@ export function useCreateInspection(): CreateInspectionViewProps {
   }
 
   const onCreate = useCallback(async () => {
-    if (!client || !address) return;
+    if (!client || !address) return alert('Missing required fields');
 
     const createdProperty = await createPropertyFromAddress(address);
     const propertyId = createdProperty.property[0].id;
