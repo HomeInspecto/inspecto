@@ -4,6 +4,71 @@ import { api } from './api';
 const AUTH_TOKEN_KEY = '@auth_token';
 const AUTH_REFRESH_TOKEN_KEY = '@auth_refresh_token';
 const AUTH_USER_KEY = '@auth_user';
+const TOKEN_EXPIRY_WARNING_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+/**
+ * Decode JWT token to get expiration time
+ */
+function decodeJWT(token: string): { exp?: number; [key: string]: any } | null {
+  try {
+    const base64Url = token.split('.')[1];
+    if (!base64Url) return null;
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Error decoding JWT:', error);
+    return null;
+  }
+}
+
+/**
+ * Check if token is expired or about to expire
+ */
+export function isTokenExpiringSoon(token: string | null, warningTimeMs: number = TOKEN_EXPIRY_WARNING_TIME): boolean {
+  if (!token) return false;
+  
+  const decoded = decodeJWT(token);
+  if (!decoded || !decoded.exp) return false;
+  
+  const expirationTime = decoded.exp * 1000; // Convert to milliseconds
+  const currentTime = Date.now();
+  const timeUntilExpiry = expirationTime - currentTime;
+  
+  return timeUntilExpiry > 0 && timeUntilExpiry <= warningTimeMs;
+}
+
+/**
+ * Check if token is expired
+ */
+export function isTokenExpired(token: string | null): boolean {
+  if (!token) return true;
+  
+  const decoded = decodeJWT(token);
+  if (!decoded || !decoded.exp) return true;
+  
+  const expirationTime = decoded.exp * 1000; // Convert to milliseconds
+  return Date.now() >= expirationTime;
+}
+
+/**
+ * Get time until token expires in milliseconds
+ */
+export function getTimeUntilExpiry(token: string | null): number | null {
+  if (!token) return null;
+  
+  const decoded = decodeJWT(token);
+  if (!decoded || !decoded.exp) return null;
+  
+  const expirationTime = decoded.exp * 1000;
+  const timeUntilExpiry = expirationTime - Date.now();
+  return timeUntilExpiry > 0 ? timeUntilExpiry : 0;
+}
 
 export interface SignupRequest {
   email: string;
@@ -115,6 +180,52 @@ export const authService = {
     const token = await this.getAccessToken();
     return {
       Authorization: `Bearer ${token}`,
+    };
+  },
+
+  /**
+   * Refresh the access token using the refresh token
+   */
+  async refreshToken(): Promise<AuthResponse | null> {
+    const refreshToken = await this.getRefreshToken();
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    try {
+      // Use Supabase's refresh token endpoint
+      // Note: This assumes your backend has a refresh endpoint or you're using Supabase directly
+      // For now, we'll need to implement this based on your backend setup
+      const response = await api.post<AuthResponse>('/api/auth/refresh', {
+        refresh_token: refreshToken,
+      });
+
+      if (response.access_token) {
+        await this.storeAuth(response);
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      // If refresh fails, clear auth and force re-login
+      await this.clearAuth();
+      throw error;
+    }
+  },
+
+  /**
+   * Check token expiration and return status
+   */
+  async checkTokenExpiration(): Promise<{
+    isExpired: boolean;
+    isExpiringSoon: boolean;
+    timeUntilExpiry: number | null;
+  }> {
+    const token = await this.getAccessToken();
+    return {
+      isExpired: isTokenExpired(token),
+      isExpiringSoon: isTokenExpiringSoon(token),
+      timeUntilExpiry: getTimeUntilExpiry(token),
     };
   },
 };
