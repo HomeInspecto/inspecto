@@ -5,6 +5,7 @@ import { Keyboard, Alert } from 'react-native';
 // inspection store not required here; navigation will use goToLogObservation passed in
 import { Audio } from 'expo-av';
 import { authService } from '@/services/auth';
+import { authService } from '@/services/auth';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'localhost:4000';
 const TRANSCRIBE_PATH = '/api/transcriptions/transcribe';
@@ -67,9 +68,8 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
         const token = await authService.getAccessToken();
         const res = await fetch(`${API_BASE_URL}${TRANSCRIBE_PATH}`, {
           method: 'POST',
-          headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },          body: form,
+          headers: await authService.authHeaders(),
+          body: form,
         });
 
         const json = await res.json().catch(() => ({}));
@@ -156,25 +156,24 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
   // Simplified function to polish and go to log observation
   const onNextWithPolish = useCallback(async () => {
     if (!note?.trim()) return;
-    
+
     try {
       setIsPolishing(true);
-      
+
       // Get auth token from auth service
       const token = await authService.getAccessToken();
-      
-      
+
       const res = await fetch(`${API_BASE_URL}${POLISH_PATH}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ transcription: note }),
       });
 
       const json = await res.json();
-      if (!res.ok) {    
+      if (!res.ok) {
         throw new Error(json?.error || `Polish failed (${res.status})`);
       }
 
@@ -185,11 +184,12 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
       // Update all observation fields in one go
       const setObservation = useActiveObservationStore.getState().setObservation;
       const severity = o.severity?.toLowerCase() || null;
-      
+
       // Make sure we have a valid severity; if not provided leave it null so UI is unselected
-      const validatedSeverity = (severity === 'critical' || severity === 'medium' || severity === 'low')
-        ? (severity as 'critical' | 'medium' | 'low')
-        : null;
+      const validatedSeverity =
+        severity === 'critical' || severity === 'medium' || severity === 'low'
+          ? (severity as 'critical' | 'medium' | 'low')
+          : null;
 
       // Update the store with all fields including severity
       setObservation({
@@ -198,7 +198,7 @@ export function useFieldNotes(goToLogObservation: () => void): AddFieldNoteProps
         implications: o.implications || '',
         recommendation: o.recommendation || '',
         severity: validatedSeverity,
-        section: o.section || 'General' // Default to General if no section provided
+        section: o.section || 'General', // Default to General if no section provided
       });
 
       // Then go to log observation page

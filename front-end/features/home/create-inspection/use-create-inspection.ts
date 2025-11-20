@@ -4,6 +4,8 @@ import { router } from 'expo-router';
 import { useInspectionsStore } from '../state';
 import { useShallow } from 'zustand/react/shallow';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
+import { authService } from '@/services/auth';
+import { API_BASE_URL } from '@/services/api';
 import { Alert } from 'react-native';
 
 export function useCreateInspection(): CreateInspectionViewProps {
@@ -19,12 +21,74 @@ export function useCreateInspection(): CreateInspectionViewProps {
     setAddress(value);
   }, []);
 
-  const onCreate = useCallback(() => {
-    if (!client || !address) return;
+  async function createPropertyFromAddress(address: string) {
+    const res = await fetch(`${API_BASE_URL}/api/properties/createProperty`, {
+      method: 'POST',
+      headers: {
+        ...(await authService.authHeaders()),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        address_line1: address,
+        address_line2: '',
+        unit: '',
+        city: '',
+        region: '',
+        postal_code: '',
+        country: '',
+        year_built: 0,
+      }),
+    });
 
-    const id = Math.random().toString(36).slice(2);
+    if (!res.ok) {
+      console.error('Property create error:', await res.text());
+      alert('Failed to create property');
+      return null;
+    }
+
+    return res.json();
+  }
+
+  async function createInspection(propertyId: string) {
+    const user = await authService.getUser();
+    if (!user || !user.id) {
+      throw new Error('User is not logged in – cannot create inspection.');
+    }
+
+    const res = await fetch(`${API_BASE_URL}/api/inspections/createInspection`, {
+      method: 'POST',
+      headers: {
+        ...(await authService.authHeaders()),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inspector_id: user.id,
+        property_id: propertyId,
+        status: 'draft',
+        scheduled_for: new Date().toISOString(),
+      }),
+    });
+
+    if (!res.ok) {
+      console.error('Inspection create error:', await res.text());
+      alert('Failed to create inspection');
+      return null;
+    }
+
+    return res.json();
+  }
+
+  const onCreate = useCallback(async () => {
+    if (!client || !address) return alert('Missing required fields');
+
+    const createdProperty = await createPropertyFromAddress(address);
+    const propertyId = createdProperty.property[0].id;
+
+    const createdInspection = await createInspection(propertyId);
+    const inspectionId = createdInspection.id;
+
     useInspectionsStore.getState().createInspection({
-      id,
+      id: inspectionId,
       client,
       address,
       createdAt: Date.now(),
@@ -32,7 +96,7 @@ export function useCreateInspection(): CreateInspectionViewProps {
 
     clearObservation();
 
-    router.push(`/active-inspection/${id}`);
+    router.push(`/active-inspection/${inspectionId}`);
   }, [client, address]);
 
   function goBack() {

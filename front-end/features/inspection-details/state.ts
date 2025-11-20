@@ -7,7 +7,7 @@ export interface ActiveInspection {
   client: string;
   address: string;
   createdAt: number;
-  observations: Observation[];
+  observations?: Observation[];
 }
 
 export interface ActiveInspectionStore {
