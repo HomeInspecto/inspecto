@@ -60,7 +60,9 @@ function formatAddress(property?: PropertyApi | null): string {
  * then map them into the UI `Inspection` shape.
  */
 export async function fetchInspectionsWithAddresses(): Promise<Inspection[]> {
-  const inspectionsRes = await fetch(`${API_BASE}/api/inspections/all`, {
+  const inspector = await authService.getUser();
+  const inspector_id = inspector?.id;
+  const inspectionsRes = await fetch(`${API_BASE}/api/inspections/byInspector/${inspector_id}`, {
     headers: {
       ...(await authService.authHeaders()),
       'Content-Type': 'application/json',

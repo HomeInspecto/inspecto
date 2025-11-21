@@ -203,7 +203,6 @@ export const authService = {
 
   async getUser(): Promise<any | null> {
     const userStr = await AsyncStorage.getItem(AUTH_USER_KEY);
-    console.log("userStr", userStr);
     return userStr ? JSON.parse(userStr) : null;
   },
 
