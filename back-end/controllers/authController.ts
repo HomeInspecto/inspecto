@@ -126,6 +126,51 @@ export const signup = async (req: Request, res: Response) => {
       });
     }
 
+    // If no session was returned (e.g., email confirmation required), 
+    // auto-confirm the email and sign in the user to get a session with tokens
+    let session = data.session;
+    if (!session && data.user && supabaseAdmin) {
+      try {
+        // Auto-confirm the email using admin client (bypasses email confirmation requirement)
+        const { error: confirmError } = await supabaseAdmin.auth.admin.updateUserById(
+          data.user.id,
+          { email_confirm: true }
+        );
+        
+        if (confirmError) {
+          console.warn('Failed to auto-confirm email:', confirmError);
+        }
+        
+        // Now sign in the user to get a session
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        if (!signInError && signInData?.session) {
+          session = signInData.session;
+        } else if (signInError) {
+          console.warn('Failed to sign in after signup:', signInError.message);
+        }
+      } catch (err) {
+        console.error('Error during auto-confirm and sign-in:', err);
+      }
+    } else if (!session && data.user) {
+      // Fallback: try to sign in even without admin client
+      try {
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        if (!signInError && signInData?.session) {
+          session = signInData.session;
+        }
+      } catch (err) {
+        console.error('Error signing in after signup:', err);
+      }
+    }
+
     // Create inspector record for this user (if admin client is available)
     if (data.user && supabaseAdmin) {
       try {
@@ -156,7 +201,24 @@ export const signup = async (req: Request, res: Response) => {
       }
     }
 
-    // Return user and session data
+    // Return user and session data (consistent with login response)
+    // If no session was created, inform the user they may need to confirm their email
+    if (!session) {
+      console.warn('No session created after signup for user:', data.user.id);
+      return res.status(201).json({
+        message: 'User created successfully. Please check your email to confirm your account, then login.',
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          created_at: data.user.created_at,
+        },
+        session: null,
+        access_token: null,
+        refresh_token: null,
+        requiresEmailConfirmation: true,
+      });
+    }
+
     return res.status(201).json({
       message: 'User created successfully',
       user: {
@@ -164,7 +226,10 @@ export const signup = async (req: Request, res: Response) => {
         email: data.user.email,
         created_at: data.user.created_at,
       },
-      session: data.session,
+      session: session,
+      // Explicitly include access_token and refresh_token
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
     });
   } catch (err) {
     console.error('Signup error:', err);

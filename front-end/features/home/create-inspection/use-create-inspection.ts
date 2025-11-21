@@ -7,11 +7,15 @@ import { useActiveObservationStore } from '@/features/edit-observation/state';
 import { authService } from '@/services/auth';
 import { API_BASE_URL } from '@/services/api';
 import { Alert } from 'react-native';
+import { useActiveInspectionStore } from '@/features/inspection-details/state';
 
 export function useCreateInspection(): CreateInspectionViewProps {
   const [client, setClient] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   const clearObservation = useActiveObservationStore(useShallow(s => s.clearObservation));
+  const [setActiveInspection] = useActiveInspectionStore(
+    useShallow(state => [state.setActiveInspection])
+  );
 
   const onClientChange = useCallback((value: string) => {
     setClient(value);
@@ -87,14 +91,16 @@ export function useCreateInspection(): CreateInspectionViewProps {
     const createdInspection = await createInspection(propertyId);
     const inspectionId = createdInspection.id;
 
-    useInspectionsStore.getState().createInspection({
+    const fullInspection = {
       id: inspectionId,
       client,
       address,
       createdAt: Date.now(),
-    });
+    };
+    useInspectionsStore.getState().createInspection(fullInspection);
 
     clearObservation();
+    setActiveInspection(fullInspection);
 
     router.push(`/active-inspection/${inspectionId}`);
   }, [client, address]);

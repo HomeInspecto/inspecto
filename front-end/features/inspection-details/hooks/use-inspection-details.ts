@@ -69,7 +69,7 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
       }
     }
 
-    load();
+    if (!activeInspection) load();
 
     return () => {
       isMounted = false;
