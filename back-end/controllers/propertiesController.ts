@@ -9,6 +9,8 @@ import DatabaseService from '../database';
  *     description: Retrieves a list of properties
  *     tags:
  *       - Properties
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       '200':
  *         description: List of properties
@@ -51,6 +53,8 @@ export const getAllProperties = async (req: Request, res: Response) => {
  *     description: Retrieves a property by its ID
  *     tags:
  *       - Properties
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - name: property_id
  *         in: path
@@ -78,7 +82,7 @@ export const getPropertyById = async (req: Request, res: Response) => {
     if (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
-    return res.json({ property: data });
+    return res.json(data?.[0] || {});
   } catch (err) {
     console.error('Database query error:', err);
     return res.status(500).json({ 
@@ -96,6 +100,8 @@ export const getPropertyById = async (req: Request, res: Response) => {
  *     description: Creates a new property record
  *     tags:
  *       - Properties
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:

@@ -9,6 +9,8 @@ import DatabaseService from '../database';
  *     description: Retrieves all inspection sections, optionally filtered
  *     tags:
  *       - Inspection Sections
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       '200':
  *         description: List of inspection sections
@@ -50,6 +52,8 @@ export const getAllInspectionSections = async (req: Request, res: Response) => {
  *     description: Retrieves a single inspection section by its ID
  *     tags:
  *       - Inspection Sections
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: section_id
@@ -116,6 +120,8 @@ export const getInspectionSectionById = async (req: Request, res: Response) => {
  *     description: Creates a new inspection section
  *     tags:
  *       - Inspection Sections
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:

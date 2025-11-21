@@ -5,6 +5,9 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import swaggerOptions from './swagger.config';
 
+// Middleware
+import { authenticateToken } from './middleware/auth';
+
 // Routes
 import healthRoutes from './routes/health';
 import propertiesRoutes from './routes/properties';
@@ -65,25 +68,39 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
-app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
+// Swagger UI options to ensure authorization button is visible
+const swaggerUIOptions = {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Inspecto API Documentation',
+  swaggerOptions: {
+    persistAuthorization: true, // Persist authorization across page refreshes
+    displayRequestDuration: true,
+    filter: true,
+    tryItOutEnabled: true,
+  },
+};
+
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec, swaggerUIOptions));
 
 //serve swagger UI at URL
-app.use('/api/swagger', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+app.use('/api/swagger', swaggerUI.serve, swaggerUI.setup(swaggerSpec, swaggerUIOptions));
 
-// Routes
+// Public routes (no authentication required)
 app.use('/', healthRoutes); // ✅ Health check routes (/, /health)
-app.use('/api/properties', propertiesRoutes); // ✅ Property-related routes
-app.use('/api/inspections', inspectionsRoutes); // ✅ Inspection-related routes
-app.use('/api/sections', inspectionSectionsRoutes); // ✅ Inspection section-related routes
-app.use('/api/inspectors', inspectorsRoutes); // ✅ Inspector-related routes
-app.use('/api/observations', observationsRoutes); // ✅ Observation-related routes
-app.use('/api/observations/media', observationMediaRoutes); // ✅ Observation media upload/list
-app.use('/supabase', supabaseRoutes); // ✅ Supabase test routes
 app.use('/api/auth', authRoutes); // ✅ Authentication routes (signup, login, logout)
+app.use('/supabase', supabaseRoutes); // ✅ Supabase test routes
 
-//routes
-app.use('/api/transcriptions', transcribeRoutes);
-app.use('/api/report', generateReportRoutes);
+// Protected routes (authentication required)
+// All routes below this point require a valid Bearer token
+app.use('/api/properties', authenticateToken, propertiesRoutes); // ✅ Property-related routes
+app.use('/api/inspections', authenticateToken, inspectionsRoutes); // ✅ Inspection-related routes
+app.use('/api/sections', authenticateToken, inspectionSectionsRoutes); // ✅ Inspection section-related routes
+app.use('/api/inspectors', authenticateToken, inspectorsRoutes); // ✅ Inspector-related routes
+app.use('/api/observations', authenticateToken, observationsRoutes); // ✅ Observation-related routes
+app.use('/api/observations/media', authenticateToken, observationMediaRoutes); // ✅ Observation media upload/list
+app.use('/api/transcriptions', authenticateToken, transcribeRoutes); // ✅ Transcription routes
+app.use('/api/report', authenticateToken, generateReportRoutes); // ✅ Report generation routes
 
 
 

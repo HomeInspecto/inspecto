@@ -2,11 +2,13 @@ import Text from '@/components/views/text/text';
 import { usePhotoEditor } from './hooks/use-photo-editor';
 import { PhotoEditorView } from './views/photo-editor-view';
 import type { PhotoWithMarkup } from '@/features/edit-observation/state';
+import { Animated } from 'react-native';
 
 export type Tool = 'pen' | 'arrow' | 'circle' | null;
 
 export interface PhotoEditorProps {
   photo: PhotoWithMarkup;
+  photos: PhotoWithMarkup[];
   currentTool: Tool;
   previewShape: string;
 
@@ -20,6 +22,9 @@ export interface PhotoEditorProps {
   deleteActivePhoto: () => void;
 
   goBack: () => void;
+
+  translateX: Animated.Value;
+  screenWidth: number;
 }
 
 export default function PhotoEditor() {

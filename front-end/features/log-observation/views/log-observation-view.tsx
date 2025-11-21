@@ -1,12 +1,17 @@
-import { View, Platform, StyleSheet } from 'react-native';
+import { View, ScrollView, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Text from '@/components/views/text/text';
 import TextInput from '@/components/views/text-input/text-input';
 import Button from '@/components/views/button/button';
 import type { Severity } from '@/features/edit-observation/state';
 import { RadioGroup } from '@/components/views/radio-group/radio-group';
+import IconButton from '@/components/views/icon-button/icon-button';
+import { COLORS } from '@/constants/colors';
 
 export interface LogObservationProps {
   onLog: () => void;
+  onGoBack?: () => void;
+  isStandalone?: boolean;
   name: string;
   description: string;
   implication: string;
@@ -14,6 +19,8 @@ export interface LogObservationProps {
 
   section: string;
   severity: Severity;
+  sectionOptions: { name: string; value: string }[];
+
 
   setName: (value: string) => void;
   setDescription: (value: string) => void;
@@ -28,6 +35,8 @@ export interface LogObservationProps {
 
 export const LogObservationView = ({
   onLog,
+  onGoBack,
+  isStandalone,
   name,
   description,
   implication,
@@ -40,9 +49,10 @@ export const LogObservationView = ({
   setRecommendation,
   setSection,
   setSeverity,
+  sectionOptions,
 }: LogObservationProps) => {
-  return (
-    <View style={{ flex: 1, gap: 20, paddingBottom: 80 }}>
+  const content = (
+    <View style={{ gap: 20 }}>
       <Text variant="title3" style={{ textAlign: 'center' }}>
         Edit observation
       </Text>
@@ -85,34 +95,57 @@ export const LogObservationView = ({
       <View style={{ gap: 8 }}>
         <Text variant="headline">Section</Text>
         {/* TODO: Replace with RadioGroup */}
-        <View
-          style={{
-            padding: 12,
-            backgroundColor: '#2e2e2f',
-            borderRadius: 8,
-            opacity: 0.7,
-          }}
-        >
-          <Text style={{ color: '#aaa' }}>
-            [Radio options for section: Roof and Gutter, Backyard, Hot Water System]
-          </Text>
-        </View>
+        <RadioGroup
+          value={section ?? ''}
+          onValueChange={setSection}
+          options={sectionOptions}
+        />
       </View>
 
       <View style={{ gap: 8 }}>
         <Text variant="headline">Severity</Text>
         <RadioGroup
-          value={severity}
-          onChange={setSeverity}
+          value={severity ?? ''} // handle null/undefined nicely
+          onValueChange={value => setSeverity(value as Severity)}
           options={[
-            { label: 'Critical', value: 'critical' },
-            { label: 'Medium', value: 'medium' },
-            { label: 'Low', value: 'low' }
+            { name: 'Critical', value: 'critical' },
+            { name: 'Medium', value: 'medium' },
+            { name: 'Low', value: 'low' },
           ]}
         />
       </View>
 
-      <Button icon="plus" text="Log observation" onPress={onLog}></Button>
+
+      <Button icon="plus" text="Log observation" onPress={onLog} disabled={isStandalone}></Button>
     </View>
   );
+
+  if (onGoBack) {
+    return (
+      <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: COLORS.pageBackground }}>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingTop: 8,
+            paddingBottom: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+          }}
+        >
+          <IconButton icon="chevron.left" size="sm" onPress={onGoBack} />
+        </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            {content}
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+    );
+  }
+
+  return content;
 };

@@ -1,16 +1,15 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Linking } from 'react-native';
-import { router } from 'expo-router';
-import { useActiveInspectionStore, type ActiveInspection } from '../state';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useActiveInspectionStore } from '../state';
 import type { Observation } from '../../edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
 import type { InspectionDetailsViewProps } from '../views/inspection-details-view';
+import { fetchActiveInspectionDetails } from './backend-calls';
 
 export function useInspectionDetails(): InspectionDetailsViewProps {
-  const { activeInspection } = useActiveInspectionStore(
-    useShallow(state => ({
-      activeInspection: state.activeInspection,
-    }))
+  const [activeInspection, setActiveInspection] = useActiveInspectionStore(
+    useShallow(state => [state.activeInspection, state.setActiveInspection])
   );
 
   const onSelectObservation = (observationId: string) => {
@@ -60,6 +59,31 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
   const onSearchChange = (text: string) => {
     setSearchTerm(text);
   };
+
+  const { id: activeInspectionId } = useLocalSearchParams<{ id: string }>(); // TODO set active inspection state here
+
+  useEffect(() => {
+    if (!activeInspectionId) return;
+
+    let isMounted = true;
+
+    async function load() {
+      try {
+        const fullInspection = await fetchActiveInspectionDetails(activeInspectionId || '');
+        console.log(fullInspection);
+        if (!isMounted) return;
+        setActiveInspection(fullInspection);
+      } catch (err) {
+        console.error('Failed to fetch inspection details:', err);
+      }
+    }
+
+    if (!activeInspection) load();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [setActiveInspection]);
 
   return {
     inspection: activeInspection,

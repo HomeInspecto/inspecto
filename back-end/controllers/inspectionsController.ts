@@ -9,6 +9,8 @@ import DatabaseService from '../database';
  *     description: Retrieves inspections, optionally filtered by inspector_id, property_id, or status
  *     tags:
  *       - Inspections
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: inspector_id
@@ -78,6 +80,8 @@ export const getAllInspections = async (req: Request, res: Response) => {
  *     description: Creates a new inspection record
  *     tags:
  *       - Inspections
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -134,7 +138,7 @@ export const createInspection = async (req: Request, res: Response) => {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
     
-    return res.status(201).json({ inspection: data });
+    return res.status(201).json(data?.[0]);
   } catch (err) {
     console.error('Database insert error:', err);
     return res.status(500).json({ 
@@ -152,6 +156,8 @@ export const createInspection = async (req: Request, res: Response) => {
  *     description: Retrieves a single inspection by its ID
  *     tags:
  *       - Inspections
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: inspection_id

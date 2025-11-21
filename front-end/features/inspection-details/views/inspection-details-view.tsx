@@ -33,21 +33,29 @@ export function InspectionDetailsView({
   return (
     <View style={{ flex: 1, gap: 16 }}>
       <View style={{ backgroundColor: COLORS.pageBackground, padding: 4, borderRadius: 20 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end'  }}>
-          <Text variant="headline" color="on-dark-primary" >{inspection ? inspection.address : 'Address'}</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Icon name="person.fill" size={14} color={COLORS.label.onDark.secondary} />
-            <Text variant="footnote" color="on-dark-tertiary" style={{ textAlign: 'right'}}>    
-              {inspection ? inspection.client : 'Client name' }
-            </Text>
-          </View>
+        <View
+          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}
+        >
+          <Text variant="headline" color="on-dark-primary">
+            {inspection ? inspection.address : 'Address'}
+          </Text>
+          {inspection.client && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Icon name="person.fill" size={14} color={COLORS.label.onDark.secondary} />
+              <Text variant="footnote" color="on-dark-tertiary" style={{ textAlign: 'right' }}>
+                {inspection.client}
+              </Text>
+            </View>
+          )}
         </View>
       </View>
 
       <Button text="View report" icon="doc.text.fill" onPress={onCreateReport} />
       <View style={{ height: 1, backgroundColor: COLORS.material.secondary.stroke }} />
 
-      <Text variant="title3" weight="emphasized">Observations</Text>
+      <Text variant="title3" weight="emphasized">
+        Observations
+      </Text>
 
       <TextInput
         value={searchTerm}
@@ -62,7 +70,9 @@ export function InspectionDetailsView({
         sections={sections}
         keyExtractor={(item, index) => `${item.name ?? 'observation'}-${index}`}
         renderSectionHeader={({ section: { title } }) => (
-          <Text variant="body" weight="emphasized" color="on-dark-secondary">{title}</Text>
+          <Text variant="body" weight="emphasized" color="on-dark-secondary">
+            {title}
+          </Text>
         )}
         renderItem={({ item, index }) => {
           const label = item.name || `Observation ${index + 1}`;
@@ -77,7 +87,9 @@ export function InspectionDetailsView({
                     paddingHorizontal: 16,
                   }}
                 >
-                  <Text variant="body" color="on-dark-primary">{label}</Text>
+                  <Text variant="body" color="on-dark-primary">
+                    {label}
+                  </Text>
                 </View>
               </Pressable>
             </View>
@@ -86,7 +98,9 @@ export function InspectionDetailsView({
         ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
         SectionSeparatorComponent={() => <View style={{ height: 16 }} />}
         ListEmptyComponent={
-          <View><Text>No observations logged.</Text></View>
+          <View>
+            <Text>No observations logged.</Text>
+          </View>
         }
         stickySectionHeadersEnabled={false}
         showsVerticalScrollIndicator={false}

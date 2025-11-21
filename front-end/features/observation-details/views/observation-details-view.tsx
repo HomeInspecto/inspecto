@@ -1,4 +1,5 @@
 import { View, ScrollView } from 'react-native';
+import { Image } from 'expo-image';
 import Text from '@/components/views/text/text';
 import type { Observation } from '@/features/edit-observation/state';
 import IconButton from '@/components/views/icon-button/icon-button';
@@ -11,6 +12,10 @@ export interface ObservationDetailsViewProps {
   observation?: Observation;
   onGoBack: () => void;
   onEdit: () => void;
+  scrollViewRef: React.RefObject<any>;
+  onScroll: (event: any) => void;
+  activePhotoIndex: number;
+  screenWidth: number;
 }
 
 export function ObservationDetailsView({
@@ -18,7 +23,13 @@ export function ObservationDetailsView({
   observation,
   onGoBack,
   onEdit,
+  scrollViewRef,
+  onScroll,
+  activePhotoIndex,
+  screenWidth,
 }: ObservationDetailsViewProps) {
+  const photos = observation?.photos || [];
+
   if (!observation) {
     return (
       <SafeAreaView
@@ -36,7 +47,7 @@ export function ObservationDetailsView({
         style={{
           paddingHorizontal: 16,
           paddingTop: 8,
-          paddingBottom: 40,
+          paddingBottom: 16,
           flexDirection: 'row',
           alignItems: 'center',
           gap: 12,
@@ -46,10 +57,58 @@ export function ObservationDetailsView({
         <Text variant="headline" weight="emphasized">inspection details</Text>
       </View>
 
+      {photos.length > 0 && (
+        <View style={{ height: '33%', backgroundColor: COLORS.system.black }}>
+          <ScrollView
+            ref={scrollViewRef}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={onScroll}
+            scrollEventThrottle={16}
+            decelerationRate="fast"
+          >
+            {photos.map((photo, index) => (
+              <Image
+                key={photo.id || `photo-${index}`}
+                source={{ uri: photo.uri }}
+                style={{ width: screenWidth, height: '100%' }}
+                contentFit="cover"
+              />
+            ))}
+          </ScrollView>
+          {photos.length > 1 && (
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 16,
+                left: 0,
+                right: 0,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                gap: 6,
+              }}
+            >
+              {photos.map((_, index) => (
+                <View
+                  key={index}
+                  style={{
+                    width: index === activePhotoIndex ? 8 : 6,
+                    height: 6,
+                    borderRadius: 3,
+                    backgroundColor: index === activePhotoIndex ? COLORS.system.white : COLORS.label.onDark.tertiary,
+                  }}
+                />
+              ))}
+            </View>
+          )}
+        </View>
+      )}
+
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32, gap: 24, }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: photos.length > 0 ? 32 : 0, paddingBottom: 32, gap: 24, }}
       >
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: photos.length > 0 ? 16 : 0 }}>
           <View style={{ gap: 6, flex: 1 }}>
             <Text variant="title2" weight="emphasized">{observation.name || observationId}</Text>
             {observation.severity ? (
@@ -78,7 +137,7 @@ export function ObservationDetailsView({
           <IconButton icon="pencil" size="sm" onPress={onEdit} />
         </View>
 
-        <View style={{ height: 1, backgroundColor: COLORS.material.secondary.stroke }} />
+        <View style={{ height: 1, backgroundColor: COLORS.material.secondary.stroke, marginTop: photos.length > 0 ? -8 : 0 }} />
 
         {observation.section ? (
           <View style={{ gap: 4 }}>

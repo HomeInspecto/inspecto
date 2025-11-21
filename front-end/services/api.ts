@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
 
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -6,10 +6,7 @@ interface RequestOptions {
   body?: any;
 }
 
-export async function apiRequest<T>(
-  endpoint: string,
-  options: RequestOptions = {}
-): Promise<T> {
+export async function apiRequest<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', headers = {}, body } = options;
 
   const url = `${API_BASE_URL}${endpoint}`;
@@ -59,4 +56,3 @@ export const api = {
   delete: <T>(endpoint: string, headers?: Record<string, string>) =>
     apiRequest<T>(endpoint, { method: 'DELETE', headers }),
 };
-

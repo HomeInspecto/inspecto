@@ -13,6 +13,8 @@ const cohere = new CohereClientV2({
  *     description: Takes raw transcription text and converts it into a structured observation format
  *     tags:
  *       - Polish
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -70,6 +72,8 @@ export const polishTranscription = async (req: Request, res: Response) => {
  *     description: Takes existing observation and applies modifications based on user instruction
  *     tags:
  *       - Polish
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:

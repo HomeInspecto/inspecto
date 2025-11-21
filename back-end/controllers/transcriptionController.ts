@@ -9,6 +9,8 @@ import { Request, Response } from 'express';
  *     description: Accepts an audio file, transcribes it via Whisper
  *     tags:
  *       - Transcription
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:

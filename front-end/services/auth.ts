@@ -35,45 +35,49 @@ export interface AuthResponse {
 export const authService = {
   async signup(data: SignupRequest): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/api/auth/signup', data);
-    
+
     if (response.session?.access_token) {
       await this.storeAuth(response);
     }
-    
+
     return response;
   },
 
   async login(data: LoginRequest): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/api/auth/login', data);
-    
+
     if (response.access_token) {
       await this.storeAuth(response);
     }
-    
+
     return response;
   },
 
   async logout(): Promise<void> {
     const token = await this.getAccessToken();
-    
+
     if (token) {
       try {
-        await api.post('/api/auth/logout', {}, {
-          Authorization: `Bearer ${token}`,
-        });
+        await api.post(
+          '/api/auth/logout',
+          {},
+          {
+            Authorization: `Bearer ${token}`,
+          }
+        );
       } catch (error) {
         // Continue with clearing local storage even if API call fails
         console.error('Logout API call failed:', error);
       }
     }
-    
+
     await this.clearAuth();
   },
 
   async storeAuth(response: AuthResponse): Promise<void> {
     const token = response.access_token || response.session?.access_token;
     const refreshToken = response.refresh_token || response.session?.refresh_token;
-    
+
     if (token) {
       await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
     }
@@ -106,5 +110,11 @@ export const authService = {
     const token = await this.getAccessToken();
     return !!token;
   },
-};
 
+  async authHeaders() {
+    const token = await this.getAccessToken();
+    return {
+      Authorization: `Bearer ${token}`,
+    };
+  },
+};

@@ -23,6 +23,7 @@ const anonKey = sanitize(process.env.SUPABASE_ANON_KEY);
  *     description: Creates a new user account with email and password using Supabase authentication
  *     tags:
  *       - Authentication
+ *     security: []  # Public endpoint - no authentication required
  *     requestBody:
  *       required: true
  *       content:
@@ -129,6 +130,7 @@ export const signup = async (req: Request, res: Response) => {
     if (data.user && supabaseAdmin) {
       try {
         const inspectorData = {
+          id: data.user.id,
           full_name: full_name || data.user.email?.split('@')[0] || 'Inspector',
           email: data.user.email || null,
           phone: phone || null,
@@ -181,6 +183,7 @@ export const signup = async (req: Request, res: Response) => {
  *     description: Authenticates a user with email and password using Supabase authentication
  *     tags:
  *       - Authentication
+ *     security: []  # Public endpoint - no authentication required
  *     requestBody:
  *       required: true
  *       content:
@@ -295,7 +298,7 @@ export const login = async (req: Request, res: Response) => {
  *     tags:
  *       - Authentication
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     responses:
  *       '200':
  *         description: Logout successful
