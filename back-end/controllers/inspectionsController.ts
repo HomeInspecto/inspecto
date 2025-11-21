@@ -138,7 +138,7 @@ export const createInspection = async (req: Request, res: Response) => {
       return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
     
-    return res.status(201).json({ inspection: data });
+    return res.status(201).json(data?.[0]);
   } catch (err) {
     console.error('Database insert error:', err);
     return res.status(500).json({ 
