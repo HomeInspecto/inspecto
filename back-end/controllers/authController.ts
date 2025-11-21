@@ -415,3 +415,96 @@ export const logout = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     description: Refreshes the access token using a refresh token
+ *     tags:
+ *       - Authentication
+ *     security: []  # Public endpoint - no authentication required
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refresh_token
+ *             properties:
+ *               refresh_token:
+ *                 type: string
+ *                 description: The refresh token
+ *     responses:
+ *       '200':
+ *         description: Token refreshed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                 session:
+ *                   type: object
+ *                 access_token:
+ *                   type: string
+ *                 refresh_token:
+ *                   type: string
+ *       '400':
+ *         description: Missing refresh token
+ *       '401':
+ *         description: Invalid or expired refresh token
+ *       '500':
+ *         description: Server error
+ */
+export const refreshToken = async (req: Request, res: Response) => {
+  try {
+    const { refresh_token } = req.body;
+
+    if (!refresh_token) {
+      return res.status(400).json({ 
+        error: 'Refresh token is required' 
+      });
+    }
+
+    // Create a Supabase client and refresh the session
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token,
+    });
+
+    if (error) {
+      console.error('Token refresh error:', error);
+      return res.status(401).json({ 
+        error: error.message || 'Token refresh failed' 
+      });
+    }
+
+    if (!data.user || !data.session) {
+      return res.status(401).json({ 
+        error: 'Token refresh failed - invalid response' 
+      });
+    }
+
+    // Return user, session, and tokens
+    return res.json({
+      message: 'Token refreshed successfully',
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        created_at: data.user.created_at,
+      },
+      session: data.session,
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+    });
+  } catch (err) {
+    console.error('Token refresh error:', err);
+    return res.status(500).json({ 
+      error: 'Internal server error', 
+      details: err instanceof Error ? err.message : 'Unknown error'
+    });
+  }
+};
+
