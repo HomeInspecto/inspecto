@@ -4,7 +4,7 @@ import { api } from './api';
 const AUTH_TOKEN_KEY = '@auth_token';
 const AUTH_REFRESH_TOKEN_KEY = '@auth_refresh_token';
 const AUTH_USER_KEY = '@auth_user';
-const TOKEN_EXPIRY_WARNING_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
+const TOKEN_EXPIRY_WARNING_TIME = 5 * 1000; // 5 minutes in milliseconds
 
 /**
  * Decode JWT token to get expiration time
@@ -70,6 +70,18 @@ export function getTimeUntilExpiry(token: string | null): number | null {
   return timeUntilExpiry > 0 ? timeUntilExpiry : 0;
 }
 
+/**
+ * Get the absolute expiration timestamp (ms) from a token
+ */
+export function getTokenExpiryTimestamp(token: string | null): number | null {
+  if (!token) return null;
+  
+  const decoded = decodeJWT(token);
+  if (!decoded || !decoded.exp) return null;
+  
+  return decoded.exp * 1000;
+}
+
 export interface SignupRequest {
   email: string;
   password: string;
@@ -109,7 +121,9 @@ export const authService = {
   },
 
   async login(data: LoginRequest): Promise<AuthResponse> {
+    console.log("login data", data);
     const response = await api.post<AuthResponse>('/api/auth/login', data);
+    console.log("response", response);
 
     if (response.access_token) {
       await this.storeAuth(response);
@@ -143,11 +157,30 @@ export const authService = {
     const token = response.access_token || response.session?.access_token;
     const refreshToken = response.refresh_token || response.session?.refresh_token;
 
+    console.log('Storing auth tokens:', {
+      hasAccessToken: !!token,
+      hasRefreshToken: !!refreshToken,
+      refreshTokenLength: refreshToken?.length || 0,
+    });
+
     if (token) {
       await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
+      console.log('Access token stored');
     }
     if (refreshToken) {
       await AsyncStorage.setItem(AUTH_REFRESH_TOKEN_KEY, refreshToken);
+      console.log('Refresh token stored:', refreshToken.substring(0, 10) + '...');
+      
+      // Verify it was stored correctly
+      const storedRefreshToken = await AsyncStorage.getItem(AUTH_REFRESH_TOKEN_KEY);
+      if (storedRefreshToken !== refreshToken) {
+        console.error('Refresh token storage mismatch!', {
+          expected: refreshToken.substring(0, 10),
+          stored: storedRefreshToken?.substring(0, 10),
+        });
+      } else {
+        console.log('Refresh token verified in storage');
+      }
     }
     if (response.user) {
       await AsyncStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.user));
@@ -159,11 +192,18 @@ export const authService = {
   },
 
   async getRefreshToken(): Promise<string | null> {
-    return AsyncStorage.getItem(AUTH_REFRESH_TOKEN_KEY);
+    const token = await AsyncStorage.getItem(AUTH_REFRESH_TOKEN_KEY);
+    if (token) {
+      console.log('Retrieved refresh token from storage:', token.substring(0, 10) + '...');
+    } else {
+      console.warn('No refresh token found in storage');
+    }
+    return token;
   },
 
   async getUser(): Promise<any | null> {
     const userStr = await AsyncStorage.getItem(AUTH_USER_KEY);
+    console.log("userStr", userStr);
     return userStr ? JSON.parse(userStr) : null;
   },
 
@@ -187,23 +227,59 @@ export const authService = {
    * Refresh the access token using the refresh token
    */
   async refreshToken(): Promise<AuthResponse | null> {
-    const refreshToken = await this.getRefreshToken();
-    if (!refreshToken) {
+    const currentRefreshToken = await this.getRefreshToken();
+    if (!currentRefreshToken) {
       throw new Error('No refresh token available');
     }
 
+    console.log('Starting token refresh with token:', currentRefreshToken.substring(0, 10) + '...');
+
     try {
-      // Use Supabase's refresh token endpoint
-      // Note: This assumes your backend has a refresh endpoint or you're using Supabase directly
-      // For now, we'll need to implement this based on your backend setup
       const response = await api.post<AuthResponse>('/api/auth/refresh', {
-        refresh_token: refreshToken,
+        refresh_token: currentRefreshToken,
       });
 
-      if (response.access_token) {
-        await this.storeAuth(response);
+      console.log('Refresh API response received:', {
+        hasAccessToken: !!response.access_token,
+        hasSessionAccessToken: !!response.session?.access_token,
+        hasRefreshToken: !!response.refresh_token,
+        hasSessionRefreshToken: !!response.session?.refresh_token,
+        refreshTokenValue: response.refresh_token || response.session?.refresh_token || 'MISSING',
+      });
+
+      // Extract tokens - prioritize top-level, fallback to session
+      const newAccessToken = response.access_token || response.session?.access_token;
+      const newRefreshToken = response.refresh_token || response.session?.refresh_token;
+
+      if (!newAccessToken || !newRefreshToken) {
+        console.error('Refresh response missing required tokens:', {
+          hasAccessToken: !!newAccessToken,
+          hasRefreshToken: !!newRefreshToken,
+          responseKeys: Object.keys(response),
+        });
+        throw new Error('Invalid refresh response: missing tokens');
       }
 
+      // Store the new tokens IMMEDIATELY (critical - old refresh token is now invalid)
+      // Use the extracted values directly to ensure we store the correct tokens
+      await AsyncStorage.setItem(AUTH_TOKEN_KEY, newAccessToken);
+      await AsyncStorage.setItem(AUTH_REFRESH_TOKEN_KEY, newRefreshToken);
+      
+      if (response.user) {
+        await AsyncStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.user));
+      }
+
+      // Verify the new refresh token was stored
+      const storedRefreshToken = await AsyncStorage.getItem(AUTH_REFRESH_TOKEN_KEY);
+      if (storedRefreshToken !== newRefreshToken) {
+        console.error('CRITICAL: New refresh token was not stored correctly!', {
+          expected: newRefreshToken.substring(0, 10),
+          stored: storedRefreshToken?.substring(0, 10),
+        });
+        throw new Error('Failed to store new refresh token');
+      }
+
+      console.log('Token refresh successful - new tokens stored and verified');
       return response;
     } catch (error) {
       console.error('Token refresh failed:', error);

@@ -10,7 +10,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
   const { method = 'GET', headers = {}, body } = options;
 
   const url = `${API_BASE_URL}${endpoint}`;
-
+  console.log("url", url);
   const config: RequestInit = {
     method,
     headers: {
@@ -18,14 +18,16 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
       ...headers,
     },
   };
-
+  console.log("config", config);
   if (body && method !== 'GET') {
+    console.log("body", body);
     config.body = JSON.stringify(body);
   }
 
   try {
+    console.log("fetching");
     const response = await fetch(url, config);
-
+    console.log("response", response);
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({
         error: `HTTP ${response.status}: ${response.statusText}`,
@@ -34,6 +36,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
     }
 
     const data = await response.json();
+    console.log("data", data);
     return data;
   } catch (error) {
     if (error instanceof Error) {
