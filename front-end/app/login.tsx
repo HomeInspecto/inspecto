@@ -29,10 +29,7 @@ export default function LoginScreen() {
     }
 
     try {
-      console.log("email", email);
-      console.log("password", password);
       await login(email, password);
-      console.log("login successful");
       router.replace('/home');
     } catch {
       // Error is already set in the store

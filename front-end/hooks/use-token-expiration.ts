@@ -5,8 +5,8 @@ import { useAuthStore } from '@/store/auth-store';
 import { authService, isTokenExpired } from '@/services/auth';
 
 // Check more frequently to catch token expiration (especially when testing with short expiry times)
-const CHECK_INTERVAL = 5 * 1000; // Check every 5 seconds (was 60 seconds)
-const EXPIRED_CHECK_INTERVAL = 1 * 1000; // Check every second for expired tokens
+const CHECK_INTERVAL = 5 * 1000; //TODO Check every 5 minutes (was 5 seconds)
+const EXPIRED_CHECK_INTERVAL = 1 * 1000; //TODO Check every minute for expired tokens (was 1 second)
 
 /**
  * Hook to monitor token expiration and show alerts
