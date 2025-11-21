@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { PhotoEditorProps, Tool } from '../photo-editor';
 import { router } from 'expo-router';
@@ -8,7 +8,9 @@ import {
   type Shape,
 } from '@/features/edit-observation/state';
 import { useShallow } from 'zustand/shallow';
-import { type GestureResponderEvent } from 'react-native';
+import { type GestureResponderEvent, Animated, Dimensions } from 'react-native';
+
+const screen_width = Dimensions.get('window').width;
 
 type PhotoEditorPropsOptionalPhoto = Omit<PhotoEditorProps, 'photo'> & { photo: Photo | null };
 
@@ -30,6 +32,16 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
     );
 
   const photo = photos[activePhotoIndex];
+
+  const translateX = useRef(new Animated.Value(-activePhotoIndex * screen_width)).current;
+
+  useEffect(() => {
+    Animated.timing(translateX, {
+      toValue: -activePhotoIndex * screen_width,
+      duration: 175,
+      useNativeDriver: true,
+    }).start();
+  }, [activePhotoIndex]);
 
   function goBack() {
     router.back();
@@ -239,6 +251,7 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
   return {
     currentTool,
     photo,
+    photos,
     undoLastShape,
     previewShape,
     goBack,
@@ -247,5 +260,7 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
     handleTouchEnd,
     handleTouchMove,
     handleTouchStart,
+    translateX,
+    screenWidth: screen_width,
   };
 }

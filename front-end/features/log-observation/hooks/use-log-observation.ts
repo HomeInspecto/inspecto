@@ -13,7 +13,7 @@ import { authService } from '@/services/auth';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'localhost:4000';
 
-export function useLogObersation(): LogObservationProps {
+export function useLogObersation(isStandalone?: boolean): LogObservationProps {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const [sectionOptions, setSectionOptions] = useState<{ name: string; value: string }[]>([]);
@@ -119,7 +119,8 @@ export function useLogObersation(): LogObservationProps {
 
     try {
       const formData = new FormData();
-
+      
+      formData.append('inspection_id', id);
       formData.append('section_id', obsrState.section);
       formData.append('obs_name', obsrState.name ?? '');
       formData.append('description', obsrState.description ?? '');
@@ -127,6 +128,7 @@ export function useLogObersation(): LogObservationProps {
       formData.append('status', 'open');
       formData.append('recommendation', obsrState.recommendation ?? '');
       formData.append('implication', obsrState.implications ?? '');
+    
 
       //add photos
       if (obsrState.photos && obsrState.photos.length > 0) {
@@ -171,8 +173,19 @@ export function useLogObersation(): LogObservationProps {
     clearObservation,
   ]);
 
+  useEffect(() => {
+    if (!isStandalone) return;
+
+    return () => {
+      clearObservation();
+    };
+  }, [isStandalone, clearObservation]);
+
+  const onGoBack = () => router.back();
+
   return {
     onLog,
+    onGoBack: isStandalone ? onGoBack : undefined,
     name,
     description,
     implication: implications,
