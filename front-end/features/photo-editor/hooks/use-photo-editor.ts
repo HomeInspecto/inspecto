@@ -165,7 +165,6 @@ export function usePhotoEditor(): PhotoEditorPropsOptionalPhoto {
 
       setPreviewShape(JSON.stringify(updatedOval));
     } else if (currentTool === 'arrow') {
-      console.log('running');
       const arrow: Shape = {
         id: Date.now().toString(),
         strokeColor: 'red',

@@ -15,10 +15,13 @@ export interface ActiveInspectionStore {
   setActiveInspection: (inspection: ActiveInspection) => void;
   clearActiveInspection: () => void;
   addObservation: (observation: Observation) => void;
+  sectionMap: Map<string, string>;
+  setSectionMap: (map: Map<string, string>) => void;
 }
 
 export const useActiveInspectionStore = create<ActiveInspectionStore>((set, get) => ({
   activeInspection: undefined,
+  sectionMap: new Map<string, string>(),
 
   setActiveInspection: inspection => set({ activeInspection: inspection }),
 
@@ -35,4 +38,6 @@ export const useActiveInspectionStore = create<ActiveInspectionStore>((set, get)
         },
       };
     }),
+
+  setSectionMap: map => set({ sectionMap: map }),
 }));

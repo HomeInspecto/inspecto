@@ -5,6 +5,7 @@ import { Dimensions } from 'react-native';
 import type { ObservationDetailsViewProps } from '../views/observation-details-view';
 import { useActiveInspectionStore } from '@/features/inspection-details/state';
 import { useActiveObservationStore } from '@/features/edit-observation/state';
+import type { Observation } from '@/features/edit-observation/state';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -16,12 +17,24 @@ export function useObservationDetails(): ObservationDetailsViewProps {
     }))
   );
 
+  const { sectionMap } = useActiveInspectionStore(
+    useShallow(state => ({ sectionMap: state.sectionMap }))
+  );
+
   const decodedObservationId = observationId ? decodeURIComponent(observationId) : '';
 
   const observation = useMemo(() => {
     if (!activeInspection?.observations?.length || !decodedObservationId) return undefined;
-    return activeInspection.observations.find(obs => obs.name === decodedObservationId);
-  }, [activeInspection?.observations, decodedObservationId]);
+    const found = activeInspection.observations.find(obs => obs.name === decodedObservationId);
+    if (!found) return undefined;
+    
+    const sectionName = sectionMap.get(found.section || '') || found.section || 'Uncategorized';
+    
+    return {
+      ...found,
+      section: sectionName,
+    } as Observation;
+  }, [activeInspection?.observations, decodedObservationId, sectionMap]);
 
   const setObservation = useActiveObservationStore(s => s.setObservation);
 
