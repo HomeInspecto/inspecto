@@ -78,12 +78,12 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
       }
     }
 
-    if (!activeInspection) load();
+    load();
 
     return () => {
       isMounted = false;
     };
-  }, [setActiveInspection]);
+  }, [activeInspectionId, setActiveInspection]);
 
   return {
     inspection: activeInspection,
