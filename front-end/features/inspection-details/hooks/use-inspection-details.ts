@@ -70,7 +70,6 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     async function load() {
       try {
         const fullInspection = await fetchActiveInspectionDetails(activeInspectionId || '');
-        console.log(fullInspection);
         if (!isMounted) return;
         setActiveInspection(fullInspection);
       } catch (err) {
