@@ -9,6 +9,7 @@ const { inspectionId } = Astro.params;
 
 const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`);
 const reportData = await res.json();
+console.log("Fetched report data:", reportData);
 
 const inspection = reportData.inspection;
 const organization = reportData.organization;

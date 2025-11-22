@@ -47,8 +47,8 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     // Open the local report preview server with the real inspection id
     // (developer: change the host/port via env if your preview server runs elsewhere)
     
-    //const url = `http://localhost:4321/view/${activeInspection.id}`;
-    const url = `http://localhost:4321/view/9c6b71e5-5059-4f02-8ddd-2df015514972`;
+    const url = `http://localhost:4321/view/edit/${activeInspection.id}`;
+    // const url = `http://localhost:4321/view/9c6b71e5-5059-4f02-8ddd-2df015514972`;
     Linking.openURL(url);
   };
   //Not yet done or connected
