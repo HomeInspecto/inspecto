@@ -100,7 +100,9 @@ app.use('/api/inspectors', authenticateToken, inspectorsRoutes); // ✅ Inspecto
 app.use('/api/observations', authenticateToken, observationsRoutes); // ✅ Observation-related routes
 app.use('/api/observations/media', authenticateToken, observationMediaRoutes); // ✅ Observation media upload/list
 app.use('/api/transcriptions', authenticateToken, transcribeRoutes); // ✅ Transcription routes
-app.use('/api/report', authenticateToken, generateReportRoutes); // ✅ Report generation routes
+app.use('/api/report', generateReportRoutes); // ✅ Report generation routes
+
+//app.use('/api/report', authenticateToken, generateReportRoutes); // ✅ Report generation routes
 
 
 
