@@ -169,3 +169,13 @@ th {
   border: 1px solid;
   border-collapse: collapse;
 }
+
+.center-block {
+  text-align: center;
+  margin: 0 auto;
+  max-width: 600px; /* keeps it readable on desktop */
+}
+
+.center-block .tiptap {
+  text-align: center; /* centers the text inside editor too */
+}
