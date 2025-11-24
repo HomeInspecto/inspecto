@@ -74,6 +74,59 @@ export const getAllInspections = async (req: Request, res: Response) => {
 
 /**
  * @swagger
+ * /api/inspections/byInspector/{inspector_id}:
+ *   get:
+ *     summary: Get inspections by inspector ID
+ *     description: Retrieves inspections by inspector ID
+ *     tags:
+ *       - Inspections
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: inspector_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the inspector
+ *     responses:
+ *       '200':
+ *         description: List of inspections
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 inspections:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       '404':
+ *         description: No inspections found for this inspector
+ *       '500':
+ *         description: Database query failed
+ */
+export const getInspectionsByInspectorId = async (req: Request, res: Response) => {
+  try {
+    const { inspector_id } = req.params;
+    console.log("in get inspections by inspector id inspector_id", inspector_id);
+    if (!inspector_id) {
+      return res.status(400).json({ error: 'inspector_id is required' });
+    }
+
+    const { data, error } = await DatabaseService.fetchDataAdmin('inspections', '*', { inspector_id: inspector_id });
+    if (error) {
+      return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+    return res.json({ inspections: data });
+  } catch (err) {
+    console.error('Database query error:', err);
+    return res.status(500).json({ error: 'Database query failed', details: err instanceof Error ? err.message : 'Unknown error' });
+  }
+};
+
+/**
+ * @swagger
  * /api/inspections/createInspection:
  *   post:
  *     summary: Create a new inspection

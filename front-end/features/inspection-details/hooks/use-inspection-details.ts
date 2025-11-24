@@ -5,7 +5,7 @@ import { useActiveInspectionStore } from '../state';
 import type { Observation } from '../../edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
 import type { InspectionDetailsViewProps } from '../views/inspection-details-view';
-import { fetchActiveInspectionDetails } from './backend-calls';
+import { fetchActiveInspectionDetails, ensureSectionsLoaded } from './backend-calls';
 import { authService } from '@/services/auth';
 import { encryptToken } from '@/utils/token-encryption';
 
@@ -23,24 +23,33 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     );
   };
 
+  const { sectionMap } = useActiveInspectionStore(
+    useShallow(state => ({ sectionMap: state.sectionMap }))
+  );
+
+  useEffect(() => {
+    ensureSectionsLoaded();
+  }, []);
+
   const sections = useMemo(() => {
     if (!activeInspection?.observations?.length) return [];
 
     const grouped = new Map<string, Observation[]>();
 
     for (const observation of activeInspection.observations) {
-      const key = observation.section || 'Uncategorized';
-      if (!grouped.has(key)) {
-        grouped.set(key, []);
+      const sectionName = sectionMap.get(observation.section || '') || observation.section || 'Uncategorized';
+      
+      if (!grouped.has(sectionName)) {
+        grouped.set(sectionName, []);
       }
-      grouped.get(key)!.push(observation);
+      grouped.get(sectionName)!.push(observation);
     }
 
     return Array.from(grouped.entries()).map(([title, data]) => ({
       title,
       data,
     }));
-  }, [activeInspection?.observations]);
+  }, [activeInspection?.observations, sectionMap]);
 
   const onCreateReport = async () => {
     if (!activeInspection) return;
@@ -49,7 +58,6 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     
     // Get the access token to pass to the report page
     const token = await authService.getAccessToken();
-    console.log("token", token);
     
     // Encrypt the token before sending it in the URL
     const encryptedToken = token ? await encryptToken(token) : null;
@@ -80,7 +88,6 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     async function load() {
       try {
         const fullInspection = await fetchActiveInspectionDetails(activeInspectionId || '');
-        console.log(fullInspection);
         if (!isMounted) return;
         setActiveInspection(fullInspection);
       } catch (err) {
@@ -88,12 +95,12 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
       }
     }
 
-    if (!activeInspection) load();
+    load();
 
     return () => {
       isMounted = false;
     };
-  }, [setActiveInspection]);
+  }, [activeInspectionId, setActiveInspection]);
 
   return {
     inspection: activeInspection,

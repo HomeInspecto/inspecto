@@ -3,6 +3,7 @@ import type { Inspection } from '@/features/home/state';
 import type { Observation } from '../../edit-observation/state';
 import type { ActiveInspection } from '../state';
 import { authService } from '@/services/auth';
+import { useActiveInspectionStore } from '../state';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -56,6 +57,33 @@ function formatAddress(property?: PropertyApi | null): string {
   if (property.country) addressParts.push(property.country);
 
   return addressParts.join(', ');
+}
+
+// fetch sections and map them to the sectionMap in zustand
+export async function ensureSectionsLoaded(): Promise<void> {
+  const currentSectionMap = useActiveInspectionStore.getState().sectionMap;
+  if (currentSectionMap.size > 0) return;
+
+  try {
+    const sectionsRes = await fetch(`${API_BASE}/api/sections/all`, {
+      headers: {
+        ...(await authService.authHeaders()),
+        'Content-Type': 'application/json',
+      },
+    });
+    const sectionsJson = await sectionsRes.json();
+    const sectionsData = sectionsJson.sections ?? sectionsJson ?? [];
+    
+    const sectionMap = new Map<string, string>();
+    for (const section of sectionsData) {
+      if (section?.id && section?.section_name) {
+        sectionMap.set(section.id, section.section_name);
+      }
+    }
+    useActiveInspectionStore.getState().setSectionMap(sectionMap);
+  } catch (error) {
+    console.error('Failed to fetch sections:', error);
+  }
 }
 
 /**
