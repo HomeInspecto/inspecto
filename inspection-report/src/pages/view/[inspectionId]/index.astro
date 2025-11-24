@@ -1,19 +1,45 @@
 ---
 export const prerender = false;
 import "../../../styles/style.css";
+import { decryptToken } from "../../../utils/token-decryption";
 
-const API_BASE_URL = "http://localhost:4000";
+const API_BASE_URL = import.meta.env.PUBLIC_API_URL || import.meta.env.API_URL || "http://localhost:4000";
 const { inspectionId } = Astro.params;
+const encryptedToken = Astro.url.searchParams.get("token");
+
+// Decrypt the token if provided
+let token: string | null = null;
+if (encryptedToken) {
+  try {
+    token = decryptToken(encryptedToken);
+  } catch (error) {
+    console.error("Failed to decrypt token:", error);
+    // If decryption fails, try using the token as-is (for backward compatibility)
+    token = encryptedToken;
+  }
+}
+
+// Fetch report data with authentication token if provided
+const headers: HeadersInit = {
+  "Content-Type": "application/json",
+};
+
+if (token) {
+  headers["Authorization"] = `Bearer ${token}`;
+}
 
 let reportData: any = null;
 let loadMessage: string | null = null;
 let loadSuccess = false;
 
 try {
-  const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`);
+  console.log("api base url", API_BASE_URL);
+  const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`, {
+    headers,
+  });
 
   if (!res.ok) {
-    loadMessage = `Failed to load report. Server responded with: ${res.status}`;
+    loadMessage = `Failed to load report. Server responded with: ${res.status} ${res.statusText}`;
   } else {
     reportData = await res.json();
     if (!reportData || !reportData.inspection) {

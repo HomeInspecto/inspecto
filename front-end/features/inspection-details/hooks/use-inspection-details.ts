@@ -6,6 +6,8 @@ import type { Observation } from '../../edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
 import type { InspectionDetailsViewProps } from '../views/inspection-details-view';
 import { fetchActiveInspectionDetails } from './backend-calls';
+import { authService } from '@/services/auth';
+import { encryptToken } from '@/utils/token-encryption';
 
 export function useInspectionDetails(): InspectionDetailsViewProps {
   const [activeInspection, setActiveInspection] = useActiveInspectionStore(
@@ -40,15 +42,23 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     }));
   }, [activeInspection?.observations]);
 
-  const onCreateReport = () => {
+  const onCreateReport = async () => {
     if (!activeInspection) return;
     const i_id = activeInspection.id;
     console.log("i_id", i_id);
-    // Open the local report preview server with the real inspection id
-    // (developer: change the host/port via env if your preview server runs elsewhere)
     
-    const url = `http://localhost:4321/view/edit/${activeInspection.id}`;
-    // const url = `http://localhost:4321/view/9c6b71e5-5059-4f02-8ddd-2df015514972`;
+    // Get the access token to pass to the report page
+    const token = await authService.getAccessToken();
+    console.log("token", token);
+    
+    // Encrypt the token before sending it in the URL
+    const encryptedToken = token ? await encryptToken(token) : null;
+    
+    // Open the local report preview server with the real inspection id and encrypted token
+    // (developer: change the host/port via env if your preview server runs elsewhere)
+    const baseUrl = `http://localhost:4321/view/edit/${activeInspection.id}`;
+    const url = encryptedToken ? `${baseUrl}?token=${encryptedToken}` : baseUrl;
+    
     Linking.openURL(url);
   };
   //Not yet done or connected
