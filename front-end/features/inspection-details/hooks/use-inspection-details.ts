@@ -53,8 +53,6 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
 
   const onCreateReport = async () => {
     if (!activeInspection) return;
-    const i_id = activeInspection.id;
-    console.log("i_id", i_id);
     
     // Get the access token to pass to the report page
     const token = await authService.getAccessToken();
