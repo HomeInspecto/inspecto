@@ -30,10 +30,6 @@ if (token) {
   headers["Authorization"] = `Bearer ${token}`;
 }
 
-console.log("headers", headers);
-console.log("api base url", API_BASE_URL);
-console.log("inspection id", inspectionId);
-console.log("token", token);
 const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`, {
   headers,
 });
@@ -43,10 +39,8 @@ if (!res.ok) {
 }
 
 const reportData = await res.json();
-console.log("Fetched report data:", reportData);
 
 const inspection = reportData.inspection;
-const organization = reportData.organization;
 
 const saveUrl = (fieldPath: string) =>
   `${API_BASE_URL}/api/report/update/${inspectionId}?field=${fieldPath}`;
@@ -64,25 +58,6 @@ const saveUrl = (fieldPath: string) =>
 
     <h1 style="margin-bottom: 12px;">Inspection Editor</h1>
     <div class="center-block">
-
-      {organization && (
-        <section class="section-card" style="margin-bottom: 8px;">
-          {organization.logo && (
-            <img src={organization.logo} alt={`${organization.name} logo`} style="max-width: 120px; height: auto; margin-bottom: 6px;" />
-          )}
-          <h2 style="margin-bottom: 6px;"><strong>Organization</strong></h2>
-          <ReportEditor initialContent={organization.name ?? ""} saveUrl={saveUrl("organization.name")} client:load />
-          {organization.contact?.address && (
-            <ReportEditor initialContent={organization.contact.address} saveUrl={saveUrl("organization.contact.address")} client:load />
-          )}
-          {organization.contact?.phone && (
-            <ReportEditor initialContent={organization.contact.phone} saveUrl={saveUrl("organization.contact.phone")} client:load />
-          )}
-          {organization.website && (
-            <ReportEditor initialContent={organization.website} saveUrl={saveUrl("organization.website")} client:load />
-          )}
-        </section>
-      )}
 
       {inspection?.inspector && (
         <section class="section-card" style="margin-bottom: 8px;">
@@ -191,3 +166,4 @@ const saveUrl = (fieldPath: string) =>
     ))}
   </main>
 </body>
+

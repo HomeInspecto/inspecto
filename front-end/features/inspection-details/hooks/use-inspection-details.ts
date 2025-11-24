@@ -8,6 +8,7 @@ import type { InspectionDetailsViewProps } from '../views/inspection-details-vie
 import { fetchActiveInspectionDetails, ensureSectionsLoaded } from './backend-calls';
 import { authService } from '@/services/auth';
 import { encryptToken } from '@/utils/token-encryption';
+const REPORT_URL = process.env.PUBLIC_REPORT_URL || "http://localhost:4321";
 
 export function useInspectionDetails(): InspectionDetailsViewProps {
   const [activeInspection, setActiveInspection] = useActiveInspectionStore(
@@ -61,22 +62,18 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     const encryptedToken = token ? await encryptToken(token) : null;
     
     // Open the local report preview server with the real inspection id and encrypted token
-    // (developer: change the host/port via env if your preview server runs elsewhere)
-    const baseUrl = `http://localhost:4321/view/edit/${activeInspection.id}`;
+    const baseUrl = `${REPORT_URL}/view/edit/${activeInspection.id}`  
     const url = encryptedToken ? `${baseUrl}?token=${encryptedToken}` : baseUrl;
     
     Linking.openURL(url);
   };
-  //Not yet done or connected
-
-  // https://inspection-report-topaz.vercel.app/view/lmquckr4ql
-
+  
   const [searchTerm, setSearchTerm] = useState('');
   const onSearchChange = (text: string) => {
     setSearchTerm(text);
   };
 
-  const { id: activeInspectionId } = useLocalSearchParams<{ id: string }>(); // TODO set active inspection state here
+  const { id: activeInspectionId } = useLocalSearchParams<{ id: string }>(); 
 
   useEffect(() => {
     if (!activeInspectionId) return;
