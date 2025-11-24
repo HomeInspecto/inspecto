@@ -3,11 +3,45 @@ import "../../../../styles/style.css";
 export const prerender = false;
 
 import ReportEditor from "../../../../components/ReportEditor.jsx";
+import { decryptToken } from "../../../../utils/token-decryption";
 
-const API_BASE_URL = "http://localhost:4000";
+const API_BASE_URL = import.meta.env.PUBLIC_API_URL || import.meta.env.API_URL || "http://localhost:4000";
 const { inspectionId } = Astro.params;
+const encryptedToken = Astro.url.searchParams.get("token");
 
-const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`);
+// Decrypt the token if provided
+let token: string | null = null;
+if (encryptedToken) {
+  try {
+    token = decryptToken(encryptedToken);
+  } catch (error) {
+    console.error("Failed to decrypt token:", error);
+    // If decryption fails, try using the token as-is (for backward compatibility)
+    token = encryptedToken;
+  }
+}
+
+// Fetch report data with authentication token if provided
+const headers: HeadersInit = {
+  "Content-Type": "application/json",
+};
+
+if (token) {
+  headers["Authorization"] = `Bearer ${token}`;
+}
+
+console.log("headers", headers);
+console.log("api base url", API_BASE_URL);
+console.log("inspection id", inspectionId);
+console.log("token", token);
+const res = await fetch(`${API_BASE_URL}/api/report/generate/${inspectionId}`, {
+  headers,
+});
+
+if (!res.ok) {
+  throw new Error(`Failed to fetch report: ${res.status} ${res.statusText}`);
+}
+
 const reportData = await res.json();
 console.log("Fetched report data:", reportData);
 
