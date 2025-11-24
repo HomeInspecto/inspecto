@@ -6,6 +6,9 @@ import type { Observation } from '../../edit-observation/state';
 import { useShallow } from 'zustand/react/shallow';
 import type { InspectionDetailsViewProps } from '../views/inspection-details-view';
 import { fetchActiveInspectionDetails, ensureSectionsLoaded } from './backend-calls';
+import { authService } from '@/services/auth';
+import { encryptToken } from '@/utils/token-encryption';
+const REPORT_URL = process.env.EXPO_PUBLIC_REPORT_URL || "http://localhost:4321";
 
 export function useInspectionDetails(): InspectionDetailsViewProps {
   const [activeInspection, setActiveInspection] = useActiveInspectionStore(
@@ -49,18 +52,28 @@ export function useInspectionDetails(): InspectionDetailsViewProps {
     }));
   }, [activeInspection?.observations, sectionMap]);
 
-  const onCreateReport = () => {
+  const onCreateReport = async () => {
     if (!activeInspection) return;
-    const url = `https://inspection-report-topaz.vercel.app/view/${activeInspection.id}`;
+    
+    // Get the access token to pass to the report page
+    const token = await authService.getAccessToken();
+    
+    // Encrypt the token before sending it in the URL
+    const encryptedToken = token ? await encryptToken(token) : null;
+    
+    // Open the local report preview server with the real inspection id and encrypted token
+    const baseUrl = `${REPORT_URL}/view/edit/${activeInspection.id}`  
+    const url = encryptedToken ? `${baseUrl}?token=${encryptedToken}` : baseUrl;
+    
     Linking.openURL(url);
   };
-
+  
   const [searchTerm, setSearchTerm] = useState('');
   const onSearchChange = (text: string) => {
     setSearchTerm(text);
   };
 
-  const { id: activeInspectionId } = useLocalSearchParams<{ id: string }>(); // TODO set active inspection state here
+  const { id: activeInspectionId } = useLocalSearchParams<{ id: string }>(); 
 
   useEffect(() => {
     if (!activeInspectionId) return;

@@ -1,5 +1,17 @@
 ---
+export const prerender = false;
 
+// Get inspectionId and token from query parameters
+const inspectionId = Astro.url.searchParams.get("inspectionId");
+const token = Astro.url.searchParams.get("token");
+
+if (inspectionId) {
+  // Redirect to view page with the inspectionId and token (if provided)
+  const redirectUrl = token 
+    ? `/view/${inspectionId}?token=${encodeURIComponent(token)}`
+    : `/view/${inspectionId}`;
+  return Astro.redirect(redirectUrl, 302);
+}
 ---
 
 <html lang="en">
@@ -8,10 +20,11 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Astro1</title>
+    <title>Inspection Report</title>
   </head>
   <body>
-    <h1>Astro2</h1>
-    <h2>My astro site</h2>
+    <h1>Inspection Report</h1>
+    <p>Please provide an inspection ID to view the report.</p>
+    <p>Example: <a href="/?inspectionId=YOUR_INSPECTION_ID">/?inspectionId=YOUR_INSPECTION_ID</a></p>
   </body>
 </html>
