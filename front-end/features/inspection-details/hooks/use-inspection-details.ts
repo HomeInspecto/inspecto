@@ -8,7 +8,7 @@ import type { InspectionDetailsViewProps } from '../views/inspection-details-vie
 import { fetchActiveInspectionDetails, ensureSectionsLoaded } from './backend-calls';
 import { authService } from '@/services/auth';
 import { encryptToken } from '@/utils/token-encryption';
-const REPORT_URL = process.env.PUBLIC_REPORT_URL || "http://localhost:4321";
+const REPORT_URL = process.env.EXPO_PUBLIC_REPORT_URL || "http://localhost:4321";
 
 export function useInspectionDetails(): InspectionDetailsViewProps {
   const [activeInspection, setActiveInspection] = useActiveInspectionStore(
