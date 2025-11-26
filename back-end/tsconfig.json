@@ -22,6 +22,7 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "baseUrl": "./",
+    "types": ["node", "jest"],
     "paths": {
       "@/*": ["./src/*"]
     },
@@ -34,9 +35,7 @@
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts"
+    "dist"
   ],
   "ts-node": {
     "esm": false,
