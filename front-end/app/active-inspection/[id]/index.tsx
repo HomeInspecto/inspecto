@@ -15,6 +15,7 @@ export default function HomeScreen() {
   useEffect(() => {
     if (!id) return;
     const inspections = useInspectionsStore.getState().inspections;
+    if (!inspections) return;
     const found = inspections.find(i => String(i.id) === String(id));
     if (found) {
       // convert to ActiveInspection shape (includes observations array)

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SectionList, Pressable } from 'react-native';
+import { View, SectionList, Pressable, Dimensions } from 'react-native';
 import Text from '@/components/views/text/text';
 import { COLORS } from '@/constants/colors';
 import type { ActiveInspection } from '../state';
@@ -66,7 +66,7 @@ export function InspectionDetailsView({
       />
 
       <SectionList
-        style={{ flex: 1 }}
+        style={{ flex: 1, maxHeight: Dimensions.get('window').height * 0.6 }}
         sections={sections}
         keyExtractor={(item, index) => `${item.name ?? 'observation'}-${index}`}
         renderSectionHeader={({ section: { title } }) => (
