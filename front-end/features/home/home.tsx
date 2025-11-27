@@ -110,7 +110,7 @@ export default function Home() {
                 top: 58, // Below the button (50px button height + 8px gap)
                 right: 0,
                 minWidth: 150,
-                backgroundColor: COLORS.material.secondary.fill,
+                backgroundColor: COLORS.pageBackground,
                 borderRadius: 12,
                 borderWidth: 1,
                 borderColor: COLORS.material.secondary.stroke,
