@@ -160,11 +160,11 @@ export default function Home() {
         <IconButton icon="plus" size="lg" onPress={handleGotoCreateInspection} />
       </View>
 
-      {__DEV__ && (
+      {/* {__DEV__ && (
         <Pressable onPress={() => router.push('/storybook')}>
           <Text variant="body">storybook (dev)</Text>
         </Pressable>
-      )}
+      )} */}
     </View>
   );
 }
