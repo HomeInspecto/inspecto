@@ -58,7 +58,7 @@ export default function Home() {
       style={{
         flex: 1,
         padding: 16,
-        paddingTop: 80,
+        paddingTop: insets.top + 80,
         gap: 24,
         backgroundColor: COLORS.pageBackground,
       }}
