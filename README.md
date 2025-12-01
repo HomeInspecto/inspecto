@@ -1,29 +1,43 @@
-# Inspecto
+# Spectr
 
-Inspecto is an intelligent inspection reporting tool designed for **independent home inspectors**. The platform streamlines the end-to-end inspection workflow—from template creation to final report generation—by combining AI-assisted document analysis, intuitive mobile data capture, and automated report assembly.
+Spectr is an intelligent inspection reporting tool designed for **independent home inspectors**. The platform streamlines end-to-end workflow, from inspection to final report generation by combining AI-assisted observations, intuitive mobile data capture, and automated report assembly.
 
-Inspecto provides a unified experience across web and mobile devices. Future integrations include secure authentication, cloud-based data storage, and customizable inspection templates for different client needs.
+Spectr provides a unified experience across web and mobile devices, empowering inspectors to spend **more time inspecting and less time writing**, by automating repetitive admin tasks and ensuring report quality and consistency.
 
-**Core Features (current and planned):**
+## Current Features
 
-* **Cross-platform mobile app** for on-site inspection data entry
-* **AI-powered template extraction** from uploaded reports
-* **Guided template generator** for consistent report formatting
-* **Camera and photo annotation tools** for adding visuals to reports
-* **Auto-generated professional reports** ready for client delivery
-* **Scalable backend architecture** with database persistence and API endpoints
-* **Secure client and inspector data handling**
+- **Cross-platform mobile app** (iOS, Android, Web) built with React Native and Expo
+- **User authentication** - Secure signup, login, and session management
+- **Inspection management** - Create, view, and manage multiple inspections
+- **Observation logging** - Log observations with details, sections, and field notes
+- **Camera integration** - Capture photos directly within the app
+- **Photo annotation tools** - Draw and annotate photos with drawing tools and SVG overlays
+- **Report editing** - View and edit generated inspection reports
+- **Audio transcription** - Transcribe audio recordings to field notes
+- **AI text polishing** - Polish and refine transcriptions using AI (Cohere integration)
+- **Scalable backend architecture** - RESTful API with Express.js
+- **Database persistence** - Supabase integration for data storage
+- **Secure data handling** - Encrypted tokens and secure API communication
 
-Inspecto empowers inspectors to spend **more time inspecting and less time writing**, by automating repetitive admin tasks and ensuring report quality and consistency.
+## Planned Features
+
+- **AI-powered template extraction** - Automatically extract inspection templates from uploaded reports
+- **Guided template generator** - Interactive tool for creating consistent report templates
+- **Customizable inspection templates** - Create and manage custom templates for different client needs
+- **Enhanced report generation** - Advanced report customization and formatting options
+- **Cloud-based data synchronization** - Real-time sync across multiple devices
+- **Offline mode** - Continue working without internet connectivity
+- **Advanced analytics** - Inspection statistics and insights dashboard
+- **Client portal** - Allow clients to view and download their inspection reports
 
 ---
 
 ## Web Demo
 
-Inspecto was designed primarily for mobile devices. Until it is available on mobile app stores we are demoing an early [web-based version](https://early-mvp-demo-html.vercel.app/), so that users can get a feel for the UI and provide feeddback. 
+Spectr was designed primarily for mobile devices. Until it is available on mobile app stores we are demoing an early [web-based version](https://early-mvp-demo-html.vercel.app/), so that users can get a feel for the UI and provide feeddback.
 
 - [Web Demo](https://early-mvp-demo-html.vercel.app/)
-- [Product Page](https://dandy-elements-644634.framer.app/)
+- [Team Spectr Product Page (Final)](https://dandy-elements-644634.framer.app/)
 
 ## Current Issues in Progress
 
@@ -31,73 +45,129 @@ Visit our [Kanban Board](https://github.com/orgs/HomeInspecto/projects/1) to fol
 
 ## Quick Start
 
+> **Note:** Spectr is designed primarily for mobile devices. A web demo is available at [early-mvp-demo-html.vercel.app](https://early-mvp-demo-html.vercel.app/), but for the best experience, please follow the mobile setup instructions below.
+
 ### Prerequisites
 
-- Docker and Docker Compose installed
-- Git
-- Node.js (for local development)
-- iOS Simulator (for iOS development) or Android Studio (for Android development)
+Before starting, ensure you have the following installed:
 
-### Running the Project
+1. **Git**
+
+   - Download from [git-scm.com](https://git-scm.com/downloads)
+   - If you don't have a GitHub account, create one at [github.com](https://github.com/)
+   - Set up SSH keys for GitHub (see [GitHub's SSH key guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh))
+
+2. **Node.js** (latest version)
+
+   - Download from [nodejs.org](https://nodejs.org/en/download)
+   - Choose the installer for your operating system
+
+3. **Expo Go** (Mobile App)
+   - **iOS**: Download from the App Store
+   - **Android**: Download from Google Play Store
+   - Sign in to Expo Go with your Expo account credentials
+
+### Project Setup
+
+> **Important:** Ensure your mobile device and development machine are connected to the same Wi-Fi network.
 
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/HomeInspecto/inspecto.git
    cd inspecto
    ```
 
-2. **Start the development environment**
+2. **Configure environment variables**
 
-   **Option A: Docker (Web Development)**
+   Create a `.env` file in the `front-end/` directory:
 
    ```bash
-   docker compose up --build
+   cd front-end
+   touch .env
    ```
 
-   **Option B: Local Development (iOS/Android)**
+   Add the following environment variables to `front-end/.env`:
+
+   ```env
+   EXPO_PUBLIC_API_URL=<your-api-url>
+   EXPO_PUBLIC_REPORT_URL=<your-report-url>
+   EXPO_PUBLIC_SECRET=<your-secret>
+   ```
+
+   > **Note:** Contact the project maintainers for the actual environment variable values.
+
+3. **Install dependencies**
 
    ```bash
-   # Backend
-   docker compose up back-end
-
-   # Frontend (in another terminal)
    cd front-end
    npm install
-   npm run ios    # for iOS
-   # or
-   npm run android # for Android
-   # or
-   npm run web    # for web
    ```
 
-3. **Access the applications**
-   - Frontend Web: http://localhost:8081 (Docker) or http://localhost:8081 (Local)
-   - Backend: http://localhost:4000
-   - Backend Health Check: http://localhost:4000/health
-   - To check API endpoints: http://localhost:4000/api
+   > If prompted to run `npm audit fix` after installation, you can ignore it and proceed.
 
-### Testing Camera & Gallery Features
+4. **Login to Expo**
 
-**On iOS (Expo Go):**
+   ```bash
+   npx expo login
+   ```
 
-1. Install **Expo Go** from App Store
-2. Start development server: `cd front-end && npm run start`
-3. Scan QR code with Expo Go
-4. Navigate to **Camera** tab to take photos
-5. Navigate to **Gallery** tab to view photos
-6. Test **pinch-to-zoom** on camera
-7. Test **new photo counter** (appears after taking photos)
+   Enter your Expo account credentials (should match the account you're signed into on Expo Go).
 
-**On Android (Development Build):**
+### Running the Project
 
-1. Install **EAS CLI**: `npm install -g eas-cli`
-2. Login to EAS: `eas login` (create free account at expo.dev if needed)
-3. Build Android app: `cd front-end && eas build --platform android --profile development`
-4. Install the APK on your Android device/emulator
-5. Start development server: `cd front-end && npm run start`
-6. Open the native app and connect to development server
-7. Test camera and gallery features
+1. **Start the development server**
+
+   ```bash
+   cd front-end
+   npm run start -- --tunnel
+   ```
+
+   > **Note:** The `--tunnel` flag enables ngrok tunneling, which allows your mobile device to connect to the development server even if they're on different networks.
+
+   **Troubleshooting:**
+
+   - If you see "CommandError: ngrok tunnel took too long to connect", rerun the command
+   - If prompted to download packages, answer "yes" and wait for them to download
+
+2. **Connect your mobile device**
+
+   **Option A: Scan QR Code**
+
+   - A QR code will appear in your terminal
+   - Scan it with your phone's camera (iOS) or the Expo Go app (Android)
+   - The app should open automatically in Expo Go
+
+   **Option B: Manual Connection in Expo Go**
+
+   - Open Expo Go on your mobile device
+   - Ensure you're signed in with the same Expo account
+   - Look for "Inspection App on ..." under Development Servers
+   - Tap it to load the app
+   - If the option doesn't appear or disappears, restart the development server (`Ctrl+C` then rerun `npm run start -- --tunnel`)
+
+3. **Verify the app is running**
+
+   Once connected, the app should load on your mobile device. You can now test the application features.
+
+### Testing the Application
+
+After finishing the setup, you can either:
+
+- **Sign up** with your own account, or
+- **Sign in** using the test account used for live demos:
+  - **Email:** `uvicspectr@gmail.com`
+  - **Password:** `Test@1234`
+
+### Alternative: Docker Development (Web)
+
+For web development without mobile setup:
+
+```bash
+docker compose up --build
+```
+
+Access the web app at: http://localhost:8081
 
 ### Development Features
 
