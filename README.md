@@ -34,7 +34,7 @@ Spectr provides a unified experience across web and mobile devices, empowering i
 
 ## Web Demo
 
-Spectr was designed primarily for mobile devices. Until it is available on mobile app stores we are demoing an early [web-based version](https://early-mvp-demo-html.vercel.app/), so that users can get a feel for the UI and provide feeddback.
+Spectr was designed primarily for mobile devices. Until it is available on mobile app stores we are demoing an early [web-based version](https://early-mvp-demo-html.vercel.app/), so that users can get a feel for the UI and provide feedback.
 
 - [Web Demo](https://early-mvp-demo-html.vercel.app/)
 
