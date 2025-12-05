@@ -37,11 +37,16 @@ Spectr provides a unified experience across web and mobile devices, empowering i
 Spectr was designed primarily for mobile devices. Until it is available on mobile app stores we are demoing an early [web-based version](https://early-mvp-demo-html.vercel.app/), so that users can get a feel for the UI and provide feeddback.
 
 - [Web Demo](https://early-mvp-demo-html.vercel.app/)
-- [Team Spectr Product Page (Final)](https://dandy-elements-644634.framer.app/)
+
+## Product Page
+
+[Team Spectr Product Page (Final)](https://dandy-elements-644634.framer.app/)
 
 ## Current Issues in Progress
 
 Visit our [Kanban Board](https://github.com/orgs/HomeInspecto/projects/1) to follow which features are currently in development.
+
+Or, read over our [project backlog](https://drive.google.com/file/d/1wGnKcrKmLQk_xk3TqT6-h99NTQSX2F_a/view?usp=sharing). 
 
 ## Quick Start
 
